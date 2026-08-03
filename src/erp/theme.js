@@ -120,8 +120,26 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
 .modal{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;width:100%;max-width:460px;box-shadow:var(--shadow);max-height:90vh;overflow:auto}
 
+/* ============ VENDA RÁPIDA (mobile-first) ============ */
+.qs-chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin:6px 0 16px;-webkit-overflow-scrolling:touch}
+.qs-chip{flex-shrink:0;padding:9px 15px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--mut);cursor:pointer;font-weight:600;font-size:13.5px;display:inline-flex;gap:7px;align-items:center;white-space:nowrap;transition:.12s}
+.qs-chip:hover{color:var(--txt)}
+.qs-chip.on{background:linear-gradient(135deg,var(--brand),var(--caramel));color:#1a1206;border-color:transparent}
+.qs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px}
+.qs-tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 12px;cursor:pointer;user-select:none;position:relative;transition:transform .1s,border-color .1s;text-align:center}
+.qs-tile:hover{border-color:var(--brand)}
+.qs-tile:active{transform:scale(.96)}
+.qs-tile.sel{border-color:var(--brand);box-shadow:0 0 0 2px rgba(224,164,92,.35)}
+.qs-tile .em{font-size:42px;line-height:1}
+.qs-qty{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,var(--brand),var(--caramel));color:#1a1206;font-weight:700;border-radius:99px;min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13.5px;padding:0 7px;font-family:'Space Grotesk'}
+.qs-minus{position:absolute;bottom:10px;left:10px;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--elev);color:var(--txt);font-size:18px;cursor:pointer;line-height:1}
+.qs-minus:hover{color:var(--red);border-color:var(--red)}
+.qs-bar{position:sticky;bottom:12px;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:18px;box-shadow:var(--shadow);z-index:4}
+.qs-bar .btn{padding:12px 20px;margin-left:auto;white-space:nowrap}
+
 /* ============ STOREFRONT (loja premium) ============ */
 .store{background:radial-gradient(1200px 600px at 70% -10%,rgba(224,164,92,.16),transparent),var(--bg);border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.store--full{border:none;border-radius:0;min-height:100vh;max-width:1200px;margin:0 auto}
 .store-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;position:sticky;top:0;background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:5}
 .store-logo{font-family:'Space Grotesk';font-weight:700;font-size:18px;display:flex;align-items:center;gap:9px}
 .hero{position:relative;text-align:center;padding:60px 24px 30px}

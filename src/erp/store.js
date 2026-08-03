@@ -224,13 +224,38 @@ export function useERP() {
       log(d, `Rota despachada — pedido #${pedidoId} com ${e ? e.nome : "entregador"}`);
     });
 
+  // Venda Rápida: registro ágil (balcão/apps). Já entra pago e baixa estoque —
+  // sem passar pelo fluxo de produção. É o "controle rápido" do dia a dia.
+  const registrarVendaRapida = (itens, canal, forma, quando) =>
+    up((d) => {
+      const id = 7000 + Math.floor(Math.random() * 2999);
+      const total = itens.reduce((t, it) => {
+        const p = d.produtos.find((x) => x.id === it.id);
+        return t + (p ? (p.promo || p.preco) * it.qtd : 0);
+      }, 0);
+      d.pedidos.unshift({
+        id, clienteId: null, canal, status: "Entregue", pagamento: forma,
+        itens, obs: "", criado: quando, rapida: true, ts: Date.now(),
+      });
+      itens.forEach((it) => {
+        const p = d.produtos.find((x) => x.id === it.id);
+        if (p) p.estoque = Math.max(0, p.estoque - it.qtd);
+      });
+      d.financeiro.unshift({
+        id: uid(), tipo: "receita", cat: "Vendas", desc: `Venda rápida #${id} (${canal})`,
+        valor: total, status: "pago", venc: "hoje", origem: "Venda Rápida",
+      });
+      const un = itens.reduce((t, i) => t + i.qtd, 0);
+      log(d, `Venda rápida #${id} — ${canal} · ${un} un · ${forma} · caixa +${total.toFixed(2)}`);
+    });
+
   return {
     db, theme, toggleTheme, resetar,
     // seletores
     custoProduto, margemProduto, totalPedido, precoVenda,
     // ações
     criarPedido, enviarProducao, avancarOrdem, entregarPedido, cancelarPedido,
-    receberCompra, liquidar, setPagamento, despacharEntrega,
+    receberCompra, liquidar, setPagamento, despacharEntrega, registrarVendaRapida,
   };
 }
 
