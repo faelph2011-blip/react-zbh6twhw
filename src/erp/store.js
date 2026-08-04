@@ -5,9 +5,12 @@
 // produção, a produção consome insumos, a entrega vira caixa,
 // o caixa alimenta o DRE, o cliente ganha cashback. Tudo em cascata.
 // ============================================================
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as seed from "./seed";
 import { uid } from "./format";
+import { cloudEnabled } from "../cloud/config";
+import { sessaoAtual, aoMudarAuth, entrar, criarConta, sair } from "../cloud/auth";
+import { puxarEstado, gravarEstado } from "../cloud/sync";
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const LS_KEY = "pudimerp_state_v1";
@@ -39,12 +42,82 @@ export function useERP() {
     () => localStorage.getItem("pudimerp_theme") || "light"
   );
 
+  // ---------- ESTADO DA NUVEM ----------
+  const [session, setSession] = useState(null);
+  const [cloudStatus, setCloudStatus] = useState({
+    syncing: false, lastSync: null, error: null, ready: !cloudEnabled,
+  });
+  const dbRef = useRef(db);
+  const userIdRef = useRef(null);
+  const pushTimer = useRef(null);
+  useEffect(() => { dbRef.current = db; }, [db]);
+
+  const writeLocal = useCallback((next) => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch (_) {}
+  }, []);
+
+  // Envia o estado para a nuvem (com atraso, agrupando gravações seguidas).
+  const schedulePush = useCallback((next) => {
+    if (!cloudEnabled || !userIdRef.current) return;
+    if (pushTimer.current) clearTimeout(pushTimer.current);
+    pushTimer.current = setTimeout(async () => {
+      setCloudStatus((s) => ({ ...s, syncing: true }));
+      const r = await gravarEstado(userIdRef.current, next);
+      setCloudStatus((s) => ({
+        ...s, syncing: false,
+        lastSync: r.ok ? Date.now() : s.lastSync,
+        error: r.ok ? null : r.erro,
+      }));
+    }, 800);
+  }, []);
+
   const persist = useCallback((next) => {
     setDb(next);
-    try {
-      localStorage.setItem(LS_KEY, JSON.stringify(next));
-    } catch (_) {}
-  }, []);
+    writeLocal(next);
+    schedulePush(next);
+  }, [writeLocal, schedulePush]);
+
+  // Ao logar: puxa o estado da nuvem (fonte da verdade). Se a nuvem
+  // ainda estiver vazia, semeia com o estado local atual.
+  const aplicarSessao = useCallback(async (s) => {
+    setSession(s);
+    const uidUser = (s && s.user && s.user.id) || null;
+    userIdRef.current = uidUser;
+    if (!uidUser) { setCloudStatus((cs) => ({ ...cs, ready: true })); return; }
+    setCloudStatus((cs) => ({ ...cs, syncing: true, error: null }));
+    const { data, erro } = await puxarEstado(uidUser);
+    if (erro) { setCloudStatus({ syncing: false, lastSync: null, error: erro, ready: true }); return; }
+    if (data) {
+      setDb(data);
+      writeLocal(data);
+      setCloudStatus({ syncing: false, lastSync: Date.now(), error: null, ready: true });
+    } else {
+      const r = await gravarEstado(uidUser, dbRef.current);
+      setCloudStatus({ syncing: false, lastSync: r.ok ? Date.now() : null, error: r.ok ? null : r.erro, ready: true });
+    }
+  }, [writeLocal]);
+
+  useEffect(() => {
+    if (!cloudEnabled) return;
+    let cancel = false;
+    sessaoAtual().then((s) => { if (!cancel) aplicarSessao(s); });
+    const unsub = aoMudarAuth((s) => { if (!cancel) aplicarSessao(s); });
+    return () => { cancel = true; unsub(); };
+  }, [aplicarSessao]);
+
+  const cloud = {
+    enabled: cloudEnabled,
+    ready: cloudStatus.ready,
+    syncing: cloudStatus.syncing,
+    lastSync: cloudStatus.lastSync,
+    error: cloudStatus.error,
+    session,
+    user: (session && session.user) || null,
+    email: (session && session.user && session.user.email) || null,
+    entrar,
+    criarConta,
+    sair: async () => { await sair(); },
+  };
 
   const toggleTheme = useCallback(() => {
     setTheme((t) => {
@@ -56,8 +129,11 @@ export function useERP() {
 
   const resetar = useCallback(() => {
     localStorage.removeItem(LS_KEY);
-    setDb(carregar());
-  }, []);
+    const fresh = carregar();
+    setDb(fresh);
+    writeLocal(fresh);
+    schedulePush(fresh);
+  }, [writeLocal, schedulePush]);
 
   // aplica uma mutação sobre uma cópia do estado atual e persiste
   const up = (fn) => {
@@ -251,6 +327,8 @@ export function useERP() {
 
   return {
     db, theme, toggleTheme, resetar,
+    // nuvem (login + sincronização)
+    cloud,
     // seletores
     custoProduto, margemProduto, totalPedido, precoVenda,
     // ações

@@ -76,6 +76,7 @@ h2{font-family:'Space Grotesk';font-size:15px;font-weight:600;margin-bottom:12px
 .btn.soft{background:var(--elev);color:var(--txt);border:1px solid var(--line)}
 .btn.mini{padding:5px 11px;font-size:12px;border-radius:8px}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.linklike{background:none;border:none;color:var(--brand);font-weight:600;cursor:pointer;font-size:inherit;font-family:inherit;padding:0;text-decoration:underline}
 
 /* ---- Rows / tables ---- */
 .row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}

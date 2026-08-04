@@ -55,10 +55,15 @@ const NAV = [
 export default function App() {
   const erp = useERP();
   const k = useKPIs(erp);
+  const cloudOn = erp.cloud.enabled;
   const [view, setView] = useState("loja"); // "loja" | "admin"
-  const [authed, setAuthed] = useState(() => localStorage.getItem("pudimerp_auth") === "1");
+  const [pinAuthed, setPinAuthed] = useState(() => localStorage.getItem("pudimerp_auth") === "1");
   const [showLogin, setShowLogin] = useState(false);
   const [tab, setTab] = useState("venda");
+
+  // Com a nuvem ligada, o acesso vem do login real (sessão Supabase);
+  // sem nuvem, mantém o PIN local de protótipo.
+  const authed = cloudOn ? !!erp.cloud.user : pinAuthed;
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", erp.theme);
@@ -66,15 +71,21 @@ export default function App() {
 
   const irParaAdmin = () => (authed ? setView("admin") : setShowLogin(true));
   const login = () => {
-    setAuthed(true);
-    localStorage.setItem("pudimerp_auth", "1");
+    if (!cloudOn) {
+      setPinAuthed(true);
+      localStorage.setItem("pudimerp_auth", "1");
+    }
     setShowLogin(false);
     setTab("venda");
     setView("admin");
   };
-  const logout = () => {
-    setAuthed(false);
-    localStorage.removeItem("pudimerp_auth");
+  const logout = async () => {
+    if (cloudOn) {
+      await erp.cloud.sair();
+    } else {
+      setPinAuthed(false);
+      localStorage.removeItem("pudimerp_auth");
+    }
     setView("loja");
   };
 
@@ -84,7 +95,7 @@ export default function App() {
       <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
         <style>{css}</style>
         <Loja erp={erp} onAdmin={irParaAdmin} full />
-        {showLogin && <LoginModal onClose={() => setShowLogin(false)} onSuccess={login} />}
+        {showLogin && <LoginModal cloud={erp.cloud} onClose={() => setShowLogin(false)} onSuccess={login} />}
       </div>
     );
   }
@@ -128,6 +139,7 @@ export default function App() {
           </div>
         ))}
         <div style={{ marginTop: "auto", paddingTop: 16 }}>
+          {cloudOn && <CloudStatus cloud={erp.cloud} />}
           <button className="nav" onClick={() => setView("loja")}>
             <span className="ic">🌐</span><span className="lbl">Ver loja</span>
           </button>
@@ -149,8 +161,15 @@ export default function App() {
   );
 }
 
-// ---------- Login do administrador (protótipo) ----------
-function LoginModal({ onClose, onSuccess }) {
+// ---------- Login do administrador ----------
+// Com a nuvem ligada → login real (e-mail + senha, Supabase).
+// Sem nuvem → PIN de protótipo (comportamento antigo preservado).
+function LoginModal({ cloud, onClose, onSuccess }) {
+  if (cloud && cloud.enabled) return <CloudLogin cloud={cloud} onClose={onClose} onSuccess={onSuccess} />;
+  return <PinLogin onClose={onClose} onSuccess={onSuccess} />;
+}
+
+function PinLogin({ onClose, onSuccess }) {
   const [pin, setPin] = useState("");
   const [erro, setErro] = useState(false);
   const entrar = () => (pin === PIN_DEMO ? onSuccess() : setErro(true));
@@ -168,8 +187,86 @@ function LoginModal({ onClose, onSuccess }) {
       {erro && <div style={{ marginBottom: 12 }}><span className="tag t-red">PIN incorreto — tente novamente</span></div>}
       <Btn onClick={entrar} className="">Entrar no painel</Btn>
       <div className="mut" style={{ fontSize: 11.5, marginTop: 12 }}>
-        PIN de demonstração: <b>{PIN_DEMO}</b> · em produção: login com e-mail, senha e 2FA (LGPD).
+        PIN de demonstração: <b>{PIN_DEMO}</b> · nuvem desligada (dados só neste aparelho).
       </div>
     </Modal>
+  );
+}
+
+function CloudLogin({ cloud, onClose, onSuccess }) {
+  const [modo, setModo] = useState("entrar"); // "entrar" | "criar"
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const [msg, setMsg] = useState("");
+  const [carregando, setCarregando] = useState(false);
+
+  const submeter = async () => {
+    if (carregando) return;
+    setErro(""); setMsg("");
+    if (!email.trim() || !senha) { setErro("Preencha e-mail e senha."); return; }
+    setCarregando(true);
+    const fn = modo === "entrar" ? cloud.entrar : cloud.criarConta;
+    const r = await fn(email, senha);
+    setCarregando(false);
+    if (!r.ok) { setErro(r.erro); return; }
+    if (modo === "criar" && r.precisaConfirmar) {
+      setMsg("Conta criada! Confirme pelo link enviado ao seu e-mail e depois faça login.");
+      setModo("entrar");
+      return;
+    }
+    onSuccess();
+  };
+
+  return (
+    <Modal title="🔒 Área do dono" onClose={onClose}>
+      <p className="mut" style={{ marginBottom: 14, fontSize: 13 }}>
+        {modo === "entrar"
+          ? "Entre com seu e-mail e senha. Seus dados ficam salvos na nuvem — acesse de qualquer aparelho. ☁️"
+          : "Crie sua conta de dono. Depois é só entrar de qualquer celular ou PC com os mesmos dados. ☁️"}
+      </p>
+      <div className="field">
+        <label>E-mail</label>
+        <input type="email" autoFocus value={email} placeholder="voce@email.com"
+          onChange={(e) => { setEmail(e.target.value); setErro(""); }}
+          onKeyDown={(e) => e.key === "Enter" && submeter()} />
+      </div>
+      <div className="field">
+        <label>Senha</label>
+        <input type="password" value={senha} placeholder="••••••"
+          onChange={(e) => { setSenha(e.target.value); setErro(""); }}
+          onKeyDown={(e) => e.key === "Enter" && submeter()} />
+      </div>
+      {erro && <div style={{ marginBottom: 12 }}><span className="tag t-red">{erro}</span></div>}
+      {msg && <div style={{ marginBottom: 12 }}><span className="tag t-green">{msg}</span></div>}
+      <Btn onClick={submeter} className="">
+        {carregando ? "Aguarde…" : modo === "entrar" ? "Entrar no painel" : "Criar conta"}
+      </Btn>
+      <div className="mut" style={{ fontSize: 12, marginTop: 12 }}>
+        {modo === "entrar" ? (
+          <>Ainda não tem conta?{" "}
+            <button className="linklike" onClick={() => { setModo("criar"); setErro(""); setMsg(""); }}>Criar conta</button>
+          </>
+        ) : (
+          <>Já tem conta?{" "}
+            <button className="linklike" onClick={() => { setModo("entrar"); setErro(""); setMsg(""); }}>Fazer login</button>
+          </>
+        )}
+      </div>
+    </Modal>
+  );
+}
+
+// Indicador de sincronização na barra lateral (só com nuvem ligada).
+function CloudStatus({ cloud }) {
+  let ic = "☁️", txt = "Nuvem conectada";
+  if (cloud.syncing) { ic = "🔄"; txt = "Sincronizando…"; }
+  else if (cloud.error) { ic = "⚠️"; txt = "Erro ao sincronizar"; }
+  else if (cloud.lastSync) { ic = "✅"; txt = "Salvo na nuvem"; }
+  return (
+    <div className="mut" style={{ fontSize: 11.5, padding: "6px 12px", lineHeight: 1.5 }}>
+      <div>{ic} {txt}</div>
+      {cloud.email && <div style={{ opacity: 0.7 }}>{cloud.email}</div>}
+    </div>
   );
 }

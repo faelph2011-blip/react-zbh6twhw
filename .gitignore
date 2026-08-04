@@ -1,2 +1,7 @@
 node_modules
 build
+
+# Variáveis de ambiente (chaves) — nunca versionar
+.env
+.env.local
+.env.*.local
