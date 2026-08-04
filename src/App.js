@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { css } from "./erp/theme";
 import { useERP, useKPIs } from "./erp/store";
 import { Modal, Btn } from "./erp/ui";
+import { Brand } from "./erp/Emblem";
 
 import Loja from "./modules/Loja";
 import VendaRapida from "./modules/VendaRapida";
@@ -111,7 +112,7 @@ export default function App() {
       <style>{css}</style>
       <aside className="side">
         <div className="brand">
-          <span className="logo-dot">🍮</span>
+          <Brand size={38} />
           <span className="txt"><span className="script" style={{ fontSize: 19 }}>Pudins da Lauren</span><small>painel do dono · admin</small></span>
         </div>
         {NAV.map(([grupo, items]) => (

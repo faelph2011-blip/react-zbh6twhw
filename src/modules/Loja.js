@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { brl } from "../erp/format";
+import { Brand } from "../erp/Emblem";
 
 const WPP = "5534984432000"; // (34) 98443-2000
 const INSTA = "https://instagram.com/pudinsdalauren";
@@ -39,7 +40,7 @@ export default function Loja({ erp, onAdmin, full }) {
 
       <div className="store-nav">
         <div className="store-logo" style={{ gap: 10 }}>
-          <span className="emblem">🍮</span>
+          <Brand size={46} />
           <span className="script" style={{ fontSize: 26, color: "var(--brown)" }}>Pudins da Lauren</span>
         </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
@@ -52,7 +53,9 @@ export default function Loja({ erp, onAdmin, full }) {
       </div>
 
       <div className="hero">
-        <div className="pudim3d"><span className="body">🍮</span><span className="drip" /></div>
+        <div style={{ width: 210, margin: "6px auto 26px", animation: "float 4s ease-in-out infinite", filter: "drop-shadow(0 18px 30px rgba(120,80,30,.28))" }}>
+          <Brand size={210} />
+        </div>
         <div className="script" style={{ fontSize: "clamp(38px,8vw,72px)", color: "var(--caramel)", marginBottom: 6 }}>
           Feito com amor
         </div>
@@ -119,7 +122,7 @@ export default function Loja({ erp, onAdmin, full }) {
       {/* Rodapé com contatos reais */}
       <div style={{ borderTop: "1px solid var(--line)", padding: "24px 26px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span className="emblem">🍮</span>
+          <Brand size={54} />
           <div>
             <div className="script" style={{ fontSize: 22, color: "var(--brown)" }}>Pudins da Lauren</div>
             <div className="mut" style={{ fontSize: 12 }}>Cremoso · Delicioso · Inesquecível</div>
