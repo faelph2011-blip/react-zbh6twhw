@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { brl } from "../erp/format";
 import { Brand } from "../erp/Emblem";
-import { hero as heroFoto, ind, med, gra } from "../erp/assets";
+import { hero as heroFoto, ind, med, gra, fresco } from "../erp/assets";
 
 const FOTOS = { ind, med, gra };
 
@@ -111,6 +111,20 @@ export default function Loja({ erp, onAdmin, full }) {
               </div>
               {p.combo && <div className="tag t-org" style={{ marginTop: 10 }}>🎉 {p.combo}</div>}
             </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Feito no dia — bastidores reais */}
+      <div style={{ textAlign: "center", padding: "22px 20px 4px" }}>
+        <div className="script" style={{ fontSize: 28, color: "var(--brown)" }}>Feito no dia, com carinho</div>
+        <div className="mut">Produção artesanal, fresquinho e geladinho — do jeito que você merece.</div>
+      </div>
+      <div style={{ padding: "12px 26px 26px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
+        {[[med, "No capricho"], [ind, "Feito no dia"], [fresco, "Geladinho"]].map(([src, cap], i) => (
+          <div key={i} style={{ position: "relative", borderRadius: 16, overflow: "hidden", boxShadow: "var(--shadow)", aspectRatio: "4 / 3" }}>
+            <img src={src} alt={cap} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            <span style={{ position: "absolute", left: 12, bottom: 12, background: "rgba(0,0,0,.45)", color: "#fff", padding: "4px 11px", borderRadius: 99, fontSize: 12.5, fontWeight: 600, backdropFilter: "blur(4px)" }}>{cap}</span>
           </div>
         ))}
       </div>
