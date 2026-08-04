@@ -24,8 +24,10 @@
 // ============================================================
 
 // 👇 COLE AQUI (ou deixe vazio e use variáveis de ambiente no Vercel)
-const SUPABASE_URL_MANUAL = "";
-const SUPABASE_ANON_KEY_MANUAL = "";
+// Projeto "Pudins da Lauren". A chave anon é pública por design — a
+// segurança dos dados fica nas regras do banco (RLS em supabase/schema.sql).
+const SUPABASE_URL_MANUAL = "https://cazltxrsvtjdnzzlrkhz.supabase.co";
+const SUPABASE_ANON_KEY_MANUAL = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhemx0eHJzdnRqZG56emxya2h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MjEwMzUsImV4cCI6MjEwMTM5NzAzNX0.oCt_rByHRbWh59T_8fNP7BShb445tw5MkUTVWUbHzmM";
 
 // O Create React App troca "process.env.REACT_APP_*" pelo valor real
 // na hora do build. Prioriza a variável de ambiente (Vercel); se não
