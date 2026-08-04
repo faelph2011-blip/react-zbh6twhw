@@ -112,7 +112,7 @@ export default function App() {
       <aside className="side">
         <div className="brand">
           <span className="logo-dot">🍮</span>
-          <span className="txt">PudimERP<small>área do dono · admin</small></span>
+          <span className="txt"><span className="script" style={{ fontSize: 19 }}>Pudins da Lauren</span><small>painel do dono · admin</small></span>
         </div>
         {NAV.map(([grupo, items]) => (
           <div key={grupo}>

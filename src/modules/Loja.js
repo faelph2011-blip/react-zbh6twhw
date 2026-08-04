@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { brl } from "../erp/format";
 
-// Vitrine premium (tela principal / pública) — inspiração Apple/Stripe:
-// hero cinematográfico, pudim 3D girando, caramelo escorrendo, cards com tilt.
-// O acesso ao ERP fica atrás do botão "Área do dono".
+const WPP = "5534984432000"; // (34) 98443-2000
+const INSTA = "https://instagram.com/pudinsdalauren";
+
+// Vitrine premium da Pudins da Lauren — identidade caramelo/creme.
+// "Feito com amor em cada detalhe". Acesso ao ERP atrás de "Área do dono".
 export default function Loja({ erp, onAdmin, full }) {
   const { db, precoVenda, criarPedido } = erp;
   const [cart, setCart] = useState([]);
@@ -18,7 +20,7 @@ export default function Loja({ erp, onAdmin, full }) {
     }, {}));
     criarPedido(db.clientes.at(-1).id, itens, "Site");
     setCart([]);
-    alert("Pedido enviado! Ele já aparece no ERP (Pedidos · canal Site). 🍮");
+    alert("Pedido enviado! 🍮 Ele já aparece no ERP (Pedidos · canal Site).");
   };
 
   const tilt = (e) => {
@@ -30,8 +32,16 @@ export default function Loja({ erp, onAdmin, full }) {
 
   return (
     <div className={"store" + (full ? " store--full" : "")}>
+      {/* Faixa de inauguração */}
+      <div className="promo-banner">
+        🎉 Promoção de Inauguração — <b>1 Pudim por R$ 12</b> ou <b>2 Pudins por R$ 20</b>
+      </div>
+
       <div className="store-nav">
-        <div className="store-logo"><span className="logo-dot">🍮</span> Pudim<span style={{ color: "var(--brand)" }}>&amp;Cia</span></div>
+        <div className="store-logo" style={{ gap: 10 }}>
+          <span className="emblem">🍮</span>
+          <span className="script" style={{ fontSize: 26, color: "var(--brown)" }}>Pudins da Lauren</span>
+        </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           {cart.length > 0 && (
             <div className="pill">🛒 {cart.length} · {brl(total)}
@@ -43,40 +53,61 @@ export default function Loja({ erp, onAdmin, full }) {
 
       <div className="hero">
         <div className="pudim3d"><span className="body">🍮</span><span className="drip" /></div>
-        <h2 className="reveal">O pudim perfeito,<br />agora a um clique.</h2>
+        <div className="script" style={{ fontSize: "clamp(38px,8vw,72px)", color: "var(--caramel)", marginBottom: 6 }}>
+          Feito com amor
+        </div>
+        <h2 className="reveal" style={{ marginTop: 0 }}>em cada detalhe.</h2>
         <p className="reveal" style={{ animationDelay: ".15s" }}>
-          Caramelo que escorre, textura de nuvem. Feito no dia, entregue geladinho na sua porta.
+          Pudim artesanal de leite condensado <b>Leite Moça</b> — cremoso, delicioso e inesquecível.
+          Feito no dia, entregue geladinho na sua porta.
         </p>
-        <button className="btn reveal" style={{ animationDelay: ".3s", padding: "12px 26px", fontSize: 15 }}
-          onClick={() => document.querySelector(".store-grid")?.scrollIntoView({ behavior: "smooth" })}>
-          Ver sabores ↓
-        </button>
+        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+          <button className="btn reveal" style={{ animationDelay: ".3s", padding: "12px 26px", fontSize: 15 }}
+            onClick={() => document.querySelector(".store-grid")?.scrollIntoView({ behavior: "smooth" })}>
+            Escolher tamanho ↓
+          </button>
+          <a className="btn soft reveal" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer"
+            style={{ animationDelay: ".35s", padding: "12px 22px", fontSize: 15, textDecoration: "none" }}>
+            💬 Pedir no WhatsApp
+          </a>
+        </div>
       </div>
 
       <div className="marquee">
-        <span>🍮 Feito no dia &nbsp;·&nbsp; 🚚 Entrega geladinha &nbsp;·&nbsp; ⭐ 4,9 de 2.400 avaliações &nbsp;·&nbsp; 🎁 Cashback em todo pedido &nbsp;·&nbsp; 💳 PIX &amp; Cartão &nbsp;·&nbsp; 🍮 Feito no dia &nbsp;·&nbsp; 🚚 Entrega geladinha &nbsp;·&nbsp; ⭐ 4,9 de 2.400 avaliações &nbsp;·&nbsp; 🎁 Cashback em todo pedido &nbsp;·&nbsp; 💳 PIX &amp; Cartão &nbsp;·&nbsp;</span>
+        <span>🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Leite Moça &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp; 🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Leite Moça &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp;</span>
+      </div>
+
+      <div style={{ textAlign: "center", padding: "26px 20px 6px" }}>
+        <div className="script" style={{ fontSize: 30, color: "var(--brown)" }}>Escolha o seu tamanho</div>
+        <div className="mut">Um só sabor, do jeito tradicional. Três tamanhos pra cada momento.</div>
       </div>
 
       <div className="store-grid">
         {db.produtos.map((p, i) => (
           <div className="pcard reveal" key={p.id} style={{ animationDelay: i * 0.08 + "s" }} onMouseMove={tilt} onMouseLeave={reset}>
-            <div className="img" style={{ background: p.grad }}>{p.emoji}</div>
+            <div className="img" style={{ background: p.grad }}>
+              {p.emoji}
+              <span className="size-badge" style={{ position: "absolute", top: 10, right: 10 }}>{p.tamanho}</span>
+            </div>
             <div className="body">
               <h3>{p.nome}</h3>
-              <div className="mut" style={{ fontSize: 11.5, marginBottom: 10 }}>{p.rendimento} fatias · geladinho</div>
+              <div className="mut" style={{ fontSize: 11.5, marginBottom: 10 }}>
+                {p.tamanho} · {p.rendimento > 1 ? `${p.rendimento} porções` : "porção individual"}
+              </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span className="price">{p.promo && <s>{brl(p.preco)}</s>}{brl(precoVenda(p))}</span>
+                <span className="price">{brl(precoVenda(p))}</span>
                 <button className="btn mini" onClick={() => add(p)}>+ Carrinho</button>
               </div>
+              {p.combo && <div className="tag t-org" style={{ marginTop: 10 }}>🎉 {p.combo}</div>}
             </div>
           </div>
         ))}
       </div>
 
-      <div style={{ padding: "10px 26px 40px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
-        {[["🚚", "Entrega refrigerada", "Chega geladinho, do jeito certo"],
-          ["🎁", "Programa fidelidade", "3% de cashback em cada compra"],
-          ["🔒", "Pagamento seguro", "PIX, cartão e checkout protegido"]].map(([ic, t, d]) => (
+      <div style={{ padding: "10px 26px 30px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
+        {[["🚚", "Entrega geladinha", "Chega refrigerado, do jeito certo"],
+          ["🥇", "Leite Moça", "Receita tradicional, ingredientes selecionados"],
+          ["🔒", "Pagamento fácil", "PIX, cartão e dinheiro"]].map(([ic, t, d]) => (
           <div className="glass" key={t} style={{ padding: 18 }}>
             <div style={{ fontSize: 26 }}>{ic}</div>
             <div className="name" style={{ marginTop: 8 }}>{t}</div>
@@ -85,9 +116,23 @@ export default function Loja({ erp, onAdmin, full }) {
         ))}
       </div>
 
-      <div style={{ textAlign: "center", padding: "18px", borderTop: "1px solid var(--line)", color: "var(--mut)", fontSize: 12.5 }}>
-        Pudim&amp;Cia · feito com PudimERP · <button className="btn soft mini" onClick={onAdmin}>Entrar como administrador</button>
+      {/* Rodapé com contatos reais */}
+      <div style={{ borderTop: "1px solid var(--line)", padding: "24px 26px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span className="emblem">🍮</span>
+          <div>
+            <div className="script" style={{ fontSize: 22, color: "var(--brown)" }}>Pudins da Lauren</div>
+            <div className="mut" style={{ fontSize: 12 }}>Cremoso · Delicioso · Inesquecível</div>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <a className="btn soft mini" href={INSTA} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>📷 @pudinsdalauren</a>
+          <a className="btn mini" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>💬 (34) 98443-2000</a>
+          <button className="btn soft mini" onClick={onAdmin}>🔒 Área do dono</button>
+        </div>
       </div>
+
+      <a className="wa-float" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" title="Pedir no WhatsApp">💬</a>
     </div>
   );
 }

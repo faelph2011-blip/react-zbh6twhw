@@ -5,21 +5,21 @@
 // ============================================================
 
 export const css = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Dancing+Script:wght@600;700&display=swap');
 
-:root, [data-theme="dark"]{
-  --bg:#0E0C0A; --surface:#17130F; --elev:#211B15; --line:#2C241C;
-  --brand:#E0A45C; --brand-soft:#F3C583; --caramel:#C77B3B;
-  --txt:#F5EEE3; --mut:#A79A88;
-  --green:#5FD08A; --red:#F0705A; --blue:#6FA8FF; --purple:#B98BFF;
-  --shadow:0 12px 40px rgba(0,0,0,.45);
-}
-[data-theme="light"]{
-  --bg:#F7F2EA; --surface:#FFFDF9; --elev:#F3ECE0; --line:#E7DCCB;
-  --brand:#C77B3B; --brand-soft:#E0A45C; --caramel:#B4682C;
-  --txt:#2A2118; --mut:#8A7B66;
+:root, [data-theme="light"]{
+  --bg:#F5E9D6; --surface:#FFFCF6; --elev:#F4E8D5; --line:#E7D5BB;
+  --brand:#C8701C; --brand-soft:#E9A94A; --caramel:#A85616; --brown:#5A3216;
+  --txt:#4A2E17; --mut:#9A8266;
   --green:#2E9E63; --red:#D9503A; --blue:#3D74D6; --purple:#8455D6;
-  --shadow:0 12px 34px rgba(120,90,40,.14);
+  --shadow:0 14px 38px rgba(120,80,30,.16);
+}
+[data-theme="dark"]{
+  --bg:#141009; --surface:#1E1710; --elev:#2A2015; --line:#38291A;
+  --brand:#E9A94A; --brand-soft:#F3C583; --caramel:#C8701C; --brown:#F3D9B5;
+  --txt:#F6ECDB; --mut:#B0A088;
+  --green:#5FD08A; --red:#F0705A; --blue:#6FA8FF; --purple:#B98BFF;
+  --shadow:0 14px 44px rgba(0,0,0,.5);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -137,9 +137,18 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5
 .qs-bar{position:sticky;bottom:12px;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:18px;box-shadow:var(--shadow);z-index:4}
 .qs-bar .btn{padding:12px 20px;margin-left:auto;white-space:nowrap}
 
+/* ============ MARCA — Pudins da Lauren ============ */
+.script{font-family:'Dancing Script',cursive;font-weight:700;line-height:.95}
+.emblem{width:40px;height:40px;border-radius:50%;background:var(--surface);border:2px solid var(--brand);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.promo-banner{background:linear-gradient(100deg,var(--caramel),var(--brand));color:#fff;text-align:center;padding:11px 18px;font-weight:600;font-size:13.5px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.promo-banner b{background:rgba(255,255,255,.22);padding:2px 10px;border-radius:99px}
+.wa-float{position:fixed;right:20px;bottom:20px;background:#25D366;color:#fff;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 24px rgba(37,211,102,.45);z-index:30;text-decoration:none;transition:.15s}
+.wa-float:hover{transform:scale(1.08)}
+
 /* ============ STOREFRONT (loja premium) ============ */
-.store{background:radial-gradient(1200px 600px at 70% -10%,rgba(224,164,92,.16),transparent),var(--bg);border-radius:16px;overflow:hidden;border:1px solid var(--line)}
-.store--full{border:none;border-radius:0;min-height:100vh;max-width:1200px;margin:0 auto}
+.store{background:radial-gradient(1200px 600px at 70% -10%,rgba(232,169,74,.20),transparent),var(--bg);border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.store--full{border:none;border-radius:0;min-height:100vh;max-width:1180px;margin:0 auto}
+.size-badge{display:inline-block;background:var(--elev);border:1px solid var(--line);color:var(--mut);border-radius:99px;padding:2px 9px;font-size:11px;font-weight:600}
 .store-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;position:sticky;top:0;background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:5}
 .store-logo{font-family:'Space Grotesk';font-weight:700;font-size:18px;display:flex;align-items:center;gap:9px}
 .hero{position:relative;text-align:center;padding:60px 24px 30px}

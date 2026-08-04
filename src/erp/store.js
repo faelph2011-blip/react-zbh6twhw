@@ -36,7 +36,7 @@ function carregar() {
 export function useERP() {
   const [db, setDb] = useState(carregar);
   const [theme, setTheme] = useState(
-    () => localStorage.getItem("pudimerp_theme") || "dark"
+    () => localStorage.getItem("pudimerp_theme") || "light"
   );
 
   const persist = useCallback((next) => {
