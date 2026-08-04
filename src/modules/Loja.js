@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { brl } from "../erp/format";
 import { Brand } from "../erp/Emblem";
+import { hero as heroFoto, ind, med, gra } from "../erp/assets";
+
+const FOTOS = { ind, med, gra };
 
 const WPP = "5534984432000"; // (34) 98443-2000
 const INSTA = "https://instagram.com/pudinsdalauren";
@@ -74,6 +77,9 @@ export default function Loja({ erp, onAdmin, full }) {
             💬 Pedir no WhatsApp
           </a>
         </div>
+        <div className="reveal" style={{ maxWidth: 620, margin: "34px auto 0", borderRadius: 18, overflow: "hidden", boxShadow: "var(--shadow)", animationDelay: ".45s" }}>
+          <img src={heroFoto} alt="Pudins da Lauren" style={{ width: "100%", display: "block" }} />
+        </div>
       </div>
 
       <div className="marquee">
@@ -88,8 +94,10 @@ export default function Loja({ erp, onAdmin, full }) {
       <div className="store-grid">
         {db.produtos.map((p, i) => (
           <div className="pcard reveal" key={p.id} style={{ animationDelay: i * 0.08 + "s" }} onMouseMove={tilt} onMouseLeave={reset}>
-            <div className="img" style={{ background: p.grad }}>
-              {p.emoji}
+            <div className="img" style={{ background: p.grad, padding: 0 }}>
+              {FOTOS[p.id]
+                ? <img src={FOTOS[p.id]} alt={p.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : p.emoji}
               <span className="size-badge" style={{ position: "absolute", top: 10, right: 10 }}>{p.tamanho}</span>
             </div>
             <div className="body">

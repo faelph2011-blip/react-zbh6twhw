@@ -1,4 +1,5 @@
 import { useId, useState } from "react";
+import { logo as logoReal } from "./assets";
 
 // Selo vetorial da Pudins da Lauren — recriação do logo original.
 // Cores fixas (estilo adesivo impresso) para ficar igual em tema claro/escuro.
@@ -49,13 +50,12 @@ export function Emblem({ size = 44 }) {
   );
 }
 
-// Usa o PNG real (public/logo.png) quando disponível; senão, o selo vetorial.
+// Usa o logo real da cliente (foto do rótulo); cai no selo vetorial se falhar.
 export function Brand({ size = 44 }) {
   const [ok, setOk] = useState(true);
-  const src = (process.env.PUBLIC_URL || "") + "/logo.png";
   if (!ok) return <Emblem size={size} />;
   return (
-    <img src={src} alt="Pudins da Lauren" onError={() => setOk(false)}
-      style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", display: "block", flexShrink: 0 }} />
+    <img src={logoReal} alt="Pudins da Lauren" onError={() => setOk(false)}
+      style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", display: "block", flexShrink: 0, border: "2px solid var(--brand)" }} />
   );
 }
