@@ -56,6 +56,6 @@ export function Brand({ size = 44 }) {
   if (!ok) return <Emblem size={size} />;
   return (
     <img src={logoReal} alt="Pudins da Lauren" onError={() => setOk(false)}
-      style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", display: "block", flexShrink: 0, border: "2px solid var(--brand)" }} />
+      style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", display: "block", flexShrink: 0 }} />
   );
 }

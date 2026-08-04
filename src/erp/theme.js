@@ -165,7 +165,7 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5
 .store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;padding:20px 26px 40px}
 .pcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s}
 .pcard:hover{transform:translateY(-8px) rotateX(3deg);box-shadow:var(--shadow)}
-.pcard .img{height:130px;display:flex;align-items:center;justify-content:center;font-size:60px;position:relative;overflow:hidden}
+.pcard .img{height:170px;display:flex;align-items:center;justify-content:center;font-size:60px;position:relative;overflow:hidden}
 .pcard .img:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.18) 50%,transparent 70%);transform:translateX(-120%);transition:.5s}
 .pcard:hover .img:after{transform:translateX(120%)}
 .pcard .body{padding:14px}
