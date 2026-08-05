@@ -4,17 +4,24 @@
 // em 3 tamanhos. Dados em memória (simulam o Postgres em produção).
 // ============================================================
 
-// ---- Insumos: matéria-prima + embalagens ----
+// ---- Insumos: matéria-prima + embalagens (custos reais Pudins da Lauren) ----
 export const insumos = [
-  { id: "condensado", nome: "Leite condensado Leite Moça", cat: "Laticínio", un: "lata", custo: 6.5, estoque: 40, min: 24, max: 120 },
-  { id: "leite", nome: "Leite integral", cat: "Laticínio", un: "L", custo: 4.5, estoque: 48, min: 20, max: 120 },
-  { id: "ovos", nome: "Ovos", cat: "Ovos", un: "un", custo: 0.72, estoque: 210, min: 120, max: 600 },
+  { id: "condensado", nome: "Leite condensado", cat: "Laticínio", un: "lata", custo: 6.99, estoque: 40, min: 24, max: 120 },
+  { id: "leite", nome: "Leite integral", cat: "Laticínio", un: "L", custo: 5.00, estoque: 48, min: 20, max: 120 },
+  { id: "ovos", nome: "Ovos (R$10 a dúzia)", cat: "Ovos", un: "un", custo: 0.83, estoque: 210, min: 120, max: 600 },
   { id: "acucar", nome: "Açúcar (massa + calda)", cat: "Secos", un: "kg", custo: 4.2, estoque: 30, min: 12, max: 80 },
   { id: "agua", nome: "Água (calda)", cat: "Outros", un: "L", custo: 0.01, estoque: 500, min: 0, max: 1000 },
-  { id: "pote_ind", nome: "Pote individual 120ml", cat: "Embalagem", un: "un", custo: 0.65, estoque: 260, min: 200, max: 1200 },
-  { id: "pote_med", nome: "Pote 400ml + tampa", cat: "Embalagem", un: "un", custo: 1.10, estoque: 120, min: 80, max: 500 },
-  { id: "pote_gra", nome: "Pote 1kg + tampa", cat: "Embalagem", un: "un", custo: 2.20, estoque: 40, min: 30, max: 200 },
-  { id: "rotulo", nome: "Rótulo Pudins da Lauren", cat: "Embalagem", un: "un", custo: 0.24, estoque: 800, min: 400, max: 3000 },
+  // Gás modelado como kg de botijão (13kg = R$100 → R$7,69/kg). Consumo por
+  // pudim vem da fornada: 1h10 ≈ 0,29kg p/ 16 individuais → 0,0182 kg/individual.
+  { id: "gas", nome: "Gás de cozinha (botijão 13kg)", cat: "Produção", un: "kg", custo: 7.69, estoque: 13, min: 3, max: 26 },
+  { id: "pote_ind", nome: "Pote pudim individual", cat: "Embalagem", un: "un", custo: 1.33, estoque: 260, min: 200, max: 1200 },
+  { id: "pote_med", nome: "Pote pudim médio", cat: "Embalagem", un: "un", custo: 3.90, estoque: 120, min: 80, max: 500 },
+  { id: "pote_gra", nome: "Pote pudim grande", cat: "Embalagem", un: "un", custo: 7.80, estoque: 40, min: 30, max: 200 },
+  { id: "rotulo", nome: "Adesivo de divulgação", cat: "Embalagem", un: "un", custo: 0.90, estoque: 800, min: 400, max: 3000 },
+  // Embalagens de entrega — usadas SÓ no delivery (não entram no custo do pudim).
+  { id: "emb_peq", nome: "Embalagem de entrega P (delivery)", cat: "Delivery", un: "un", custo: 1.49, estoque: 50, min: 20, max: 200 },
+  { id: "emb_med", nome: "Embalagem de entrega M (delivery)", cat: "Delivery", un: "un", custo: 1.89, estoque: 40, min: 15, max: 150 },
+  { id: "emb_gra", nome: "Embalagem de entrega G + laço (delivery)", cat: "Delivery", un: "un", custo: 2.83, estoque: 30, min: 10, max: 100 },
 ];
 
 // ---- Produtos: 1 sabor (Leite Moça), 3 tamanhos ----
@@ -27,7 +34,8 @@ export const produtos = [
     // Base: 1 receita = 9 individuais (400ml leite · 1 lata condensado · 2 xíc. açúcar · 200ml água · 3 ovos)
     ficha: [
       { id: "condensado", qtd: 0.111 }, { id: "leite", qtd: 0.044 }, { id: "ovos", qtd: 0.333 },
-      { id: "acucar", qtd: 0.04 }, { id: "agua", qtd: 0.022 }, { id: "pote_ind", qtd: 1 }, { id: "rotulo", qtd: 1 },
+      { id: "acucar", qtd: 0.04 }, { id: "agua", qtd: 0.022 }, { id: "gas", qtd: 0.0182 },
+      { id: "pote_ind", qtd: 1 }, { id: "rotulo", qtd: 1 },
     ],
   },
   {
@@ -37,7 +45,8 @@ export const produtos = [
     // 300g ≈ 2,5× a porção individual
     ficha: [
       { id: "condensado", qtd: 0.278 }, { id: "leite", qtd: 0.111 }, { id: "ovos", qtd: 0.833 },
-      { id: "acucar", qtd: 0.10 }, { id: "agua", qtd: 0.056 }, { id: "pote_med", qtd: 1 }, { id: "rotulo", qtd: 1 },
+      { id: "acucar", qtd: 0.10 }, { id: "agua", qtd: 0.056 }, { id: "gas", qtd: 0.0456 },
+      { id: "pote_med", qtd: 1 }, { id: "rotulo", qtd: 1 },
     ],
   },
   {
@@ -47,7 +56,8 @@ export const produtos = [
     // 1kg ≈ 8,3× a porção individual
     ficha: [
       { id: "condensado", qtd: 0.926 }, { id: "leite", qtd: 0.37 }, { id: "ovos", qtd: 2.78 },
-      { id: "acucar", qtd: 0.333 }, { id: "agua", qtd: 0.185 }, { id: "pote_gra", qtd: 1 }, { id: "rotulo", qtd: 1 },
+      { id: "acucar", qtd: 0.333 }, { id: "agua", qtd: 0.185 }, { id: "gas", qtd: 0.1512 },
+      { id: "pote_gra", qtd: 1 }, { id: "rotulo", qtd: 1 },
     ],
   },
 ];
