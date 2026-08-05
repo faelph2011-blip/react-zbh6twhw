@@ -39,7 +39,7 @@ function carregar() {
 export function useERP() {
   const [db, setDb] = useState(carregar);
   const [theme, setTheme] = useState(
-    () => localStorage.getItem("pudimerp_theme") || "light"
+    () => localStorage.getItem("pudimerp_theme") || "dark"
   );
 
   // ---------- ESTADO DA NUVEM ----------

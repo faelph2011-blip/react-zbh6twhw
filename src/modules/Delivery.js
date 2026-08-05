@@ -85,7 +85,7 @@ export default function Delivery({ erp }) {
                     const pos = m.lucro >= 0;
                     return (
                       <td key={r.label} className="num" style={{ textAlign: "right" }}>
-                        <div style={{ fontWeight: 700, color: pos ? "var(--grn, #1a9d5a)" : "var(--red)" }}>{brl(m.lucro)}</div>
+                        <div style={{ fontWeight: 700, color: pos ? "var(--green)" : "var(--red)" }}>{brl(m.lucro)}</div>
                         <div className="mut" style={{ fontSize: 10.5 }}>{pct(m.margem)}</div>
                       </td>
                     );
