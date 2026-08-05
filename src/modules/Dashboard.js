@@ -1,14 +1,31 @@
 import { Card, KPI, Tag, Bar, Sparkbars, Donut } from "../erp/ui";
 import { brl, pct, num, hoje } from "../erp/format";
-import { serieVendas } from "../erp/seed";
+
+const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const CORES = ["var(--brand)", "var(--caramel)", "var(--brand-soft)"];
 
 export default function Dashboard({ erp, k, go }) {
-  const { db } = erp;
-  const comp = [
-    { label: "Tradicional", v: 42, color: "var(--brand)" },
-    { label: "Especiais", v: 28, color: "var(--caramel)" },
-    { label: "Individual", v: 30, color: "var(--brand-soft)" },
-  ];
+  const { db, totalPedido, precoVenda } = erp;
+
+  // Série real de vendas dos últimos 7 dias (pela data do pedido)
+  const dias7 = [...Array(7)].map((_, i) => { const dt = new Date(); dt.setHours(12, 0, 0, 0); dt.setDate(dt.getDate() - (6 - i)); return dt; });
+  const serie = dias7.map((dt) => {
+    const iso = dt.toISOString().slice(0, 10);
+    return db.pedidos.filter((p) => p.status !== "Cancelado" && p.data === iso).reduce((t, p) => t + totalPedido(p), 0);
+  });
+  const labels = dias7.map((dt) => DIAS[dt.getDay()]);
+  const totalSemana = serie.reduce((a, b) => a + b, 0);
+
+  // Composição de receita real (por produto)
+  const compRaw = db.produtos.map((p, i) => {
+    const q = (k.topProdutos.find((t) => t.prod.id === p.id) || {}).q || 0;
+    return { label: p.nome.replace("Pudim ", ""), v: q * precoVenda(p), color: CORES[i % CORES.length] };
+  }).filter((s) => s.v > 0);
+  const totComp = compRaw.reduce((a, b) => a + b.v, 0) || 1;
+  const comp = compRaw.map((s) => ({ ...s, v: Math.round((s.v / totComp) * 100) }));
+
+  const nAlertas = k.alertasInsumo.length + k.alertasProduto.length;
+
   return (
     <>
       <div className="topbar">
@@ -16,7 +33,7 @@ export default function Dashboard({ erp, k, go }) {
           <h1>Dashboard Executivo</h1>
           <div className="sub">Visão consolidada · {hoje()} — todos os módulos integrados em tempo real</div>
         </div>
-        <div className="pill">🟢 Operação saudável · 3 alertas ativos</div>
+        <div className="pill">{nAlertas === 0 ? "🟢 Operação saudável" : `🟠 ${nAlertas} alerta(s) ativo(s)`}</div>
       </div>
 
       <div className="grid g4">
@@ -30,12 +47,12 @@ export default function Dashboard({ erp, k, go }) {
         <Card style={{ gridColumn: "span 2" }}>
           <div className="hdr" style={{ marginBottom: 6 }}>
             <div><div className="k">Vendas · últimos 7 dias</div>
-              <div className="v" style={{ fontSize: 22 }}>{brl(serieVendas.reduce((a, b) => a + b, 0))}</div></div>
-            <Tag cls="t-grn">▲ 18% vs. semana anterior</Tag>
+              <div className="v" style={{ fontSize: 22 }}>{brl(totalSemana)}</div></div>
+            {totalSemana > 0 && <Tag cls="t-grn">{db.pedidos.filter((p) => p.status !== "Cancelado").length} pedidos</Tag>}
           </div>
-          <Sparkbars data={serieVendas} height={120} />
+          <Sparkbars data={serie} height={120} />
           <div className="mut" style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-            {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((d) => <span key={d}>{d}</span>)}
+            {labels.map((d, i) => <span key={i}>{d}</span>)}
           </div>
         </Card>
 
@@ -70,7 +87,8 @@ export default function Dashboard({ erp, k, go }) {
 
         <Card>
           <h2>Composição de receita</h2>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {comp.length === 0 && <div className="mut">Sem vendas ainda — a composição aparece conforme os pedidos.</div>}
+          {comp.length > 0 && <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <Donut segments={comp} />
             <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
               {comp.map((s) => (
@@ -80,7 +98,7 @@ export default function Dashboard({ erp, k, go }) {
                 </div>
               ))}
             </div>
-          </div>
+          </div>}
         </Card>
 
         <Card>

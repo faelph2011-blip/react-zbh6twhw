@@ -181,7 +181,8 @@ export function useERP() {
   const criarPedido = (clienteId, itens, canal) =>
     up((d) => {
       const id = 1000 + Math.floor(Math.random() * 9000);
-      const ped = { id, clienteId, canal, status: "Novo", pagamento: "Pendente", itens, obs: "", criado: "agora" };
+      const hojeISO = new Date().toISOString().slice(0, 10);
+      const ped = { id, clienteId, canal, status: "Novo", pagamento: "Pendente", itens, obs: "", criado: "hoje", data: hojeISO, ts: Date.now() };
       d.pedidos.unshift(ped);
       const total = itens.reduce((t, it) => {
         const p = d.produtos.find((x) => x.id === it.id);
@@ -279,6 +280,30 @@ export function useERP() {
       log(d, `Recebido ${qtd} ${ins.un} de ${ins.nome} — estoque reposto · pagável lançado`);
     });
 
+  // Compra/investimento: repõe estoque (se for insumo do catálogo) ou registra
+  // um custo avulso ("Outros"), sempre com data, para o controle do investido.
+  const registrarCompra = ({ insumoId, nomeManual, qtd, custoTotal, data }) =>
+    up((d) => {
+      const hojeISO = new Date().toISOString().slice(0, 10);
+      const dia = data || hojeISO;
+      let nome = (nomeManual || "").trim() || "Item";
+      if (insumoId) {
+        const ins = d.insumos.find((i) => i.id === insumoId);
+        if (ins) {
+          ins.estoque = +(ins.estoque + (Number(qtd) || 0)).toFixed(3);
+          nome = ins.nome;
+        }
+      }
+      const valor = +(Number(custoTotal) || 0).toFixed(2);
+      d.financeiro.unshift({
+        id: uid(), tipo: "despesa", cat: "Compras",
+        desc: `Compra: ${nome}${qtd ? ` (${qtd})` : ""}`,
+        valor, status: "pago", venc: dia === hojeISO ? "hoje" : dia,
+        origem: "Compras", data: dia,
+      });
+      log(d, `Compra registrada — ${nome} · R$ ${valor.toFixed(2)} (${dia})`);
+    });
+
   const liquidar = (lancId) =>
     up((d) => {
       const l = d.financeiro.find((x) => x.id === lancId);
@@ -303,7 +328,8 @@ export function useERP() {
   // Venda Rápida: registro ágil (balcão/apps). Já entra pago e baixa estoque —
   // sem passar pelo fluxo de produção. É o "controle rápido" do dia a dia.
   // dataISO (yyyy-mm-dd) permite lançar vendas de dias passados.
-  const registrarVendaRapida = (itens, canal, forma, quando, dataISO) =>
+  // clienteId (opcional) vincula a venda a um cliente cadastrado.
+  const registrarVendaRapida = (itens, canal, forma, quando, dataISO, clienteId) =>
     up((d) => {
       const id = 7000 + Math.floor(Math.random() * 2999);
       const total = itens.reduce((t, it) => {
@@ -314,7 +340,7 @@ export function useERP() {
       const dia = dataISO || hojeISO;
       const ts = dataISO && dataISO !== hojeISO ? new Date(dia + "T12:00:00").getTime() : Date.now();
       d.pedidos.unshift({
-        id, clienteId: null, canal, status: "Entregue", pagamento: forma,
+        id, clienteId: clienteId || null, canal, status: "Entregue", pagamento: forma,
         itens, obs: "", criado: quando, rapida: true, ts, data: dia,
       });
       itens.forEach((it) => {
@@ -323,10 +349,41 @@ export function useERP() {
       });
       d.financeiro.unshift({
         id: uid(), tipo: "receita", cat: "Vendas", desc: `Venda rápida #${id} (${canal})`,
-        valor: total, status: "pago", venc: dia === hojeISO ? "hoje" : dia, origem: "Venda Rápida",
+        valor: total, status: "pago", venc: dia === hojeISO ? "hoje" : dia, origem: "Venda Rápida", data: dia,
       });
+      // vincula ao cliente: cashback 3%, pontos e histórico
+      if (clienteId) {
+        const cli = d.clientes.find((c) => c.id === clienteId);
+        if (cli) {
+          cli.cashback = +(cli.cashback + total * 0.03).toFixed(2);
+          cli.pontos += Math.round(total);
+          cli.pedidos += 1;
+          cli.gasto += total;
+          cli.ultimo = "agora";
+        }
+      }
       const un = itens.reduce((t, i) => t + i.qtd, 0);
       log(d, `Venda rápida #${id} — ${canal} · ${un} un · ${forma} · caixa +${total.toFixed(2)}`);
+    });
+
+  // Pedido vindo da loja online: cadastra o cliente E cria o pedido de uma vez
+  // (um único passo, para não perder dados entre gravações).
+  const pedidoSite = ({ nome, tel, itens }) =>
+    up((d) => {
+      const cid = uid();
+      d.clientes.unshift({
+        id: cid, nome: (nome || "").trim() || "Cliente do site", tel: (tel || "").trim(),
+        wpp: true, aniv: "—", origem: "Site", cashback: 0, pontos: 0, pedidos: 0, gasto: 0, ultimo: "agora",
+      });
+      const id = 1000 + Math.floor(Math.random() * 9000);
+      const hojeISO = new Date().toISOString().slice(0, 10);
+      const total = itens.reduce((t, it) => {
+        const p = d.produtos.find((x) => x.id === it.id);
+        return t + (p ? (p.promo || p.preco) * it.qtd : 0);
+      }, 0);
+      d.pedidos.unshift({ id, clienteId: cid, canal: "Site", status: "Novo", pagamento: "Pendente", itens, obs: "", criado: "hoje", data: hojeISO, ts: Date.now() });
+      d.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${id}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos", data: hojeISO });
+      log(d, `Pedido #${id} (Site) — ${nome || "cliente"} cadastrado no CRM · recebível lançado`);
     });
 
   // Cadastro de cliente (CRM)
@@ -345,14 +402,19 @@ export function useERP() {
       log(d, `Cliente cadastrado — ${c.nome}`);
     });
 
-  // Limpa os dados de EXEMPLO (pedidos, ordens, clientes, financeiro) para
-  // começar a jornada real do zero. Mantém produtos, insumos e custos.
+  // Limpa TODOS os dados de exemplo para começar a jornada real do zero:
+  // zera pedidos, ordens, clientes, financeiro, entregadores, fornecedores
+  // e o estoque (insumos e produtos). Mantém o catálogo e os custos.
   const limparExemplos = () =>
     up((d) => {
       d.pedidos = [];
       d.ordens = [];
       d.clientes = [];
       d.financeiro = [];
+      d.entregadores = [];
+      d.fornecedores = [];
+      d.insumos.forEach((i) => { i.estoque = 0; });
+      d.produtos.forEach((p) => { p.estoque = 0; });
       d.feed = ["Base limpa — pronta para os dados reais 🍮"];
     });
 
@@ -378,14 +440,14 @@ export function useERP() {
     });
 
   return {
-    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos,
+    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite,
     // nuvem (login + sincronização)
     cloud,
     // seletores
     custoProduto, margemProduto, totalPedido, precoVenda,
     // ações
     criarPedido, enviarProducao, avancarOrdem, entregarPedido, cancelarPedido,
-    receberCompra, liquidar, setPagamento, despacharEntrega, registrarVendaRapida,
+    receberCompra, registrarCompra, liquidar, setPagamento, despacharEntrega, registrarVendaRapida,
   };
 }
 

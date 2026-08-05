@@ -20,6 +20,7 @@ export default function VendaRapida({ erp }) {
   const [cart, setCart] = useState({});
   const [manual, setManual] = useState("");
   const [data, setData] = useState(hojeISO());
+  const [cliente, setCliente] = useState("");
   const hoje = hojeISO();
   const retroativo = data !== hoje;
 
@@ -47,10 +48,11 @@ export default function VendaRapida({ erp }) {
       const dLabel = new Date(data + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
       quando = manual ? `${dLabel} ${manual}` : dLabel;
     }
-    registrarVendaRapida(itens, canal, forma, quando, data);
+    registrarVendaRapida(itens, canal, forma, quando, data, cliente || null);
     setCart({});
     setManual("");
     setData(hoje);
+    setCliente("");
   };
 
   // vendas rápidas de hoje (resumo)
@@ -116,8 +118,12 @@ export default function VendaRapida({ erp }) {
           <input type="date" max={hoje} value={data} onChange={(e) => setData(e.target.value || hoje)}
             title="Data da venda (hoje ou um dia passado)" style={{ minWidth: 150 }} />
           <input placeholder="horário (ex: 14:30) · opcional" value={manual}
-            onChange={(e) => setManual(e.target.value)} style={{ flex: 1, minWidth: 130 }} />
-          {retroativo && <span className="tag t-org">📅 lançamento retroativo</span>}
+            onChange={(e) => setManual(e.target.value)} style={{ flex: 1, minWidth: 120 }} />
+          <select value={cliente} onChange={(e) => setCliente(e.target.value)} title="Vincular a um cliente cadastrado (opcional)" style={{ minWidth: 150 }}>
+            <option value="">👤 Sem cliente</option>
+            {db.clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+          </select>
+          {retroativo && <span className="tag t-org">📅 retroativo</span>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div>

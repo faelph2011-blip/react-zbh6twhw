@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { brl, waLink, msgPedido } from "../erp/format";
+import { Modal, Btn } from "../erp/ui";
 import { Brand } from "../erp/Emblem";
 import { hero as heroFoto, ind, med, gra, fresco } from "../erp/assets";
 
@@ -11,22 +12,26 @@ const INSTA = "https://instagram.com/pudinsdalauren";
 // Vitrine premium da Pudins da Lauren — identidade caramelo/creme.
 // "Feito com amor em cada detalhe". Acesso ao ERP atrás de "Área do dono".
 export default function Loja({ erp, onAdmin, full }) {
-  const { db, precoVenda, criarPedido } = erp;
+  const { db, precoVenda, pedidoSite } = erp;
   const [cart, setCart] = useState([]);
+  const [checkout, setCheckout] = useState(false);
   const add = (p) => setCart((c) => [...c, p]);
   const total = cart.reduce((t, p) => t + precoVenda(p), 0);
 
-  const finalizar = () => {
+  // Cliente preenche os dados → cadastra na base, cria o pedido e envia pro WhatsApp.
+  const enviarPedido = (nome, tel) => {
     if (!cart.length) return;
     const itens = Object.values(cart.reduce((acc, p) => {
       acc[p.id] = acc[p.id] || { id: p.id, qtd: 0 };
       acc[p.id].qtd += 1; return acc;
     }, {}));
-    // Registra no ERP (canal Site) — cliente avulso se não houver cadastro.
-    criarPedido(db.clientes.at(-1)?.id || null, itens, "Site");
-    // Envia o pedido pro WhatsApp da loja (dono é notificado mesmo sem o site aberto).
-    const url = waLink(msgPedido({ produtos: db.produtos, itens, total, canal: "Site", extra: "Enviado pela loja online 🌐" }));
+    pedidoSite({ nome, tel, itens });
+    const url = waLink(msgPedido({
+      produtos: db.produtos, itens, total, canal: "Site", cliente: nome,
+      extra: `📞 ${tel}\nEnviado pela loja online 🌐`,
+    }));
     setCart([]);
+    setCheckout(false);
     window.open(url, "_blank", "noopener");
   };
 
@@ -52,7 +57,7 @@ export default function Loja({ erp, onAdmin, full }) {
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           {cart.length > 0 && (
             <div className="pill">🛒 {cart.length} · {brl(total)}
-              <button className="btn mini" style={{ marginLeft: 8 }} onClick={finalizar}>Finalizar</button></div>
+              <button className="btn mini" style={{ marginLeft: 8 }} onClick={() => setCheckout(true)}>Finalizar</button></div>
           )}
           <button className="btn soft mini" onClick={onAdmin}>🔒 Área do dono</button>
         </div>
@@ -161,6 +166,37 @@ export default function Loja({ erp, onAdmin, full }) {
       </div>
 
       <a className="wa-float" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" title="Pedir no WhatsApp">💬</a>
+
+      {checkout && <CheckoutModal total={total} onClose={() => setCheckout(false)} onConfirm={enviarPedido} />}
     </div>
+  );
+}
+
+function CheckoutModal({ total, onClose, onConfirm }) {
+  const [nome, setNome] = useState("");
+  const [tel, setTel] = useState("");
+  const [erro, setErro] = useState("");
+
+  const confirmar = () => {
+    if (!nome.trim()) { setErro("Digite seu nome."); return; }
+    if (!tel.trim()) { setErro("Digite seu WhatsApp para contato."); return; }
+    onConfirm(nome.trim(), tel.trim());
+  };
+
+  return (
+    <Modal title="🍮 Finalizar pedido" onClose={onClose}>
+      <p className="mut" style={{ marginBottom: 14, fontSize: 13 }}>
+        Preencha seus dados — enviamos seu pedido pelo WhatsApp e confirmamos tudo com você. 💬
+      </p>
+      <div className="field"><label>Seu nome *</label>
+        <input autoFocus value={nome} placeholder="Ex: Maria Silva"
+          onChange={(e) => { setNome(e.target.value); setErro(""); }} /></div>
+      <div className="field"><label>Seu WhatsApp *</label>
+        <input value={tel} placeholder="(34) 9 9999-9999"
+          onChange={(e) => { setTel(e.target.value); setErro(""); }} /></div>
+      <div className="pill" style={{ marginBottom: 14 }}>Total do pedido: <b>{brl(total)}</b></div>
+      {erro && <div style={{ marginBottom: 12 }}><span className="tag t-red">{erro}</span></div>}
+      <Btn onClick={confirmar}>Enviar pedido pelo WhatsApp 💬</Btn>
+    </Modal>
   );
 }
