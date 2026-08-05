@@ -147,7 +147,10 @@ export default function App() {
             <span className="ic">{erp.theme === "dark" ? "☀️" : "🌙"}</span>
             <span className="lbl">{erp.theme === "dark" ? "Modo claro" : "Modo escuro"}</span>
           </button>
-          <button className="nav" onClick={() => { if (window.confirm("Restaurar dados de demonstração?")) erp.resetar(); }}>
+          <button className="nav" onClick={() => { if (window.confirm("Limpar os pedidos e clientes de EXEMPLO para começar a jornada real? (mantém produtos, custos e estoque)")) erp.limparExemplos(); }}>
+            <span className="ic">🧹</span><span className="lbl">Limpar exemplos</span>
+          </button>
+          <button className="nav" onClick={() => { if (window.confirm("Restaurar TODOS os dados de demonstração (produtos, clientes, pedidos)?")) erp.resetar(); }}>
             <span className="ic">↺</span><span className="lbl">Resetar dados</span>
           </button>
           <button className="nav" onClick={logout}>

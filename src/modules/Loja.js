@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { brl } from "../erp/format";
+import { brl, waLink, msgPedido } from "../erp/format";
 import { Brand } from "../erp/Emblem";
 import { hero as heroFoto, ind, med, gra, fresco } from "../erp/assets";
 
@@ -22,9 +22,12 @@ export default function Loja({ erp, onAdmin, full }) {
       acc[p.id] = acc[p.id] || { id: p.id, qtd: 0 };
       acc[p.id].qtd += 1; return acc;
     }, {}));
-    criarPedido(db.clientes.at(-1).id, itens, "Site");
+    // Registra no ERP (canal Site) — cliente avulso se não houver cadastro.
+    criarPedido(db.clientes.at(-1)?.id || null, itens, "Site");
+    // Envia o pedido pro WhatsApp da loja (dono é notificado mesmo sem o site aberto).
+    const url = waLink(msgPedido({ produtos: db.produtos, itens, total, canal: "Site", extra: "Enviado pela loja online 🌐" }));
     setCart([]);
-    alert("Pedido enviado! 🍮 Ele já aparece no ERP (Pedidos · canal Site).");
+    window.open(url, "_blank", "noopener");
   };
 
   const tilt = (e) => {

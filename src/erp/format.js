@@ -14,6 +14,29 @@ export const num = (v) => (Number(v) || 0).toLocaleString("pt-BR");
 
 export const uid = () => Math.random().toString(36).slice(2, 9);
 
+// WhatsApp da loja (Pudins da Lauren) e gerador de link com mensagem pronta.
+export const WPP_LOJA = "5534984432000"; // (34) 98443-2000
+export const waLink = (texto, numero = WPP_LOJA) =>
+  `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+
+// Monta a mensagem de um pedido para o WhatsApp.
+export const msgPedido = ({ produtos, itens, total, canal, cliente, extra }) => {
+  const linhas = itens.map((it) => {
+    const p = produtos.find((x) => x.id === it.id);
+    return `• ${it.qtd}× ${p ? p.nome : "item"}`;
+  });
+  return [
+    "🍮 *Pudins da Lauren — Pedido*",
+    cliente ? `👤 ${cliente}` : null,
+    canal ? `🛒 Canal: ${canal}` : null,
+    "",
+    ...linhas,
+    "",
+    `💰 Total: ${brl(total)}`,
+    extra || null,
+  ].filter((l) => l !== null).join("\n");
+};
+
 export const hoje = () =>
   new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, Tag, Btn, Modal, Empty } from "../erp/ui";
-import { brl } from "../erp/format";
+import { brl, waLink, msgPedido } from "../erp/format";
 
 const STATUS_CLS = { Novo: "t-blu", Produção: "t-org", Pronto: "t-pur", Entregue: "t-grn", Cancelado: "t-red" };
 const CANAL_IC = { Balcão: "🏪", WhatsApp: "💬", Site: "🌐", Delivery: "🛵" };
@@ -48,11 +48,16 @@ export default function Pedidos({ erp }) {
                 <span className="num" style={{ fontWeight: 700, fontSize: 16 }}>{brl(totalPedido(p))}</span>
                 <Tag cls={p.pagamento === "Pendente" ? "t-red" : "t-grn"}>{p.pagamento}</Tag>
               </div>
-              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+              <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
                 {p.status === "Novo" && <Btn variant="mini" onClick={() => enviarProducao(p.id)}>→ Produção</Btn>}
                 {(p.status === "Pronto" || p.status === "Produção") && <Btn variant="mini" onClick={() => entregarPedido(p.id)}>Entregar</Btn>}
                 {p.status !== "Entregue" && p.status !== "Cancelado" &&
                   <Btn variant="mini soft" onClick={() => cancelarPedido(p.id)}>Cancelar</Btn>}
+                <a className="btn mini soft" style={{ textDecoration: "none" }} target="_blank" rel="noreferrer"
+                  title="Abrir este pedido no WhatsApp"
+                  href={waLink(msgPedido({ produtos: db.produtos, itens: p.itens, total: totalPedido(p), canal: p.canal, cliente: cli?.nome, extra: `#${p.id} · ${p.pagamento}` }))}>
+                  📲 WhatsApp
+                </a>
               </div>
             </Card>
           );
@@ -66,7 +71,7 @@ export default function Pedidos({ erp }) {
 
 function NovoPedido({ erp, onClose }) {
   const { db, criarPedido, precoVenda } = erp;
-  const [cliente, setCliente] = useState(db.clientes[0].id);
+  const [cliente, setCliente] = useState(db.clientes[0]?.id || "");
   const [canal, setCanal] = useState("Balcão");
   const [cart, setCart] = useState({});
 
@@ -78,6 +83,7 @@ function NovoPedido({ erp, onClose }) {
     <Modal title="Novo pedido" onClose={onClose}>
       <div className="field"><label>Cliente</label>
         <select value={cliente} onChange={(e) => setCliente(e.target.value)}>
+          <option value="">Sem cliente (avulso)</option>
           {db.clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
         </select></div>
       <div className="field"><label>Canal</label>
@@ -97,7 +103,7 @@ function NovoPedido({ erp, onClose }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "16px 0" }}>
         <span className="mut">Total</span><span className="num" style={{ fontSize: 20, fontWeight: 700 }}>{brl(total)}</span>
       </div>
-      <Btn disabled={itens.length === 0} onClick={() => { criarPedido(cliente, itens, canal); onClose(); }}>Criar pedido</Btn>
+      <Btn disabled={itens.length === 0} onClick={() => { criarPedido(cliente || null, itens, canal); onClose(); }}>Criar pedido</Btn>
     </Modal>
   );
 }

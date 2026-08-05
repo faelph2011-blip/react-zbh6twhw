@@ -11,12 +11,17 @@ const FORMAS = ["PIX", "Dinheiro", "Cartão", "App"];
 const agora = () =>
   "hoje " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
+const hojeISO = () => new Date().toISOString().slice(0, 10);
+
 export default function VendaRapida({ erp }) {
   const { db, precoVenda, registrarVendaRapida } = erp;
   const [canal, setCanal] = useState("Balcão");
   const [forma, setForma] = useState("PIX");
   const [cart, setCart] = useState({});
   const [manual, setManual] = useState("");
+  const [data, setData] = useState(hojeISO());
+  const hoje = hojeISO();
+  const retroativo = data !== hoje;
 
   const add = (id, d) =>
     setCart((c) => {
@@ -35,10 +40,17 @@ export default function VendaRapida({ erp }) {
 
   const registrar = () => {
     if (!itens.length) return;
-    const quando = manual ? "hoje " + manual : agora();
-    registrarVendaRapida(itens, canal, forma, quando);
+    let quando;
+    if (!retroativo) {
+      quando = manual ? "hoje " + manual : agora();
+    } else {
+      const dLabel = new Date(data + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+      quando = manual ? `${dLabel} ${manual}` : dLabel;
+    }
+    registrarVendaRapida(itens, canal, forma, quando, data);
     setCart({});
     setManual("");
+    setData(hoje);
   };
 
   // vendas rápidas de hoje (resumo)
@@ -97,12 +109,15 @@ export default function VendaRapida({ erp }) {
 
       {/* Barra de registro (sticky) */}
       <div className="qs-bar">
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12, alignItems: "center" }}>
           {FORMAS.map((f) => (
             <button key={f} className={"qs-chip " + (forma === f ? "on" : "")} onClick={() => setForma(f)}>{f}</button>
           ))}
-          <input placeholder="horário (ex: 14:30) · vazio = agora" value={manual}
-            onChange={(e) => setManual(e.target.value)} style={{ flex: 1, minWidth: 140 }} />
+          <input type="date" max={hoje} value={data} onChange={(e) => setData(e.target.value || hoje)}
+            title="Data da venda (hoje ou um dia passado)" style={{ minWidth: 150 }} />
+          <input placeholder="horário (ex: 14:30) · opcional" value={manual}
+            onChange={(e) => setManual(e.target.value)} style={{ flex: 1, minWidth: 130 }} />
+          {retroativo && <span className="tag t-org">📅 lançamento retroativo</span>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div>

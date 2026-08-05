@@ -302,16 +302,20 @@ export function useERP() {
 
   // Venda Rápida: registro ágil (balcão/apps). Já entra pago e baixa estoque —
   // sem passar pelo fluxo de produção. É o "controle rápido" do dia a dia.
-  const registrarVendaRapida = (itens, canal, forma, quando) =>
+  // dataISO (yyyy-mm-dd) permite lançar vendas de dias passados.
+  const registrarVendaRapida = (itens, canal, forma, quando, dataISO) =>
     up((d) => {
       const id = 7000 + Math.floor(Math.random() * 2999);
       const total = itens.reduce((t, it) => {
         const p = d.produtos.find((x) => x.id === it.id);
         return t + (p ? (p.promo || p.preco) * it.qtd : 0);
       }, 0);
+      const hojeISO = new Date().toISOString().slice(0, 10);
+      const dia = dataISO || hojeISO;
+      const ts = dataISO && dataISO !== hojeISO ? new Date(dia + "T12:00:00").getTime() : Date.now();
       d.pedidos.unshift({
         id, clienteId: null, canal, status: "Entregue", pagamento: forma,
-        itens, obs: "", criado: quando, rapida: true, ts: Date.now(),
+        itens, obs: "", criado: quando, rapida: true, ts, data: dia,
       });
       itens.forEach((it) => {
         const p = d.produtos.find((x) => x.id === it.id);
@@ -319,10 +323,37 @@ export function useERP() {
       });
       d.financeiro.unshift({
         id: uid(), tipo: "receita", cat: "Vendas", desc: `Venda rápida #${id} (${canal})`,
-        valor: total, status: "pago", venc: "hoje", origem: "Venda Rápida",
+        valor: total, status: "pago", venc: dia === hojeISO ? "hoje" : dia, origem: "Venda Rápida",
       });
       const un = itens.reduce((t, i) => t + i.qtd, 0);
       log(d, `Venda rápida #${id} — ${canal} · ${un} un · ${forma} · caixa +${total.toFixed(2)}`);
+    });
+
+  // Cadastro de cliente (CRM)
+  const criarCliente = (dados) =>
+    up((d) => {
+      const c = {
+        id: uid(),
+        nome: (dados.nome || "").trim() || "Cliente",
+        tel: (dados.tel || "").trim(),
+        wpp: !!dados.wpp,
+        aniv: (dados.aniv || "").trim() || "—",
+        origem: (dados.origem || "").trim() || "Cadastro",
+        cashback: 0, pontos: 0, pedidos: 0, gasto: 0, ultimo: "—",
+      };
+      d.clientes.unshift(c);
+      log(d, `Cliente cadastrado — ${c.nome}`);
+    });
+
+  // Limpa os dados de EXEMPLO (pedidos, ordens, clientes, financeiro) para
+  // começar a jornada real do zero. Mantém produtos, insumos e custos.
+  const limparExemplos = () =>
+    up((d) => {
+      d.pedidos = [];
+      d.ordens = [];
+      d.clientes = [];
+      d.financeiro = [];
+      d.feed = ["Base limpa — pronta para os dados reais 🍮"];
     });
 
   // Aplica o catálogo de custos do seed (custos reais, gás, insumos novos)
@@ -347,7 +378,7 @@ export function useERP() {
     });
 
   return {
-    db, theme, toggleTheme, resetar, sincronizarCatalogo,
+    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos,
     // nuvem (login + sincronização)
     cloud,
     // seletores
