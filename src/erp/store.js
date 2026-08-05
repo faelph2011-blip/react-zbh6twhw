@@ -48,7 +48,7 @@ export function useERP() {
     syncing: false, lastSync: null, error: null, ready: !cloudEnabled,
   });
   const dbRef = useRef(db);
-  const userIdRef = useRef(null);
+  const loggedInRef = useRef(false);
   const pushTimer = useRef(null);
   useEffect(() => { dbRef.current = db; }, [db]);
 
@@ -58,11 +58,11 @@ export function useERP() {
 
   // Envia o estado para a nuvem (com atraso, agrupando gravações seguidas).
   const schedulePush = useCallback((next) => {
-    if (!cloudEnabled || !userIdRef.current) return;
+    if (!cloudEnabled || !loggedInRef.current) return;
     if (pushTimer.current) clearTimeout(pushTimer.current);
     pushTimer.current = setTimeout(async () => {
       setCloudStatus((s) => ({ ...s, syncing: true }));
-      const r = await gravarEstado(userIdRef.current, next);
+      const r = await gravarEstado(next);
       setCloudStatus((s) => ({
         ...s, syncing: false,
         lastSync: r.ok ? Date.now() : s.lastSync,
@@ -81,18 +81,18 @@ export function useERP() {
   // ainda estiver vazia, semeia com o estado local atual.
   const aplicarSessao = useCallback(async (s) => {
     setSession(s);
-    const uidUser = (s && s.user && s.user.id) || null;
-    userIdRef.current = uidUser;
-    if (!uidUser) { setCloudStatus((cs) => ({ ...cs, ready: true })); return; }
+    const logado = !!(s && s.user && s.user.id);
+    loggedInRef.current = logado;
+    if (!logado) { setCloudStatus((cs) => ({ ...cs, ready: true })); return; }
     setCloudStatus((cs) => ({ ...cs, syncing: true, error: null }));
-    const { data, erro } = await puxarEstado(uidUser);
+    const { data, erro } = await puxarEstado();
     if (erro) { setCloudStatus({ syncing: false, lastSync: null, error: erro, ready: true }); return; }
     if (data) {
       setDb(data);
       writeLocal(data);
       setCloudStatus({ syncing: false, lastSync: Date.now(), error: null, ready: true });
     } else {
-      const r = await gravarEstado(uidUser, dbRef.current);
+      const r = await gravarEstado(dbRef.current);
       setCloudStatus({ syncing: false, lastSync: r.ok ? Date.now() : null, error: r.ok ? null : r.erro, ready: true });
     }
   }, [writeLocal]);

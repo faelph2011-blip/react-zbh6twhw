@@ -38,8 +38,10 @@ const ENV_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY || "";
 export const SUPABASE_URL = ENV_URL || SUPABASE_URL_MANUAL || "";
 export const SUPABASE_ANON_KEY = ENV_KEY || SUPABASE_ANON_KEY_MANUAL || "";
 
-// Nome da tabela que guarda o estado do ERP (1 linha por usuário).
-export const CLOUD_TABLE = "erp_state";
+// Loja compartilhada: uma única linha guarda o estado do ERP, e todos os
+// admins autorizados (Raphael, Vitoria...) enxergam/editam os mesmos dados.
+export const CLOUD_TABLE = "loja_state";
+export const WORKSPACE_ID = "principal";
 
 // A nuvem só liga quando as duas chaves existem.
 export const cloudEnabled = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
