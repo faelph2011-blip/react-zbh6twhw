@@ -3,21 +3,34 @@ import { Card, Tag } from "../erp/ui";
 import { brl, pct } from "../erp/format";
 
 export default function Engenharia({ erp }) {
-  const { db, custoProduto, margemProduto, precoVenda } = erp;
+  const { db, custoProduto, margemProduto, precoVenda, sincronizarCatalogo } = erp;
   const [sel, setSel] = useState(db.produtos[0].id);
+  const [msg, setMsg] = useState("");
   const p = db.produtos.find((x) => x.id === sel);
   const custo = custoProduto(p);
   const pv = precoVenda(p);
+
+  const atualizar = () => {
+    sincronizarCatalogo();
+    setMsg("Custos atualizados com os valores reais! ✅");
+    setTimeout(() => setMsg(""), 4000);
+  };
 
   return (
     <>
       <div className="topbar">
         <div><h1>Engenharia do Produto</h1>
           <div className="sub">Ficha técnica com custo calculado automaticamente por receita, unidade e fatia</div></div>
-        <select value={sel} onChange={(e) => setSel(e.target.value)} style={{ maxWidth: 260 }}>
-          {db.produtos.map((x) => <option key={x.id} value={x.id}>{x.nome}</option>)}
-        </select>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <button className="btn soft mini" onClick={atualizar} title="Aplica os custos reais (ingredientes, potes, adesivo, gás, delivery) sem apagar dados">
+            ↻ Atualizar custos
+          </button>
+          <select value={sel} onChange={(e) => setSel(e.target.value)} style={{ maxWidth: 220 }}>
+            {db.produtos.map((x) => <option key={x.id} value={x.id}>{x.nome}</option>)}
+          </select>
+        </div>
       </div>
+      {msg && <div style={{ marginBottom: 12 }}><span className="tag t-grn">{msg}</span></div>}
 
       <div className="grid g3">
         <Card style={{ gridColumn: "span 2" }}>

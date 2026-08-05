@@ -325,8 +325,29 @@ export function useERP() {
       log(d, `Venda rápida #${id} — ${canal} · ${un} un · ${forma} · caixa +${total.toFixed(2)}`);
     });
 
+  // Aplica o catálogo de custos do seed (custos reais, gás, insumos novos)
+  // sobre os dados atuais, SEM apagar vendas, clientes ou estoque.
+  const sincronizarCatalogo = () =>
+    up((d) => {
+      seed.insumos.forEach((si) => {
+        const ex = d.insumos.find((i) => i.id === si.id);
+        if (ex) {
+          ex.nome = si.nome; ex.cat = si.cat; ex.un = si.un; ex.custo = si.custo;
+          if (ex.min == null) ex.min = si.min;
+          if (ex.max == null) ex.max = si.max;
+        } else {
+          d.insumos.push({ ...si });
+        }
+      });
+      seed.produtos.forEach((sp) => {
+        const p = d.produtos.find((x) => x.id === sp.id);
+        if (p) p.ficha = sp.ficha.map((f) => ({ ...f }));
+      });
+      log(d, "Catálogo de custos atualizado — ingredientes, potes, adesivo, gás e delivery");
+    });
+
   return {
-    db, theme, toggleTheme, resetar,
+    db, theme, toggleTheme, resetar, sincronizarCatalogo,
     // nuvem (login + sincronização)
     cloud,
     // seletores
