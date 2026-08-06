@@ -69,7 +69,20 @@ export default function App() {
     document.documentElement.setAttribute("data-theme", erp.theme);
   }, [erp.theme]);
 
-  const irParaAdmin = () => (authed ? setView("admin") : setShowLogin(true));
+  // Acesso do dono por URL secreta (#dono ou #admin) — sem botão visível ao cliente.
+  useEffect(() => {
+    const abrir = () => {
+      const h = window.location.hash.toLowerCase();
+      if (h === "#dono" || h === "#admin") {
+        if (cloudOn ? !!erp.cloud.user : pinAuthed) setView("admin");
+        else setShowLogin(true);
+      }
+    };
+    abrir();
+    window.addEventListener("hashchange", abrir);
+    return () => window.removeEventListener("hashchange", abrir);
+  }, [cloudOn, erp.cloud.user, pinAuthed]);
+
   const login = () => {
     if (!cloudOn) {
       setPinAuthed(true);
@@ -94,7 +107,7 @@ export default function App() {
     return (
       <div style={{ minHeight: "100vh", background: "transparent" }}>
         <style>{css}</style>
-        <Loja erp={erp} onAdmin={irParaAdmin} full />
+        <Loja erp={erp} full />
         {showLogin && <LoginModal cloud={erp.cloud} onClose={() => setShowLogin(false)} onSuccess={login} />}
       </div>
     );

@@ -13,7 +13,7 @@ import { sessaoAtual, aoMudarAuth, entrar, criarConta, sair } from "../cloud/aut
 import { puxarEstado, gravarEstado } from "../cloud/sync";
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
-const LS_KEY = "pudimerp_state_v1";
+const LS_KEY = "pudimerp_state_v2";
 
 function carregar() {
   try {
@@ -434,7 +434,7 @@ export function useERP() {
       });
       seed.produtos.forEach((sp) => {
         const p = d.produtos.find((x) => x.id === sp.id);
-        if (p) p.ficha = sp.ficha.map((f) => ({ ...f }));
+        if (p) { p.ficha = sp.ficha.map((f) => ({ ...f })); p.rendimento = sp.rendimento; p.tamanho = sp.tamanho; }
       });
       log(d, "Catálogo de custos atualizado — ingredientes, potes, adesivo, gás e delivery");
     });

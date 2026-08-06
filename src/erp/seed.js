@@ -52,7 +52,7 @@ export const produtos = [
   {
     id: "gra", nome: "Pudim Grande", cat: "Tradicional", sku: "PUD-GRA-1000",
     tamanho: "1kg", emoji: "🍮", grad: "linear-gradient(135deg,#A85616,#C77B3B)",
-    preco: 79.90, promo: null, tempo: 95, rendimento: 12, validade: 5, estoque: 4,
+    preco: 79.90, promo: null, tempo: 95, rendimento: 10, validade: 5, estoque: 4,
     // 1kg ≈ 8,3× a porção individual
     ficha: [
       { id: "condensado", qtd: 0.926 }, { id: "leite", qtd: 0.37 }, { id: "ovos", qtd: 2.78 },

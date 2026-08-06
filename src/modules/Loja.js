@@ -11,7 +11,7 @@ const INSTA = "https://instagram.com/pudinsdalauren";
 
 // Vitrine premium da Pudins da Lauren — identidade caramelo/creme.
 // "Feito com amor em cada detalhe". Acesso ao ERP atrás de "Área do dono".
-export default function Loja({ erp, onAdmin, full }) {
+export default function Loja({ erp, full }) {
   const { db, precoVenda, pedidoSite } = erp;
   const [cart, setCart] = useState([]);
   const [checkout, setCheckout] = useState(false);
@@ -81,7 +81,7 @@ export default function Loja({ erp, onAdmin, full }) {
             <div className="pill">🛒 {cart.length} · {brl(total)}
               <button className="btn mini" style={{ marginLeft: 8 }} onClick={() => setCheckout(true)}>Finalizar</button></div>
           )}
-          <button className="btn soft mini" onClick={onAdmin}>🔒 Área do dono</button>
+          <a className="btn mini" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>💬 WhatsApp</a>
         </div>
       </div>
 
@@ -97,7 +97,7 @@ export default function Loja({ erp, onAdmin, full }) {
           <div className="script hero-script">Feito com amor</div>
           <h2 className="hero-title">em cada detalhe.</h2>
           <p className="hero-sub">
-            Pudim artesanal de leite condensado <b>Leite Moça</b> — cremoso, delicioso e inesquecível.
+            Pudim artesanal de leite condensado — cremoso, delicioso e inesquecível.
             Feito no dia, entregue geladinho na sua porta.
           </p>
           <div className="hero-cta">
@@ -114,7 +114,7 @@ export default function Loja({ erp, onAdmin, full }) {
       </div>
 
       <div className="marquee">
-        <span>🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Leite Moça &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp; 🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Leite Moça &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp;</span>
+        <span>🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Artesanal &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp; 🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Artesanal &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp;</span>
       </div>
 
       {/* Parallax — declaração da marca */}
@@ -122,7 +122,7 @@ export default function Loja({ erp, onAdmin, full }) {
         <div className="cine-band-scrim" />
         <div className="cine-band-content sr">
           <div className="script" style={{ fontSize: 42 }}>Cremoso, delicioso, inesquecível</div>
-          <p>Pudim de leite condensado Leite Moça, feito no capricho — a sobremesa que vira memória afetiva.</p>
+          <p>Pudim de leite condensado, feito no capricho — a sobremesa que vira memória afetiva.</p>
         </div>
       </section>
 
@@ -145,7 +145,7 @@ export default function Loja({ erp, onAdmin, full }) {
 
       <div style={{ padding: "10px 26px 30px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
         {[["🚚", "Entrega geladinha", "Chega refrigerado, do jeito certo"],
-          ["🥇", "Leite Moça", "Receita tradicional, ingredientes selecionados"],
+          ["🥇", "Receita artesanal", "Ingredientes selecionados, do jeito tradicional"],
           ["🔒", "Pagamento fácil", "PIX, cartão e dinheiro"]].map(([ic, t, d], i) => (
           <div className="glass sr" key={t} style={{ padding: 18, transitionDelay: i * 0.1 + "s" }}>
             <div style={{ fontSize: 26 }}>{ic}</div>
@@ -206,7 +206,6 @@ export default function Loja({ erp, onAdmin, full }) {
           <div className="foot-links">
             <a href={INSTA} target="_blank" rel="noreferrer">📷 @pudinsdalauren</a>
             <a href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer">💬 (34) 98443-2000</a>
-            <button onClick={onAdmin}>🔒 Área do dono</button>
           </div>
         </div>
         <div className="foot-copy">Feito com amor em cada detalhe 💛</div>
