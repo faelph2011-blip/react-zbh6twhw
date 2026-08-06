@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { brl, waLink, msgPedido } from "../erp/format";
 import { Modal, Btn } from "../erp/ui";
 import { Brand } from "../erp/Emblem";
@@ -17,6 +17,33 @@ export default function Loja({ erp, onAdmin, full }) {
   const [checkout, setCheckout] = useState(false);
   const add = (p) => setCart((c) => [...c, p]);
   const total = cart.reduce((t, p) => t + precoVenda(p), 0);
+
+  // Efeitos de rolagem: elementos ".sr" surgem ao entrar na tela; vídeos de
+  // fundo tocam quando visíveis e pausam quando saem (economia). Só visual.
+  useEffect(() => {
+    const srs = Array.from(document.querySelectorAll(".sr"));
+    const reduz = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduz || !("IntersectionObserver" in window)) {
+      srs.forEach((el) => el.classList.add("sr-in"));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("sr-in"); io.unobserve(en.target); } });
+    }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
+    srs.forEach((el) => io.observe(el));
+
+    const vids = Array.from(document.querySelectorAll("video[data-autoplay]"));
+    const vio = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        const v = en.target;
+        if (en.isIntersecting) { const pr = v.play && v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+        else if (v.pause) v.pause();
+      });
+    }, { threshold: 0.2 });
+    vids.forEach((v) => vio.observe(v));
+
+    return () => { io.disconnect(); vio.disconnect(); };
+  }, []);
 
   // Cliente preenche os dados → cadastra na base, cria o pedido e envia pro WhatsApp.
   const enviarPedido = (nome, tel) => {
@@ -63,51 +90,46 @@ export default function Loja({ erp, onAdmin, full }) {
         </div>
       </div>
 
-      <div className="hero">
-        <div style={{ width: 210, margin: "6px auto 26px", animation: "float 4s ease-in-out infinite", filter: "drop-shadow(0 18px 30px rgba(120,80,30,.28))" }}>
-          <Brand size={210} />
+      <div className="hero hero--cine">
+        <video className="hero-bg" data-autoplay
+          src={`${process.env.PUBLIC_URL}/hero.mp4`}
+          poster={`${process.env.PUBLIC_URL}/hero-poster.jpg`}
+          autoPlay muted loop playsInline preload="metadata"
+          aria-label="Pudins da Lauren — vídeo do pudim artesanal" />
+        <div className="hero-scrim" />
+        <div className="hero-inner">
+          <div className="hero-logo"><Brand size={132} /></div>
+          <div className="script hero-script">Feito com amor</div>
+          <h2 className="hero-title">em cada detalhe.</h2>
+          <p className="hero-sub">
+            Pudim artesanal de leite condensado <b>Leite Moça</b> — cremoso, delicioso e inesquecível.
+            Feito no dia, entregue geladinho na sua porta.
+          </p>
+          <div className="hero-cta">
+            <button className="btn"
+              onClick={() => document.querySelector(".store-grid")?.scrollIntoView({ behavior: "smooth" })}>
+              Escolher tamanho ↓
+            </button>
+            <a className="btn glassbtn" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer">
+              💬 Pedir no WhatsApp
+            </a>
+          </div>
         </div>
-        <div className="script" style={{ fontSize: "clamp(38px,8vw,72px)", color: "var(--caramel)", marginBottom: 6 }}>
-          Feito com amor
-        </div>
-        <h2 className="reveal" style={{ marginTop: 0 }}>em cada detalhe.</h2>
-        <p className="reveal" style={{ animationDelay: ".15s" }}>
-          Pudim artesanal de leite condensado <b>Leite Moça</b> — cremoso, delicioso e inesquecível.
-          Feito no dia, entregue geladinho na sua porta.
-        </p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <button className="btn reveal" style={{ animationDelay: ".3s", padding: "12px 26px", fontSize: 15 }}
-            onClick={() => document.querySelector(".store-grid")?.scrollIntoView({ behavior: "smooth" })}>
-            Escolher tamanho ↓
-          </button>
-          <a className="btn soft reveal" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer"
-            style={{ animationDelay: ".35s", padding: "12px 22px", fontSize: 15, textDecoration: "none" }}>
-            💬 Pedir no WhatsApp
-          </a>
-        </div>
-        <div className="reveal" style={{ maxWidth: 640, margin: "36px auto 0", borderRadius: 24, overflow: "hidden", boxShadow: "var(--shadow)", border: "1px solid var(--line-2)", animationDelay: ".45s" }}>
-          <video
-            src={`${process.env.PUBLIC_URL}/hero.mp4`}
-            poster={`${process.env.PUBLIC_URL}/hero-poster.jpg`}
-            autoPlay muted loop playsInline preload="metadata"
-            aria-label="Pudins da Lauren — vídeo do pudim artesanal"
-            style={{ width: "100%", display: "block", background: "#0b0704" }}
-          />
-        </div>
+        <div className="hero-fade" />
       </div>
 
       <div className="marquee">
         <span>🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Leite Moça &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp; 🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Leite Moça &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp;</span>
       </div>
 
-      <div style={{ textAlign: "center", padding: "26px 20px 6px" }}>
-        <div className="script" style={{ fontSize: 30, color: "var(--brown)" }}>Escolha o seu tamanho</div>
+      <div className="sr" style={{ textAlign: "center", padding: "40px 20px 6px" }}>
+        <div className="script" style={{ fontSize: 34, color: "var(--brown)" }}>Escolha o seu tamanho</div>
         <div className="mut">Um só sabor, do jeito tradicional. Três tamanhos pra cada momento.</div>
       </div>
 
       <div className="store-grid">
         {db.produtos.map((p, i) => (
-          <div className="pcard reveal" key={p.id} style={{ animationDelay: i * 0.08 + "s" }} onMouseMove={tilt} onMouseLeave={reset}>
+          <div className="pcard sr" key={p.id} style={{ transitionDelay: i * 0.08 + "s" }} onMouseMove={tilt} onMouseLeave={reset}>
             <div className="img" style={{ background: p.grad, padding: 0 }}>
               {FOTOS[p.id]
                 ? <img src={FOTOS[p.id]} alt={p.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -129,16 +151,19 @@ export default function Loja({ erp, onAdmin, full }) {
         ))}
       </div>
 
-      {/* Feito no dia — bastidores reais */}
-      <div style={{ textAlign: "center", padding: "22px 20px 4px" }}>
-        <div className="script" style={{ fontSize: 28, color: "var(--brown)" }}>Feito no dia, com carinho</div>
-        <div className="mut">Produção artesanal, fresquinho e geladinho — do jeito que você merece.</div>
-      </div>
-      <div style={{ padding: "12px 26px 26px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 14 }}>
+      {/* Faixa cinematográfica com imagem de fundo (parallax) */}
+      <section className="cine-band" style={{ backgroundImage: `url(${fresco})` }}>
+        <div className="cine-band-scrim" />
+        <div className="cine-band-content sr">
+          <div className="script" style={{ fontSize: 36 }}>Feito no dia, com carinho</div>
+          <p>Produção artesanal, fresquinho e geladinho — do jeito que você merece.</p>
+        </div>
+      </section>
+      <div className="bastidores">
         {[[med, "No capricho"], [ind, "Feito no dia"], [fresco, "Geladinho"]].map(([src, cap], i) => (
-          <div key={i} style={{ position: "relative", borderRadius: 16, overflow: "hidden", boxShadow: "var(--shadow)", aspectRatio: "4 / 3" }}>
-            <img src={src} alt={cap} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-            <span style={{ position: "absolute", left: 12, bottom: 12, background: "rgba(0,0,0,.45)", color: "#fff", padding: "4px 11px", borderRadius: 99, fontSize: 12.5, fontWeight: 600, backdropFilter: "blur(4px)" }}>{cap}</span>
+          <div key={i} className="bast-card sr" style={{ transitionDelay: i * 0.1 + "s" }}>
+            <img src={src} alt={cap} />
+            <span className="bast-cap">{cap}</span>
           </div>
         ))}
       </div>
@@ -146,8 +171,8 @@ export default function Loja({ erp, onAdmin, full }) {
       <div style={{ padding: "10px 26px 30px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 14 }}>
         {[["🚚", "Entrega geladinha", "Chega refrigerado, do jeito certo"],
           ["🥇", "Leite Moça", "Receita tradicional, ingredientes selecionados"],
-          ["🔒", "Pagamento fácil", "PIX, cartão e dinheiro"]].map(([ic, t, d]) => (
-          <div className="glass" key={t} style={{ padding: 18 }}>
+          ["🔒", "Pagamento fácil", "PIX, cartão e dinheiro"]].map(([ic, t, d], i) => (
+          <div className="glass sr" key={t} style={{ padding: 18, transitionDelay: i * 0.1 + "s" }}>
             <div style={{ fontSize: 26 }}>{ic}</div>
             <div className="name" style={{ marginTop: 8 }}>{t}</div>
             <div className="mut" style={{ fontSize: 12.5 }}>{d}</div>

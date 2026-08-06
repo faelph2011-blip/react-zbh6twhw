@@ -242,6 +242,39 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .glass{background:var(--glass);backdrop-filter:blur(14px) saturate(1.1);border:1px solid var(--line);border-radius:20px;box-shadow:var(--soft)}
 
+/* ============ HERO CINEMATOGRÁFICO (vídeo de fundo) ============ */
+.hero--cine{position:relative;min-height:min(88vh,780px);display:flex;align-items:center;justify-content:center;text-align:center;padding:0;overflow:hidden}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.hero-scrim{position:absolute;inset:0;z-index:1;background:radial-gradient(120% 90% at 50% 28%,rgba(10,6,3,.25),rgba(8,5,3,.66) 76%),linear-gradient(180deg,rgba(8,5,3,.55),rgba(8,5,3,.22) 42%,rgba(8,5,3,.9))}
+.hero-fade{position:absolute;left:0;right:0;bottom:0;height:130px;z-index:1;background:linear-gradient(180deg,transparent,var(--bg))}
+.hero-inner{position:relative;z-index:2;max-width:840px;padding:60px 24px}
+.hero-logo{width:132px;margin:0 auto 18px;filter:drop-shadow(0 16px 32px rgba(0,0,0,.55));animation:float 4s ease-in-out infinite}
+.hero-script{font-size:clamp(40px,8vw,78px);color:var(--gold);margin-bottom:2px;text-shadow:0 8px 34px rgba(0,0,0,.55)}
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,6vw,58px);font-weight:700;letter-spacing:-1.2px;line-height:1.03;margin-bottom:16px;background:linear-gradient(100deg,#FFF6E7,var(--gold),#FFF6E7);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 7s linear infinite}
+.hero-sub{color:rgba(255,244,228,.86);font-size:16px;max-width:520px;margin:0 auto 26px;line-height:1.6}
+.hero-sub b{color:#fff}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero-cta .btn{padding:13px 26px;font-size:15px;background:var(--grad);color:#1a1206;box-shadow:0 12px 30px -8px rgba(201,112,28,.6)}
+.hero-cta .btn:hover{box-shadow:0 18px 38px -8px rgba(201,112,28,.72),0 0 0 1px rgba(255,240,205,.4)}
+.hero-cta .glassbtn{background:rgba(255,255,255,.12);color:#FFF3E2;border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px);text-decoration:none;padding:13px 24px;font-size:15px;font-weight:600;border-radius:12px;transition:transform .2s,background .2s;display:inline-flex;align-items:center;gap:7px;cursor:pointer}
+.hero-cta .glassbtn:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+
+/* ============ FAIXA CINEMATOGRÁFICA (imagem parallax) ============ */
+.cine-band{position:relative;min-height:360px;display:flex;align-items:center;justify-content:center;text-align:center;background-size:cover;background-position:center;background-attachment:fixed;margin:10px 0}
+.cine-band-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,5,3,.56),rgba(8,5,3,.46))}
+.cine-band-content{position:relative;z-index:1;padding:44px 24px;max-width:640px}
+.cine-band-content .script{color:var(--gold);text-shadow:0 6px 24px rgba(0,0,0,.55)}
+.cine-band-content p{color:rgba(255,244,228,.9);margin-top:6px;font-size:15px;line-height:1.5}
+.bastidores{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding:22px 26px 32px}
+.bast-card{position:relative;border-radius:20px;overflow:hidden;box-shadow:var(--soft);aspect-ratio:4/3}
+.bast-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.22,1,.36,1)}
+.bast-card:hover img{transform:scale(1.07)}
+.bast-cap{position:absolute;left:12px;bottom:12px;background:rgba(10,6,3,.52);color:#FFF3E2;padding:5px 13px;border-radius:99px;font-size:12.5px;font-weight:600;backdrop-filter:blur(5px)}
+
+/* ============ REVEAL AO ROLAR ============ */
+.sr{opacity:0;transform:translateY(34px);transition:opacity .85s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.22,1,.36,1)}
+.sr-in{opacity:1;transform:none}
+
 /* ---- responsivo ---- */
 @media(max-width:1000px){
   .g4,.g5{grid-template-columns:repeat(2,1fr)}
@@ -259,6 +292,10 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
   .store-nav{padding:13px 18px}
   .store-grid{padding:18px 16px 34px;gap:16px}
   .hero{padding:44px 20px 26px}
+  .hero--cine{min-height:80vh}
+  .hero-inner{padding:44px 20px}
+  .cine-band{background-attachment:scroll;min-height:280px}
+  .bastidores{padding:18px 16px 26px}
 }
 
 /* respeita redução de movimento */
