@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { brl, waLink, msgPedido } from "../erp/format";
 import { Modal, Btn } from "../erp/ui";
 import { Brand } from "../erp/Emblem";
-import { ind, med, gra, fresco } from "../erp/assets";
+import { hero as heroPhoto, ind, med, gra, fresco } from "../erp/assets";
 
 const FOTOS = { ind, med, gra };
 
@@ -71,11 +71,6 @@ export default function Loja({ erp, onAdmin, full }) {
 
   return (
     <div className={"store" + (full ? " store--full" : "")}>
-      {/* Faixa de inauguração */}
-      <div className="promo-banner">
-        🎉 Promoção de Inauguração — <b>1 Pudim por R$ 12</b> ou <b>2 Pudins por R$ 20</b>
-      </div>
-
       <div className="store-nav">
         <div className="store-logo" style={{ gap: 10 }}>
           <Brand size={46} />
@@ -122,34 +117,14 @@ export default function Loja({ erp, onAdmin, full }) {
         <span>🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Leite Moça &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp; 🍮 Cremoso &nbsp;·&nbsp; Delicioso &nbsp;·&nbsp; Inesquecível &nbsp;·&nbsp; Feito com amor em cada detalhe &nbsp;·&nbsp; Leite Moça &nbsp;·&nbsp; Feito no dia &nbsp;·&nbsp;</span>
       </div>
 
-      <div className="sr" style={{ textAlign: "center", padding: "40px 20px 6px" }}>
-        <div className="script" style={{ fontSize: 34, color: "var(--brown)" }}>Escolha o seu tamanho</div>
-        <div className="mut">Um só sabor, do jeito tradicional. Três tamanhos pra cada momento.</div>
-      </div>
-
-      <div className="store-grid">
-        {db.produtos.map((p, i) => (
-          <div className="pcard sr" key={p.id} style={{ transitionDelay: i * 0.08 + "s" }} onMouseMove={tilt} onMouseLeave={reset}>
-            <div className="img" style={{ background: p.grad, padding: 0 }}>
-              {FOTOS[p.id]
-                ? <img src={FOTOS[p.id]} alt={p.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : p.emoji}
-              <span className="size-badge" style={{ position: "absolute", top: 10, right: 10 }}>{p.tamanho}</span>
-            </div>
-            <div className="body">
-              <h3>{p.nome}</h3>
-              <div className="mut" style={{ fontSize: 11.5, marginBottom: 10 }}>
-                {p.tamanho} · {p.rendimento > 1 ? `${p.rendimento} porções` : "porção individual"}
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span className="price">{brl(precoVenda(p))}</span>
-                <button className="btn mini" onClick={() => add(p)}>+ Carrinho</button>
-              </div>
-              {p.combo && <div className="tag t-org" style={{ marginTop: 10 }}>🎉 {p.combo}</div>}
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Parallax — declaração da marca */}
+      <section className="cine-band" style={{ backgroundImage: `url(${heroPhoto})` }}>
+        <div className="cine-band-scrim" />
+        <div className="cine-band-content sr">
+          <div className="script" style={{ fontSize: 42 }}>Cremoso, delicioso, inesquecível</div>
+          <p>Pudim de leite condensado Leite Moça, feito no capricho — a sobremesa que vira memória afetiva.</p>
+        </div>
+      </section>
 
       {/* Faixa cinematográfica com imagem de fundo (parallax) */}
       <section className="cine-band" style={{ backgroundImage: `url(${fresco})` }}>
@@ -180,21 +155,62 @@ export default function Loja({ erp, onAdmin, full }) {
         ))}
       </div>
 
-      {/* Rodapé com contatos reais */}
-      <div style={{ borderTop: "1px solid var(--line)", padding: "24px 26px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Brand size={54} />
-          <div>
-            <div className="script" style={{ fontSize: 22, color: "var(--brown)" }}>Pudins da Lauren</div>
-            <div className="mut" style={{ fontSize: 12 }}>Cremoso · Delicioso · Inesquecível</div>
+      {/* Parallax — chamada para o cardápio */}
+      <section className="cine-band" style={{ backgroundImage: `url(${gra})` }}>
+        <div className="cine-band-scrim" />
+        <div className="cine-band-content sr">
+          <div className="script" style={{ fontSize: 42 }}>Bateu a vontade?</div>
+          <p>Escolha o seu tamanho logo abaixo — é rapidinho e a gente confirma tudo no WhatsApp. 🍮</p>
+        </div>
+      </section>
+
+      {/* Cardápio — escolha o seu tamanho (final do site) */}
+      <div className="sr" style={{ textAlign: "center", padding: "44px 20px 6px" }}>
+        <div className="script" style={{ fontSize: 36, color: "var(--brown)" }}>Escolha o seu tamanho</div>
+        <div className="mut">Um só sabor, do jeito tradicional. Três tamanhos pra cada momento.</div>
+      </div>
+      <div className="store-grid">
+        {db.produtos.map((p, i) => (
+          <div className="pcard sr" key={p.id} style={{ transitionDelay: i * 0.08 + "s" }} onMouseMove={tilt} onMouseLeave={reset}>
+            <div className="img" style={{ background: p.grad, padding: 0 }}>
+              {FOTOS[p.id]
+                ? <img src={FOTOS[p.id]} alt={p.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : p.emoji}
+              <span className="size-badge" style={{ position: "absolute", top: 10, right: 10 }}>{p.tamanho}</span>
+            </div>
+            <div className="body">
+              <h3>{p.nome}</h3>
+              <div className="mut" style={{ fontSize: 11.5, marginBottom: 10 }}>
+                {p.tamanho} · {p.rendimento > 1 ? `${p.rendimento} porções` : "porção individual"}
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span className="price">{brl(precoVenda(p))}</span>
+                <button className="btn mini" onClick={() => add(p)}>+ Carrinho</button>
+              </div>
+              {p.combo && <div className="tag t-org" style={{ marginTop: 10 }}>🎉 {p.combo}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Rodapé homogêneo (escuro premium, combina com o hero) */}
+      <footer className="store-foot">
+        <div className="store-foot-inner">
+          <div className="foot-brand">
+            <Brand size={66} />
+            <div>
+              <div className="script" style={{ fontSize: 28 }}>Pudins da Lauren</div>
+              <div className="foot-tag">Cremoso · Delicioso · Inesquecível</div>
+            </div>
+          </div>
+          <div className="foot-links">
+            <a href={INSTA} target="_blank" rel="noreferrer">📷 @pudinsdalauren</a>
+            <a href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer">💬 (34) 98443-2000</a>
+            <button onClick={onAdmin}>🔒 Área do dono</button>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <a className="btn soft mini" href={INSTA} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>📷 @pudinsdalauren</a>
-          <a className="btn mini" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>💬 (34) 98443-2000</a>
-          <button className="btn soft mini" onClick={onAdmin}>🔒 Área do dono</button>
-        </div>
-      </div>
+        <div className="foot-copy">Feito com amor em cada detalhe 💛</div>
+      </footer>
 
       <a className="wa-float" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" title="Pedir no WhatsApp">💬</a>
 

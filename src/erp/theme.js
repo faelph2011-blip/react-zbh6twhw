@@ -245,7 +245,7 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 /* ============ HERO CINEMATOGRÁFICO (vídeo de fundo) ============ */
 .hero--cine{position:relative;min-height:min(88vh,780px);display:flex;align-items:center;justify-content:center;text-align:center;padding:0;overflow:hidden}
 .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-.hero-scrim{position:absolute;inset:0;z-index:1;background:radial-gradient(120% 90% at 50% 28%,rgba(10,6,3,.25),rgba(8,5,3,.66) 76%),linear-gradient(180deg,rgba(8,5,3,.55),rgba(8,5,3,.22) 42%,rgba(8,5,3,.9))}
+.hero-scrim{position:absolute;inset:0;z-index:1;background:radial-gradient(120% 92% at 50% 30%,rgba(8,5,2,.40),rgba(5,3,1,.80) 78%),linear-gradient(180deg,rgba(6,4,2,.68),rgba(6,4,2,.44) 42%,rgba(6,4,2,.95))}
 .hero-fade{position:absolute;left:0;right:0;bottom:0;height:130px;z-index:1;background:linear-gradient(180deg,transparent,var(--bg))}
 .hero-inner{position:relative;z-index:2;max-width:840px;padding:60px 24px}
 .hero-logo{width:132px;margin:0 auto 18px;filter:drop-shadow(0 16px 32px rgba(0,0,0,.55));animation:float 4s ease-in-out infinite}
@@ -274,6 +274,17 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 /* ============ REVEAL AO ROLAR ============ */
 .sr{opacity:0;transform:translateY(34px);transition:opacity .85s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.22,1,.36,1)}
 .sr-in{opacity:1;transform:none}
+
+/* ============ RODAPÉ HOMOGÊNEO (escuro premium) ============ */
+.store-foot{position:relative;margin-top:22px;background:var(--ink-grad);color:#F3E7CE;padding:46px 26px 30px;border-top:1px solid rgba(216,166,74,.22)}
+.store-foot-inner{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
+.foot-brand{display:flex;align-items:center;gap:14px}
+.foot-brand .script{color:var(--gold);line-height:1}
+.foot-tag{color:rgba(243,231,206,.7);font-size:12.5px;letter-spacing:.3px;margin-top:2px}
+.foot-links{display:flex;gap:10px;flex-wrap:wrap}
+.foot-links a,.foot-links button{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#F3E7CE;padding:10px 16px;border-radius:99px;font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:none;transition:transform .18s,background .18s,border-color .18s;display:inline-flex;align-items:center;gap:6px;font-family:Inter}
+.foot-links a:hover,.foot-links button:hover{background:rgba(216,166,74,.18);border-color:var(--gold);color:#fff;transform:translateY(-2px)}
+.foot-copy{max-width:1000px;margin:26px auto 0;text-align:center;color:rgba(243,231,206,.55);font-size:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:18px}
 
 /* ---- responsivo ---- */
 @media(max-width:1000px){
