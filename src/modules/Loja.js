@@ -2,7 +2,7 @@ import { useState } from "react";
 import { brl, waLink, msgPedido } from "../erp/format";
 import { Modal, Btn } from "../erp/ui";
 import { Brand } from "../erp/Emblem";
-import { hero as heroFoto, ind, med, gra, fresco } from "../erp/assets";
+import { ind, med, gra, fresco } from "../erp/assets";
 
 const FOTOS = { ind, med, gra };
 
@@ -85,8 +85,14 @@ export default function Loja({ erp, onAdmin, full }) {
             💬 Pedir no WhatsApp
           </a>
         </div>
-        <div className="reveal" style={{ maxWidth: 620, margin: "34px auto 0", borderRadius: 18, overflow: "hidden", boxShadow: "var(--shadow)", animationDelay: ".45s" }}>
-          <img src={heroFoto} alt="Pudins da Lauren" style={{ width: "100%", display: "block" }} />
+        <div className="reveal" style={{ maxWidth: 640, margin: "36px auto 0", borderRadius: 24, overflow: "hidden", boxShadow: "var(--shadow)", border: "1px solid var(--line-2)", animationDelay: ".45s" }}>
+          <video
+            src={`${process.env.PUBLIC_URL}/hero.mp4`}
+            poster={`${process.env.PUBLIC_URL}/hero-poster.jpg`}
+            autoPlay muted loop playsInline preload="metadata"
+            aria-label="Pudins da Lauren — vídeo do pudim artesanal"
+            style={{ width: "100%", display: "block", background: "#0b0704" }}
+          />
         </div>
       </div>
 

@@ -92,7 +92,7 @@ export default function App() {
   // ---------- LOJA PÚBLICA (tela principal) ----------
   if (view !== "admin" || !authed) {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
+      <div style={{ minHeight: "100vh", background: "transparent" }}>
         <style>{css}</style>
         <Loja erp={erp} onAdmin={irParaAdmin} full />
         {showLogin && <LoginModal cloud={erp.cloud} onClose={() => setShowLogin(false)} onSuccess={login} />}
