@@ -14,7 +14,7 @@ const agora = () =>
 const hojeISO = () => new Date().toISOString().slice(0, 10);
 
 export default function VendaRapida({ erp }) {
-  const { db, precoVenda, registrarVendaRapida } = erp;
+  const { db, precoVenda, precoLinha, registrarVendaRapida } = erp;
   const [canal, setCanal] = useState("Balcão");
   const [forma, setForma] = useState("PIX");
   const [cart, setCart] = useState({});
@@ -35,7 +35,7 @@ export default function VendaRapida({ erp }) {
   const itens = Object.entries(cart).map(([id, qtd]) => ({ id, qtd }));
   const total = itens.reduce((t, it) => {
     const p = db.produtos.find((x) => x.id === it.id);
-    return t + (p ? precoVenda(p) * it.qtd : 0);
+    return t + precoLinha(p, it.qtd);
   }, 0);
   const totalUn = itens.reduce((t, i) => t + i.qtd, 0);
 
@@ -63,7 +63,7 @@ export default function VendaRapida({ erp }) {
     vendasHoje.forEach((v) => {
       const t = v.itens.reduce((s, it) => {
         const p = db.produtos.find((x) => x.id === it.id);
-        return s + (p ? precoVenda(p) * it.qtd : 0);
+        return s + precoLinha(p, it.qtd);
       }, 0);
       valor += t;
       un += v.itens.reduce((s, i) => s + i.qtd, 0);
@@ -153,7 +153,7 @@ export default function VendaRapida({ erp }) {
         </div>
         {vendasHoje.length === 0 && <Empty>Nenhuma venda rápida ainda. Registre a primeira acima. ⚡</Empty>}
         {vendasHoje.slice(0, 12).map((v) => {
-          const t = v.itens.reduce((s, it) => { const p = db.produtos.find((x) => x.id === it.id); return s + (p ? precoVenda(p) * it.qtd : 0); }, 0);
+          const t = v.itens.reduce((s, it) => { const p = db.produtos.find((x) => x.id === it.id); return s + precoLinha(p, it.qtd); }, 0);
           const canalIc = (CANAIS.find((c) => c[0] === v.canal) || ["", "🧾"])[1];
           return (
             <div className="row" key={v.id}>

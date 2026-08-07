@@ -12,11 +12,13 @@ const INSTA = "https://instagram.com/pudinsdalauren";
 // Vitrine premium da Pudins da Lauren — identidade caramelo/creme.
 // "Feito com amor em cada detalhe". Acesso ao ERP atrás de "Área do dono".
 export default function Loja({ erp, full }) {
-  const { db, precoVenda, pedidoSite } = erp;
+  const { db, precoVenda, precoLinha, pedidoSite } = erp;
   const [cart, setCart] = useState([]);
   const [checkout, setCheckout] = useState(false);
   const add = (p) => setCart((c) => [...c, p]);
-  const total = cart.reduce((t, p) => t + precoVenda(p), 0);
+  // total do carrinho já com o combo aplicado (ex.: 2 individuais por R$ 20)
+  const total = Object.entries(cart.reduce((a, p) => { a[p.id] = (a[p.id] || 0) + 1; return a; }, {}))
+    .reduce((t, [id, qtd]) => t + precoLinha(db.produtos.find((x) => x.id === id), qtd), 0);
 
   // Efeitos de rolagem: elementos ".sr" surgem ao entrar na tela; vídeos de
   // fundo tocam quando visíveis e pausam quando saem (economia). Só visual.

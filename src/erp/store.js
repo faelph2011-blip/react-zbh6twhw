@@ -13,7 +13,21 @@ import { sessaoAtual, aoMudarAuth, entrar, criarConta, sair } from "../cloud/aut
 import { puxarEstado, gravarEstado } from "../cloud/sync";
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
-const LS_KEY = "pudimerp_state_v2";
+const LS_KEY = "pudimerp_state_v3";
+
+// Preço unitário (considera promoção) e preço da LINHA (aplica combo,
+// ex.: "2 por R$ 20" → cada par sai por 20, sobra unitária no preço cheio).
+export const precoUnit = (p) => (p ? (p.promo && p.promo > 0 ? p.promo : p.preco) : 0);
+export const precoLinha = (p, qtd) => {
+  if (!p) return 0;
+  const u = precoUnit(p);
+  if (p.comboQtd && p.comboPreco && qtd >= p.comboQtd) {
+    const pares = Math.floor(qtd / p.comboQtd);
+    const resto = qtd % p.comboQtd;
+    return pares * p.comboPreco + resto * u;
+  }
+  return u * qtd;
+};
 
 function carregar() {
   try {
@@ -170,7 +184,7 @@ export function useERP() {
     (ped) =>
       ped.itens.reduce((t, it) => {
         const p = db.produtos.find((x) => x.id === it.id);
-        return t + (p ? precoVenda(p) * it.qtd : 0);
+        return t + precoLinha(p, it.qtd);
       }, 0),
     [db.produtos]
   );
@@ -186,7 +200,7 @@ export function useERP() {
       d.pedidos.unshift(ped);
       const total = itens.reduce((t, it) => {
         const p = d.produtos.find((x) => x.id === it.id);
-        return t + (p ? (p.promo || p.preco) * it.qtd : 0);
+        return t + precoLinha(p, it.qtd);
       }, 0);
       d.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${id}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos" });
       const cli = d.clientes.find((c) => c.id === clienteId);
@@ -246,7 +260,7 @@ export function useERP() {
       const lanc = d.financeiro.find((l) => l.desc.includes(`#${pedidoId}`) && l.tipo === "receita");
       const total = ped.itens.reduce((t, it) => {
         const p = d.produtos.find((x) => x.id === it.id);
-        return t + (p ? (p.promo || p.preco) * it.qtd : 0);
+        return t + precoLinha(p, it.qtd);
       }, 0);
       if (lanc) lanc.status = "pago";
       const cli = d.clientes.find((c) => c.id === ped.clienteId);
@@ -334,7 +348,7 @@ export function useERP() {
       const id = 7000 + Math.floor(Math.random() * 2999);
       const total = itens.reduce((t, it) => {
         const p = d.produtos.find((x) => x.id === it.id);
-        return t + (p ? (p.promo || p.preco) * it.qtd : 0);
+        return t + precoLinha(p, it.qtd);
       }, 0);
       const hojeISO = new Date().toISOString().slice(0, 10);
       const dia = dataISO || hojeISO;
@@ -379,7 +393,7 @@ export function useERP() {
       const hojeISO = new Date().toISOString().slice(0, 10);
       const total = itens.reduce((t, it) => {
         const p = d.produtos.find((x) => x.id === it.id);
-        return t + (p ? (p.promo || p.preco) * it.qtd : 0);
+        return t + precoLinha(p, it.qtd);
       }, 0);
       d.pedidos.unshift({ id, clienteId: cid, canal: "Site", status: "Novo", pagamento: "Pendente", itens, obs: "", criado: "hoje", data: hojeISO, ts: Date.now() });
       d.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${id}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos", data: hojeISO });
@@ -434,7 +448,12 @@ export function useERP() {
       });
       seed.produtos.forEach((sp) => {
         const p = d.produtos.find((x) => x.id === sp.id);
-        if (p) { p.ficha = sp.ficha.map((f) => ({ ...f })); p.rendimento = sp.rendimento; p.tamanho = sp.tamanho; }
+        if (p) {
+          p.ficha = sp.ficha.map((f) => ({ ...f }));
+          p.rendimento = sp.rendimento; p.tamanho = sp.tamanho; p.nome = sp.nome;
+          p.preco = sp.preco; p.promo = sp.promo;
+          p.combo = sp.combo; p.comboQtd = sp.comboQtd; p.comboPreco = sp.comboPreco;
+        }
       });
       log(d, "Catálogo de custos atualizado — ingredientes, potes, adesivo, gás e delivery");
     });
@@ -444,7 +463,7 @@ export function useERP() {
     // nuvem (login + sincronização)
     cloud,
     // seletores
-    custoProduto, margemProduto, totalPedido, precoVenda,
+    custoProduto, margemProduto, totalPedido, precoVenda, precoLinha,
     // ações
     criarPedido, enviarProducao, avancarOrdem, entregarPedido, cancelarPedido,
     receberCompra, registrarCompra, liquidar, setPagamento, despacharEntrega, registrarVendaRapida,
@@ -461,7 +480,7 @@ export function useKPIs(erp) {
     const aPagar = db.financeiro.filter((l) => l.tipo === "despesa" && l.status === "aberto").reduce((t, l) => t + l.valor, 0);
     const despesasPagas = db.financeiro.filter((l) => l.tipo === "despesa" && l.status === "pago").reduce((t, l) => t + l.valor, 0);
 
-    const receitaBruta = db.pedidos.filter((p) => p.status !== "Cancelado").reduce((t, p) => t + p.itens.reduce((s, it) => { const pr = db.produtos.find((x) => x.id === it.id); return s + (pr ? precoVenda(pr) * it.qtd : 0); }, 0), 0);
+    const receitaBruta = db.pedidos.filter((p) => p.status !== "Cancelado").reduce((t, p) => t + p.itens.reduce((s, it) => { const pr = db.produtos.find((x) => x.id === it.id); return s + precoLinha(pr, it.qtd); }, 0), 0);
     const cmv = db.pedidos.filter((p) => p.status !== "Cancelado").reduce((t, p) => t + p.itens.reduce((s, it) => { const pr = db.produtos.find((x) => x.id === it.id); return s + (pr ? custoProduto(pr) * it.qtd : 0); }, 0), 0);
     const lucroBruto = receitaBruta - cmv;
 

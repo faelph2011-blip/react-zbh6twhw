@@ -70,13 +70,13 @@ export default function Pedidos({ erp }) {
 }
 
 function NovoPedido({ erp, onClose }) {
-  const { db, criarPedido, precoVenda } = erp;
+  const { db, criarPedido, precoVenda, precoLinha } = erp;
   const [cliente, setCliente] = useState(db.clientes[0]?.id || "");
   const [canal, setCanal] = useState("Balcão");
   const [cart, setCart] = useState({});
 
   const add = (id, d) => setCart((c) => { const q = (c[id] || 0) + d; const n = { ...c }; if (q <= 0) delete n[id]; else n[id] = q; return n; });
-  const total = Object.entries(cart).reduce((t, [id, q]) => { const p = db.produtos.find((x) => x.id === id); return t + (p ? precoVenda(p) * q : 0); }, 0);
+  const total = Object.entries(cart).reduce((t, [id, q]) => { const p = db.produtos.find((x) => x.id === id); return t + precoLinha(p, q); }, 0);
   const itens = Object.entries(cart).map(([id, qtd]) => ({ id, qtd }));
 
   return (
