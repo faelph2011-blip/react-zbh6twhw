@@ -199,6 +199,9 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 .promo-banner b{background:var(--grad);color:#1a1206;padding:2px 11px;border-radius:99px}
 .wa-float{position:fixed;right:22px;bottom:22px;background:#1fbe57;color:#fff;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:0 14px 30px -6px rgba(31,190,87,.5);z-index:30;text-decoration:none;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s}
 .wa-float:hover{transform:scale(1.1) translateY(-2px);box-shadow:0 20px 40px -8px rgba(31,190,87,.6)}
+.cart-float{position:fixed;right:22px;bottom:94px;width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;background:var(--grad);color:#1a1206;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 30px -6px rgba(201,112,28,.5);z-index:30;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s}
+.cart-float:hover{transform:scale(1.1) translateY(-2px);box-shadow:0 20px 40px -8px rgba(201,112,28,.6)}
+.cart-float-badge{position:absolute;top:-3px;right:-3px;background:#e23b3b;color:#fff;min-width:22px;height:22px;border-radius:99px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px;border:2px solid var(--bg);font-family:'Space Grotesk'}
 
 /* ============ STOREFRONT (loja premium clara) ============ */
 .store{background:transparent;border-radius:20px;overflow:hidden;border:1px solid var(--line)}

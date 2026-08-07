@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { brl, waLink, msgPedido } from "../erp/format";
-import { Modal, Btn } from "../erp/ui";
+import { Modal, Btn, Wa } from "../erp/ui";
 import { Brand } from "../erp/Emblem";
 import { hero as heroPhoto, ind, med, gra, fresco } from "../erp/assets";
 
@@ -81,7 +81,7 @@ export default function Loja({ erp, full }) {
             <div className="pill">🛒 {cart.length} · {brl(total)}
               <button className="btn mini" style={{ marginLeft: 8 }} onClick={() => setCheckout(true)}>Finalizar</button></div>
           )}
-          <a className="btn mini" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>💬 WhatsApp</a>
+          <a className="btn mini" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}><Wa size={15} /> WhatsApp</a>
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export default function Loja({ erp, full }) {
               Escolher tamanho ↓
             </button>
             <a className="btn glassbtn" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer">
-              💬 Pedir no WhatsApp
+              <Wa size={18} /> Pedir no WhatsApp
             </a>
           </div>
         </div>
@@ -205,13 +205,18 @@ export default function Loja({ erp, full }) {
           </div>
           <div className="foot-links">
             <a href={INSTA} target="_blank" rel="noreferrer">📷 @pudinsdalauren</a>
-            <a href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer">💬 (34) 98443-2000</a>
+            <a href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer"><Wa size={15} /> (34) 98443-2000</a>
           </div>
         </div>
         <div className="foot-copy">Feito com amor em cada detalhe 💛</div>
       </footer>
 
-      <a className="wa-float" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" title="Pedir no WhatsApp">💬</a>
+      {cart.length > 0 && (
+        <button className="cart-float" onClick={() => setCheckout(true)} aria-label="Ver carrinho" title="Ver carrinho">
+          🛒<span className="cart-float-badge">{cart.length}</span>
+        </button>
+      )}
+      <a className="wa-float" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" title="Pedir no WhatsApp"><Wa size={30} /></a>
 
       {checkout && <CheckoutModal total={total} onClose={() => setCheckout(false)} onConfirm={enviarPedido} />}
     </div>
@@ -242,7 +247,7 @@ function CheckoutModal({ total, onClose, onConfirm }) {
           onChange={(e) => { setTel(e.target.value); setErro(""); }} /></div>
       <div className="pill" style={{ marginBottom: 14 }}>Total do pedido: <b>{brl(total)}</b></div>
       {erro && <div style={{ marginBottom: 12 }}><span className="tag t-red">{erro}</span></div>}
-      <Btn onClick={confirmar}>Enviar pedido pelo WhatsApp 💬</Btn>
+      <Btn onClick={confirmar}>Enviar pedido pelo WhatsApp <Wa size={16} /></Btn>
     </Modal>
   );
 }
