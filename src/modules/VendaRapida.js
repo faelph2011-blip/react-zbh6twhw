@@ -101,6 +101,9 @@ export default function VendaRapida({ erp }) {
               <div className="em">{p.emoji}</div>
               <div className="name" style={{ fontSize: 13, marginTop: 4 }}>{p.nome}</div>
               <div style={{ color: "var(--brand)", fontWeight: 700, marginTop: 2 }}>{brl(precoVenda(p))}</div>
+              <div style={{ fontSize: 10.5, marginTop: 3, fontWeight: 600, color: p.estoque > 0 ? "var(--mut)" : "var(--red)" }}>
+                {p.estoque > 0 ? `📦 ${p.estoque} em estoque` : "⚠ sem estoque"}
+              </div>
               {q > 0 && (
                 <button className="qs-minus" onClick={(e) => { e.stopPropagation(); add(p.id, -1); }}>−</button>
               )}

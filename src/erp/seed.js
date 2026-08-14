@@ -9,8 +9,13 @@ export const insumos = [
   { id: "condensado", nome: "Leite condensado", cat: "Laticínio", un: "lata", custo: 6.99, estoque: 40, min: 24, max: 120 },
   { id: "leite", nome: "Leite integral", cat: "Laticínio", un: "L", custo: 5.00, estoque: 48, min: 20, max: 120 },
   { id: "ovos", nome: "Ovos (R$10 a dúzia)", cat: "Ovos", un: "un", custo: 0.83, estoque: 210, min: 120, max: 600 },
-  { id: "acucar", nome: "Açúcar (massa + calda)", cat: "Secos", un: "kg", custo: 4.2, estoque: 30, min: 12, max: 80 },
+  { id: "acucar", nome: "Açúcar (5kg por R$11)", cat: "Secos", un: "kg", custo: 2.20, estoque: 30, min: 12, max: 80 },
   { id: "agua", nome: "Água (calda)", cat: "Outros", un: "L", custo: 0.01, estoque: 500, min: 0, max: 1000 },
+  // Ingredientes dos sabores especiais (Nutella / Morango-Amora)
+  { id: "nutella", nome: "Nutella (pote 700g)", cat: "Sabores", un: "pote", custo: 49.90, estoque: 0, min: 2, max: 12 },
+  { id: "creme_leite", nome: "Creme de leite (caixa 200g)", cat: "Sabores", un: "caixa", custo: 3.00, estoque: 0, min: 6, max: 40 },
+  { id: "morango", nome: "Morango / Amora", cat: "Sabores", un: "kg", custo: 22.00, estoque: 0, min: 1, max: 6 },
+  { id: "leite_ninho", nome: "Leite em pó Ninho", cat: "Sabores", un: "kg", custo: 40.00, estoque: 0, min: 1, max: 5 },
   // Gás modelado como kg de botijão (13kg = R$100 → R$7,69/kg). Consumo por
   // pudim vem da fornada: 1h10 ≈ 0,29kg p/ 16 individuais → 0,0182 kg/individual.
   { id: "gas", nome: "Gás de cozinha (botijão 13kg)", cat: "Produção", un: "kg", custo: 7.69, estoque: 13, min: 3, max: 26 },

@@ -432,6 +432,21 @@ export function useERP() {
       d.feed = ["Base limpa — pronta para os dados reais 🍮"];
     });
 
+  // Produção direta: registra X pudins prontos no estoque, abatendo os
+  // insumos da ficha técnica (mesma lógica do PCP, porém em 1 clique).
+  const produzir = (produtoId, qtd) =>
+    up((d) => {
+      const prod = d.produtos.find((p) => p.id === produtoId);
+      const n = Math.floor(Number(qtd) || 0);
+      if (!prod || n <= 0) return;
+      prod.ficha.forEach((item) => {
+        const ins = d.insumos.find((i) => i.id === item.id);
+        if (ins) ins.estoque = Math.max(0, +(ins.estoque - item.qtd * n).toFixed(3));
+      });
+      prod.estoque += n;
+      log(d, `Produção: +${n}× ${prod.nome} ao estoque pronto · insumos baixados`);
+    });
+
   // Aplica o catálogo de custos do seed (custos reais, gás, insumos novos)
   // sobre os dados atuais, SEM apagar vendas, clientes ou estoque.
   const sincronizarCatalogo = () =>
@@ -459,7 +474,7 @@ export function useERP() {
     });
 
   return {
-    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite,
+    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite, produzir,
     // nuvem (login + sincronização)
     cloud,
     // seletores
