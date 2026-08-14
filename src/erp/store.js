@@ -50,6 +50,37 @@ function carregar() {
   };
 }
 
+// Realinha o catálogo (produtos e insumos) com o código, PRESERVANDO
+// estoque e todas as transações (vendas, clientes, financeiro). É usado
+// tanto no login (automático) quanto no botão "Atualizar custos".
+function aplicarCatalogo(d) {
+  if (!d || !Array.isArray(d.insumos) || !Array.isArray(d.produtos)) return d;
+  seed.insumos.forEach((si) => {
+    const ex = d.insumos.find((i) => i.id === si.id);
+    if (ex) {
+      ex.nome = si.nome; ex.cat = si.cat; ex.un = si.un; ex.custo = si.custo;
+      if (ex.min == null) ex.min = si.min;
+      if (ex.max == null) ex.max = si.max;
+    } else {
+      d.insumos.push({ ...si });
+    }
+  });
+  seed.produtos.forEach((sp) => {
+    const p = d.produtos.find((x) => x.id === sp.id);
+    if (p) {
+      p.ficha = sp.ficha.map((f) => ({ ...f }));
+      p.rendimento = sp.rendimento; p.tamanho = sp.tamanho; p.nome = sp.nome;
+      p.preco = sp.preco; p.promo = sp.promo;
+      p.combo = sp.combo; p.comboQtd = sp.comboQtd; p.comboPreco = sp.comboPreco;
+      p.sabor = sp.sabor; p.porte = sp.porte;
+      p.emoji = sp.emoji; p.grad = sp.grad; p.cat = sp.cat; p.sku = sp.sku;
+    } else {
+      d.produtos.push({ ...clone(sp), estoque: 0 });
+    }
+  });
+  return d;
+}
+
 export function useERP() {
   const [db, setDb] = useState(carregar);
   const [theme, setTheme] = useState(
@@ -102,8 +133,11 @@ export function useERP() {
     const { data, erro } = await puxarEstado();
     if (erro) { setCloudStatus({ syncing: false, lastSync: null, error: erro, ready: true }); return; }
     if (data) {
-      setDb(data);
-      writeLocal(data);
+      // realinha o catálogo do código sobre os dados da nuvem (preserva
+      // estoque e transações) — assim mudanças de produto aparecem sozinhas
+      const rec = aplicarCatalogo(clone(data));
+      setDb(rec);
+      writeLocal(rec);
       setCloudStatus({ syncing: false, lastSync: Date.now(), error: null, ready: true });
     } else {
       const r = await gravarEstado(dbRef.current);
@@ -451,29 +485,8 @@ export function useERP() {
   // sobre os dados atuais, SEM apagar vendas, clientes ou estoque.
   const sincronizarCatalogo = () =>
     up((d) => {
-      seed.insumos.forEach((si) => {
-        const ex = d.insumos.find((i) => i.id === si.id);
-        if (ex) {
-          ex.nome = si.nome; ex.cat = si.cat; ex.un = si.un; ex.custo = si.custo;
-          if (ex.min == null) ex.min = si.min;
-          if (ex.max == null) ex.max = si.max;
-        } else {
-          d.insumos.push({ ...si });
-        }
-      });
-      seed.produtos.forEach((sp) => {
-        const p = d.produtos.find((x) => x.id === sp.id);
-        if (p) {
-          p.ficha = sp.ficha.map((f) => ({ ...f }));
-          p.rendimento = sp.rendimento; p.tamanho = sp.tamanho; p.nome = sp.nome;
-          p.preco = sp.preco; p.promo = sp.promo;
-          p.combo = sp.combo; p.comboQtd = sp.comboQtd; p.comboPreco = sp.comboPreco;
-          p.sabor = sp.sabor; p.porte = sp.porte;
-        } else {
-          d.produtos.push({ ...clone(sp), estoque: 0 });
-        }
-      });
-      log(d, "Catálogo de custos atualizado — ingredientes, potes, adesivo, gás e delivery");
+      aplicarCatalogo(d);
+      log(d, "Catálogo atualizado — produtos, ingredientes e custos realinhados");
     });
 
   return {

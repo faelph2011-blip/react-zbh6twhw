@@ -189,14 +189,12 @@ export default function Loja({ erp, full }) {
           if (!itens.length) return null;
           const rep = itens[0];
           const foto = FOTO_SABOR[sabor];
-          const comboItem = itens.find((p) => p.combo);
           return (
             <div className="flavor sr" key={sabor}>
               <div className="flavor-media" style={{ background: rep.grad }}>
                 {foto
                   ? <img src={foto} alt={sabor} />
                   : <span className="flavor-emoji">{rep.emoji}</span>}
-                {comboItem && <span className="flavor-combo">🎉 {comboItem.combo}</span>}
               </div>
               <div className="flavor-info">
                 <h3>{NOME_SABOR[sabor] || sabor}</h3>
@@ -205,7 +203,7 @@ export default function Loja({ erp, full }) {
                   {itens.map((p) => (
                     <div className="size-opt" key={p.id}>
                       <div className="size-opt-info">
-                        <span className="size-opt-porte">{porteDe(p)}</span>
+                        <span className="size-opt-porte">{porteDe(p)}{p.combo && <span className="combo-inline">🎉 {p.combo}</span>}</span>
                         <span className="mut" style={{ fontSize: 11.5 }}>{p.tamanho} · {p.rendimento > 1 ? `${p.rendimento} porções` : "individual"}</span>
                       </div>
                       <span className="size-opt-price">{brl(precoVenda(p))}</span>

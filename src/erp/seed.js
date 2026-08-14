@@ -33,7 +33,7 @@ export const insumos = [
 // Individual 120g R$12 (combo 2 por R$20) · Médio 300g R$28 · Grande 1kg R$79,90
 export const produtos = [
   {
-    id: "ind", nome: "Pudim Individual", sabor: "Tradicional", porte: "Individual", cat: "Tradicional", sku: "PUD-IND-120",
+    id: "ind", nome: "Tradicional de Leite Condensado - Individual", sabor: "Tradicional", porte: "Individual", cat: "Tradicional", sku: "PUD-IND-120",
     tamanho: "120g", emoji: "🍮", grad: "linear-gradient(135deg,#E0A45C,#F3C583)",
     preco: 12.0, promo: null, combo: "2 por R$ 20", comboQtd: 2, comboPreco: 20, tempo: 70, rendimento: 1, validade: 5, estoque: 30,
     // Base: 1 receita = 9 individuais (400ml leite · 1 lata condensado · 2 xíc. açúcar · 200ml água · 3 ovos)
@@ -44,7 +44,7 @@ export const produtos = [
     ],
   },
   {
-    id: "med", nome: "Pudim Médio", sabor: "Tradicional", porte: "Médio", cat: "Tradicional", sku: "PUD-MED-300",
+    id: "med", nome: "Tradicional de Leite Condensado - Médio", sabor: "Tradicional", porte: "Médio", cat: "Tradicional", sku: "PUD-MED-300",
     tamanho: "300g", emoji: "🍮", grad: "linear-gradient(135deg,#C77B3B,#E0A45C)",
     preco: 28.0, promo: null, tempo: 80, rendimento: 3, validade: 5, estoque: 8,
     // 300g ≈ 2,5× a porção individual
@@ -55,7 +55,7 @@ export const produtos = [
     ],
   },
   {
-    id: "gra", nome: "Pudim Grande", sabor: "Tradicional", porte: "Grande", cat: "Tradicional", sku: "PUD-GRA-1000",
+    id: "gra", nome: "Tradicional de Leite Condensado - Grande", sabor: "Tradicional", porte: "Grande", cat: "Tradicional", sku: "PUD-GRA-1000",
     tamanho: "1kg", emoji: "🍮", grad: "linear-gradient(135deg,#A85616,#C77B3B)",
     preco: 79.90, promo: null, tempo: 95, rendimento: 10, validade: 5, estoque: 4,
     // 1kg ≈ 8,3× a porção individual

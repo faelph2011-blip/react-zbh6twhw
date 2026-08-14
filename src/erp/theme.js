@@ -262,6 +262,7 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 .size-opt-info{flex:1;display:flex;flex-direction:column;min-width:0;gap:1px}
 .size-opt-porte{font-weight:700;font-size:15px}
 .size-opt-price{font-family:'Space Grotesk';font-weight:700;font-size:19px;color:var(--caramel);white-space:nowrap}
+.combo-inline{display:inline-block;margin-left:8px;background:var(--grad);color:#1a1206;font-weight:700;font-size:10.5px;padding:2px 9px;border-radius:99px;vertical-align:middle;white-space:nowrap}
 .size-opt .btn{white-space:nowrap}
 @media(max-width:720px){
   .flavor{flex-direction:column}
