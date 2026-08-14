@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { brl, waLink, msgPedido } from "../erp/format";
 import { Modal, Btn, Wa } from "../erp/ui";
 import { Brand } from "../erp/Emblem";
-import { hero as heroPhoto, ind, med, gra, fresco, ninho } from "../erp/assets";
+import { hero as heroPhoto, ind, med, gra, fresco, ninho, frutas } from "../erp/assets";
 
 // Apresentação do cardápio agrupada por sabor (3 tipos × tamanhos)
 const SABORES = ["Tradicional", "Ninho com Nutella", "Ninho com Frutas Vermelhas"];
@@ -16,7 +16,7 @@ const DESC_SABOR = {
 const NOME_SABOR = {
   "Tradicional": "Tradicional de Leite Condensado",
 };
-const FOTO_SABOR = { "Tradicional": med, "Ninho com Nutella": ninho }; // Frutas Vermelhas ainda sem foto (emoji)
+const FOTO_SABOR = { "Tradicional": med, "Ninho com Nutella": ninho, "Ninho com Frutas Vermelhas": frutas };
 
 // Deduz sabor/porte caso o produto (vindo da nuvem antiga) não tenha as etiquetas
 const PORTE_BY_ID = { ind: "Individual", med: "Médio", gra: "Grande" };

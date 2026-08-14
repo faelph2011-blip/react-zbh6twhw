@@ -117,7 +117,7 @@ export const produtos = [
   {
     id: "frutas_med", nome: "Ninho com Frutas Vermelhas Médio", sabor: "Ninho com Frutas Vermelhas", porte: "Médio", cat: "Especial", sku: "PUD-FRV-300",
     tamanho: "300g", emoji: "🍓", grad: "linear-gradient(135deg,#B23A5B,#E86A86)",
-    preco: 36.0, promo: null, tempo: 80, rendimento: 3, validade: 5, estoque: 0,
+    preco: 38.0, promo: null, tempo: 80, rendimento: 3, validade: 5, estoque: 0,
     ficha: [
       { id: "condensado", qtd: 0.278 }, { id: "leite", qtd: 0.111 }, { id: "ovos", qtd: 0.833 },
       { id: "acucar", qtd: 0.10 }, { id: "agua", qtd: 0.056 }, { id: "gas", qtd: 0.0456 },
@@ -128,7 +128,7 @@ export const produtos = [
   {
     id: "frutas_gra", nome: "Ninho com Frutas Vermelhas Grande", sabor: "Ninho com Frutas Vermelhas", porte: "Grande", cat: "Especial", sku: "PUD-FRV-1000",
     tamanho: "1kg", emoji: "🍓", grad: "linear-gradient(135deg,#B23A5B,#E86A86)",
-    preco: 99.90, promo: null, tempo: 95, rendimento: 10, validade: 5, estoque: 0,
+    preco: 109.90, promo: null, tempo: 95, rendimento: 10, validade: 5, estoque: 0,
     ficha: [
       { id: "condensado", qtd: 0.926 }, { id: "leite", qtd: 0.37 }, { id: "ovos", qtd: 2.78 },
       { id: "acucar", qtd: 0.333 }, { id: "agua", qtd: 0.185 }, { id: "gas", qtd: 0.1512 },
