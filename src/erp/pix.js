@@ -6,7 +6,7 @@ import qrcode from "qrcode-generator";
 export const PIX = {
   chave: "e3c2e1f3-c052-4a0a-b819-7e0042cbf98d", // chave aleatória (EVP)
   nome: "PUDINS DA LAUREN",                       // máx. 25 caracteres, sem acento
-  cidade: "SAO PAULO",                            // máx. 15 caracteres, sem acento
+  cidade: "UBERLANDIA",                           // máx. 15 caracteres, sem acento (Uberlândia-MG)
   titular: "Raphael Marques do Carmo",
   banco: "Nubank (NU Pagamentos)",
 };
