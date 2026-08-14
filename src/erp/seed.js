@@ -65,6 +65,31 @@ export const produtos = [
       { id: "pote_gra", qtd: 1 }, { id: "rotulo", qtd: 1 },
     ],
   },
+  // ---- Sabores especiais (base tradicional + ingredientes do sabor) ----
+  {
+    id: "nutella", nome: "Ninho com Nutella", cat: "Especial", sku: "PUD-NUT-120",
+    tamanho: "120g", emoji: "🍫", grad: "linear-gradient(135deg,#4A2C18,#8A5A34)",
+    preco: 16.0, promo: null, tempo: 70, rendimento: 1, validade: 5, estoque: 0,
+    // base individual + creme de leite (2 caixas/9) + ninho (50g/9) + nutella (200g de 700g /9)
+    ficha: [
+      { id: "condensado", qtd: 0.111 }, { id: "leite", qtd: 0.044 }, { id: "ovos", qtd: 0.333 },
+      { id: "acucar", qtd: 0.04 }, { id: "agua", qtd: 0.022 }, { id: "gas", qtd: 0.0182 },
+      { id: "creme_leite", qtd: 0.2222 }, { id: "leite_ninho", qtd: 0.00556 }, { id: "nutella", qtd: 0.03175 },
+      { id: "pote_ind", qtd: 1 }, { id: "rotulo", qtd: 1 },
+    ],
+  },
+  {
+    id: "frutas", nome: "Ninho com Frutas Vermelhas", cat: "Especial", sku: "PUD-FRV-120",
+    tamanho: "120g", emoji: "🍓", grad: "linear-gradient(135deg,#B23A5B,#E86A86)",
+    preco: 16.0, promo: null, tempo: 70, rendimento: 1, validade: 5, estoque: 0,
+    // base individual + creme de leite + ninho + morango/amora (500g/9)
+    ficha: [
+      { id: "condensado", qtd: 0.111 }, { id: "leite", qtd: 0.044 }, { id: "ovos", qtd: 0.333 },
+      { id: "acucar", qtd: 0.04 }, { id: "agua", qtd: 0.022 }, { id: "gas", qtd: 0.0182 },
+      { id: "creme_leite", qtd: 0.2222 }, { id: "leite_ninho", qtd: 0.00556 }, { id: "morango", qtd: 0.05556 },
+      { id: "pote_ind", qtd: 1 }, { id: "rotulo", qtd: 1 },
+    ],
+  },
 ];
 
 // ---- Clientes (CRM) ----

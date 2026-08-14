@@ -168,8 +168,8 @@ export default function Loja({ erp, full }) {
 
       {/* Cardápio — escolha o seu tamanho (final do site) */}
       <div className="sr" style={{ textAlign: "center", padding: "44px 20px 6px" }}>
-        <div className="script" style={{ fontSize: 36, color: "var(--brown)" }}>Escolha o seu tamanho</div>
-        <div className="mut">Um só sabor, do jeito tradicional. Três tamanhos pra cada momento.</div>
+        <div className="script" style={{ fontSize: 36, color: "var(--brown)" }}>Escolha o seu pudim</div>
+        <div className="mut">Do tradicional aos especiais — tamanhos e sabores pra cada momento.</div>
       </div>
       <div className="store-grid">
         {db.produtos.map((p, i) => (

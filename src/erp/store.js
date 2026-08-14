@@ -13,7 +13,7 @@ import { sessaoAtual, aoMudarAuth, entrar, criarConta, sair } from "../cloud/aut
 import { puxarEstado, gravarEstado } from "../cloud/sync";
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
-const LS_KEY = "pudimerp_state_v3";
+const LS_KEY = "pudimerp_state_v4";
 
 // Preço unitário (considera promoção) e preço da LINHA (aplica combo,
 // ex.: "2 por R$ 20" → cada par sai por 20, sobra unitária no preço cheio).
@@ -468,6 +468,8 @@ export function useERP() {
           p.rendimento = sp.rendimento; p.tamanho = sp.tamanho; p.nome = sp.nome;
           p.preco = sp.preco; p.promo = sp.promo;
           p.combo = sp.combo; p.comboQtd = sp.comboQtd; p.comboPreco = sp.comboPreco;
+        } else {
+          d.produtos.push({ ...clone(sp), estoque: 0 });
         }
       });
       log(d, "Catálogo de custos atualizado — ingredientes, potes, adesivo, gás e delivery");
