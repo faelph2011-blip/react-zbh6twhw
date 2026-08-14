@@ -33,7 +33,7 @@ export const insumos = [
 // Individual 120g R$12 (combo 2 por R$20) · Médio 300g R$28 · Grande 1kg R$79,90
 export const produtos = [
   {
-    id: "ind", nome: "Pudim Individual", cat: "Tradicional", sku: "PUD-IND-120",
+    id: "ind", nome: "Pudim Individual", sabor: "Tradicional", porte: "Individual", cat: "Tradicional", sku: "PUD-IND-120",
     tamanho: "120g", emoji: "🍮", grad: "linear-gradient(135deg,#E0A45C,#F3C583)",
     preco: 12.0, promo: null, combo: "2 por R$ 20", comboQtd: 2, comboPreco: 20, tempo: 70, rendimento: 1, validade: 5, estoque: 30,
     // Base: 1 receita = 9 individuais (400ml leite · 1 lata condensado · 2 xíc. açúcar · 200ml água · 3 ovos)
@@ -44,7 +44,7 @@ export const produtos = [
     ],
   },
   {
-    id: "med", nome: "Pudim Médio", cat: "Tradicional", sku: "PUD-MED-300",
+    id: "med", nome: "Pudim Médio", sabor: "Tradicional", porte: "Médio", cat: "Tradicional", sku: "PUD-MED-300",
     tamanho: "300g", emoji: "🍮", grad: "linear-gradient(135deg,#C77B3B,#E0A45C)",
     preco: 28.0, promo: null, tempo: 80, rendimento: 3, validade: 5, estoque: 8,
     // 300g ≈ 2,5× a porção individual
@@ -55,7 +55,7 @@ export const produtos = [
     ],
   },
   {
-    id: "gra", nome: "Pudim Grande", cat: "Tradicional", sku: "PUD-GRA-1000",
+    id: "gra", nome: "Pudim Grande", sabor: "Tradicional", porte: "Grande", cat: "Tradicional", sku: "PUD-GRA-1000",
     tamanho: "1kg", emoji: "🍮", grad: "linear-gradient(135deg,#A85616,#C77B3B)",
     preco: 79.90, promo: null, tempo: 95, rendimento: 10, validade: 5, estoque: 4,
     // 1kg ≈ 8,3× a porção individual
@@ -67,7 +67,7 @@ export const produtos = [
   },
   // ---- Sabores especiais (base tradicional + ingredientes do sabor) ----
   {
-    id: "nutella", nome: "Ninho com Nutella", cat: "Especial", sku: "PUD-NUT-120",
+    id: "nutella", nome: "Ninho com Nutella", sabor: "Ninho com Nutella", porte: "Individual", cat: "Especial", sku: "PUD-NUT-120",
     tamanho: "120g", emoji: "🍫", grad: "linear-gradient(135deg,#4A2C18,#8A5A34)",
     preco: 16.0, promo: null, tempo: 70, rendimento: 1, validade: 5, estoque: 0,
     // base individual + creme de leite (2 caixas/9) + ninho (50g/9) + nutella (200g de 700g /9)
@@ -79,7 +79,7 @@ export const produtos = [
     ],
   },
   {
-    id: "frutas", nome: "Ninho com Frutas Vermelhas", cat: "Especial", sku: "PUD-FRV-120",
+    id: "frutas", nome: "Ninho com Frutas Vermelhas", sabor: "Ninho com Frutas Vermelhas", porte: "Individual", cat: "Especial", sku: "PUD-FRV-120",
     tamanho: "120g", emoji: "🍓", grad: "linear-gradient(135deg,#B23A5B,#E86A86)",
     preco: 16.0, promo: null, tempo: 70, rendimento: 1, validade: 5, estoque: 0,
     // base individual + creme de leite + ninho + morango/amora (500g/9)
@@ -88,6 +88,52 @@ export const produtos = [
       { id: "acucar", qtd: 0.04 }, { id: "agua", qtd: 0.022 }, { id: "gas", qtd: 0.0182 },
       { id: "creme_leite", qtd: 0.2222 }, { id: "leite_ninho", qtd: 0.00556 }, { id: "morango", qtd: 0.05556 },
       { id: "pote_ind", qtd: 1 }, { id: "rotulo", qtd: 1 },
+    ],
+  },
+  // ---- Ninho com Nutella: Médio e Grande (base tradicional + sabor proporcional) ----
+  {
+    id: "nutella_med", nome: "Ninho com Nutella Médio", sabor: "Ninho com Nutella", porte: "Médio", cat: "Especial", sku: "PUD-NUT-300",
+    tamanho: "300g", emoji: "🍫", grad: "linear-gradient(135deg,#4A2C18,#8A5A34)",
+    preco: 38.0, promo: null, tempo: 80, rendimento: 3, validade: 5, estoque: 0,
+    ficha: [
+      { id: "condensado", qtd: 0.278 }, { id: "leite", qtd: 0.111 }, { id: "ovos", qtd: 0.833 },
+      { id: "acucar", qtd: 0.10 }, { id: "agua", qtd: 0.056 }, { id: "gas", qtd: 0.0456 },
+      { id: "creme_leite", qtd: 0.5565 }, { id: "leite_ninho", qtd: 0.0139 }, { id: "nutella", qtd: 0.0795 },
+      { id: "pote_med", qtd: 1 }, { id: "rotulo", qtd: 1 },
+    ],
+  },
+  {
+    id: "nutella_gra", nome: "Ninho com Nutella Grande", sabor: "Ninho com Nutella", porte: "Grande", cat: "Especial", sku: "PUD-NUT-1000",
+    tamanho: "1kg", emoji: "🍫", grad: "linear-gradient(135deg,#4A2C18,#8A5A34)",
+    preco: 109.90, promo: null, tempo: 95, rendimento: 10, validade: 5, estoque: 0,
+    ficha: [
+      { id: "condensado", qtd: 0.926 }, { id: "leite", qtd: 0.37 }, { id: "ovos", qtd: 2.78 },
+      { id: "acucar", qtd: 0.333 }, { id: "agua", qtd: 0.185 }, { id: "gas", qtd: 0.1512 },
+      { id: "creme_leite", qtd: 1.8537 }, { id: "leite_ninho", qtd: 0.0464 }, { id: "nutella", qtd: 0.2649 },
+      { id: "pote_gra", qtd: 1 }, { id: "rotulo", qtd: 1 },
+    ],
+  },
+  // ---- Ninho com Frutas Vermelhas: Médio e Grande ----
+  {
+    id: "frutas_med", nome: "Ninho com Frutas Vermelhas Médio", sabor: "Ninho com Frutas Vermelhas", porte: "Médio", cat: "Especial", sku: "PUD-FRV-300",
+    tamanho: "300g", emoji: "🍓", grad: "linear-gradient(135deg,#B23A5B,#E86A86)",
+    preco: 36.0, promo: null, tempo: 80, rendimento: 3, validade: 5, estoque: 0,
+    ficha: [
+      { id: "condensado", qtd: 0.278 }, { id: "leite", qtd: 0.111 }, { id: "ovos", qtd: 0.833 },
+      { id: "acucar", qtd: 0.10 }, { id: "agua", qtd: 0.056 }, { id: "gas", qtd: 0.0456 },
+      { id: "creme_leite", qtd: 0.5565 }, { id: "leite_ninho", qtd: 0.0139 }, { id: "morango", qtd: 0.1391 },
+      { id: "pote_med", qtd: 1 }, { id: "rotulo", qtd: 1 },
+    ],
+  },
+  {
+    id: "frutas_gra", nome: "Ninho com Frutas Vermelhas Grande", sabor: "Ninho com Frutas Vermelhas", porte: "Grande", cat: "Especial", sku: "PUD-FRV-1000",
+    tamanho: "1kg", emoji: "🍓", grad: "linear-gradient(135deg,#B23A5B,#E86A86)",
+    preco: 99.90, promo: null, tempo: 95, rendimento: 10, validade: 5, estoque: 0,
+    ficha: [
+      { id: "condensado", qtd: 0.926 }, { id: "leite", qtd: 0.37 }, { id: "ovos", qtd: 2.78 },
+      { id: "acucar", qtd: 0.333 }, { id: "agua", qtd: 0.185 }, { id: "gas", qtd: 0.1512 },
+      { id: "creme_leite", qtd: 1.8537 }, { id: "leite_ninho", qtd: 0.0464 }, { id: "morango", qtd: 0.4635 },
+      { id: "pote_gra", qtd: 1 }, { id: "rotulo", qtd: 1 },
     ],
   },
 ];

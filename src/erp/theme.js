@@ -245,6 +245,32 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .glass{background:var(--glass);backdrop-filter:blur(14px) saturate(1.1);border:1px solid var(--line);border-radius:20px;box-shadow:var(--soft)}
 
+/* ============ CARDÁPIO — blocos por sabor (linear) ============ */
+.cardapio{max-width:1000px;margin:0 auto;padding:12px 22px 46px;display:flex;flex-direction:column;gap:20px}
+.flavor{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:var(--soft);transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
+.flavor:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.flavor-media{position:relative;width:300px;min-height:230px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.flavor-media img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.flavor:hover .flavor-media img{transform:scale(1.06)}
+.flavor-emoji{font-size:88px;line-height:1;filter:drop-shadow(0 12px 22px rgba(0,0,0,.35))}
+.flavor-combo{position:absolute;left:14px;bottom:14px;z-index:1;background:var(--grad);color:#1a1206;font-weight:700;font-size:12px;padding:5px 12px;border-radius:99px;box-shadow:var(--soft)}
+.flavor-info{flex:1;padding:22px 26px;min-width:0}
+.flavor-info h3{font-family:'Space Grotesk',sans-serif;font-size:25px;font-weight:700;letter-spacing:-.6px;margin-bottom:4px}
+.flavor-sizes{display:flex;flex-direction:column}
+.size-opt{display:flex;align-items:center;gap:14px;padding:13px 2px;border-top:1px solid var(--line)}
+.size-opt:first-child{border-top:none}
+.size-opt-info{flex:1;display:flex;flex-direction:column;min-width:0;gap:1px}
+.size-opt-porte{font-weight:700;font-size:15px}
+.size-opt-price{font-family:'Space Grotesk';font-weight:700;font-size:19px;color:var(--caramel);white-space:nowrap}
+.size-opt .btn{white-space:nowrap}
+@media(max-width:720px){
+  .flavor{flex-direction:column}
+  .flavor-media{width:100%;min-height:190px}
+  .flavor-emoji{font-size:74px}
+  .cardapio{padding:10px 16px 36px}
+  .flavor-info{padding:18px 18px}
+}
+
 /* ============ HERO CINEMATOGRÁFICO (vídeo de fundo) ============ */
 .hero--cine{position:relative;min-height:min(88vh,780px);display:flex;align-items:center;justify-content:center;text-align:center;padding:0;overflow:hidden}
 .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}

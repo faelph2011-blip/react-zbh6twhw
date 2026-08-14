@@ -4,7 +4,15 @@ import { Modal, Btn, Wa } from "../erp/ui";
 import { Brand } from "../erp/Emblem";
 import { hero as heroPhoto, ind, med, gra, fresco } from "../erp/assets";
 
-const FOTOS = { ind, med, gra };
+// Apresentação do cardápio agrupada por sabor (3 tipos × tamanhos)
+const SABORES = ["Tradicional", "Ninho com Nutella", "Ninho com Frutas Vermelhas"];
+const PORTE_ORDER = { Individual: 0, "Médio": 1, Grande: 2 };
+const DESC_SABOR = {
+  "Tradicional": "O clássico de leite condensado — cremoso e na medida certa.",
+  "Ninho com Nutella": "Leite Ninho com Nutella — puro afeto em cada colherada.",
+  "Ninho com Frutas Vermelhas": "Leite Ninho com morango e amora — docinho e irresistível.",
+};
+const FOTO_SABOR = { "Tradicional": med }; // novos sabores ainda sem foto (emoji)
 
 const WPP = "5534984432000"; // (34) 98443-2000
 const INSTA = "https://instagram.com/pudinsdalauren";
@@ -64,13 +72,6 @@ export default function Loja({ erp, full }) {
     window.open(url, "_blank", "noopener");
   };
 
-  const tilt = (e) => {
-    const el = e.currentTarget, r = el.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-    el.style.transform = `translateY(-8px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg)`;
-  };
-  const reset = (e) => { e.currentTarget.style.transform = ""; };
-
   return (
     <div className={"store" + (full ? " store--full" : "")}>
       <div className="store-nav">
@@ -104,8 +105,8 @@ export default function Loja({ erp, full }) {
           </p>
           <div className="hero-cta">
             <button className="btn"
-              onClick={() => document.querySelector(".store-grid")?.scrollIntoView({ behavior: "smooth" })}>
-              Escolher tamanho ↓
+              onClick={() => document.querySelector(".cardapio")?.scrollIntoView({ behavior: "smooth" })}>
+              Ver o cardápio ↓
             </button>
             <a className="btn glassbtn" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer">
               <Wa size={18} /> Pedir no WhatsApp
@@ -166,33 +167,47 @@ export default function Loja({ erp, full }) {
         </div>
       </section>
 
-      {/* Cardápio — escolha o seu tamanho (final do site) */}
-      <div className="sr" style={{ textAlign: "center", padding: "44px 20px 6px" }}>
-        <div className="script" style={{ fontSize: 36, color: "var(--brown)" }}>Escolha o seu pudim</div>
-        <div className="mut">Do tradicional aos especiais — tamanhos e sabores pra cada momento.</div>
+      {/* Cardápio — 3 sabores × tamanhos (final do site) */}
+      <div className="sr" style={{ textAlign: "center", padding: "44px 20px 10px" }}>
+        <div className="script" style={{ fontSize: 36, color: "var(--brown)" }}>Nosso cardápio</div>
+        <div className="mut">Três sabores, três tamanhos — escolha o seu momento.</div>
       </div>
-      <div className="store-grid">
-        {db.produtos.map((p, i) => (
-          <div className="pcard sr" key={p.id} style={{ transitionDelay: i * 0.08 + "s" }} onMouseMove={tilt} onMouseLeave={reset}>
-            <div className="img" style={{ background: p.grad, padding: 0 }}>
-              {FOTOS[p.id]
-                ? <img src={FOTOS[p.id]} alt={p.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : p.emoji}
-              <span className="size-badge" style={{ position: "absolute", top: 10, right: 10 }}>{p.tamanho}</span>
-            </div>
-            <div className="body">
-              <h3>{p.nome}</h3>
-              <div className="mut" style={{ fontSize: 11.5, marginBottom: 10 }}>
-                {p.tamanho} · {p.rendimento > 1 ? `${p.rendimento} porções` : "porção individual"}
+      <div className="cardapio">
+        {SABORES.map((sabor) => {
+          const itens = db.produtos
+            .filter((p) => p.sabor === sabor)
+            .sort((a, b) => (PORTE_ORDER[a.porte] ?? 9) - (PORTE_ORDER[b.porte] ?? 9));
+          if (!itens.length) return null;
+          const rep = itens[0];
+          const foto = FOTO_SABOR[sabor];
+          const comboItem = itens.find((p) => p.combo);
+          return (
+            <div className="flavor sr" key={sabor}>
+              <div className="flavor-media" style={{ background: rep.grad }}>
+                {foto
+                  ? <img src={foto} alt={sabor} />
+                  : <span className="flavor-emoji">{rep.emoji}</span>}
+                {comboItem && <span className="flavor-combo">🎉 {comboItem.combo}</span>}
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span className="price">{brl(precoVenda(p))}</span>
-                <button className="btn mini" onClick={() => add(p)}>+ Carrinho</button>
+              <div className="flavor-info">
+                <h3>{sabor}</h3>
+                <p className="mut" style={{ fontSize: 13, marginBottom: 12 }}>{DESC_SABOR[sabor]}</p>
+                <div className="flavor-sizes">
+                  {itens.map((p) => (
+                    <div className="size-opt" key={p.id}>
+                      <div className="size-opt-info">
+                        <span className="size-opt-porte">{p.porte}</span>
+                        <span className="mut" style={{ fontSize: 11.5 }}>{p.tamanho} · {p.rendimento > 1 ? `${p.rendimento} porções` : "individual"}</span>
+                      </div>
+                      <span className="size-opt-price">{brl(precoVenda(p))}</span>
+                      <button className="btn mini" onClick={() => add(p)}>+ Carrinho</button>
+                    </div>
+                  ))}
+                </div>
               </div>
-              {p.combo && <div className="tag t-org" style={{ marginTop: 10 }}>🎉 {p.combo}</div>}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Rodapé homogêneo (escuro premium, combina com o hero) */}

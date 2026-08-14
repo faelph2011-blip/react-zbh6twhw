@@ -13,7 +13,7 @@ import { sessaoAtual, aoMudarAuth, entrar, criarConta, sair } from "../cloud/aut
 import { puxarEstado, gravarEstado } from "../cloud/sync";
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
-const LS_KEY = "pudimerp_state_v4";
+const LS_KEY = "pudimerp_state_v5";
 
 // Preço unitário (considera promoção) e preço da LINHA (aplica combo,
 // ex.: "2 por R$ 20" → cada par sai por 20, sobra unitária no preço cheio).
