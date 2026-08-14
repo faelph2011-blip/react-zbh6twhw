@@ -65,22 +65,25 @@ export default function Loja({ erp, full }) {
     return () => { io.disconnect(); vio.disconnect(); };
   }, []);
 
-  // Cliente preenche os dados → cadastra na base, cria o pedido e envia pro WhatsApp.
+  // Cliente preenche os dados → cadastra na base e cria o pedido.
+  // No PIX o WhatsApp NÃO abre sozinho (senão o app tomaria a tela e esconderia o QR);
+  // ele fica como botão na tela de pagamento. No modo "combinar", abre direto.
   const enviarPedido = (nome, tel, forma) => {
-    if (!cart.length) return;
+    if (!cart.length) return null;
     const itens = Object.values(cart.reduce((acc, p) => {
       acc[p.id] = acc[p.id] || { id: p.id, qtd: 0 };
       acc[p.id].qtd += 1; return acc;
     }, {}));
     pedidoSite({ nome, tel, itens });
     const pag = forma === "pix"
-      ? `💳 Pagamento: PIX — ${brl(total)}`
+      ? `💳 Pagamento: PIX — ${brl(total)} (segue o comprovante 👇)`
       : "💳 Pagamento: combinar no WhatsApp";
     const url = waLink(msgPedido({
       produtos: db.produtos, itens, total, canal: "Site", cliente: nome,
       extra: `📞 ${tel}\n${pag}\nEnviado pela loja online 🌐`,
     }));
-    window.open(url, "_blank", "noopener");
+    if (forma !== "pix") window.open(url, "_blank", "noopener");
+    return url;
   };
 
   const finalizarCheckout = () => { setCart([]); setCheckout(false); };
@@ -256,20 +259,21 @@ function CheckoutModal({ total, onClose, onConfirm, onFinish }) {
   const [nome, setNome] = useState("");
   const [tel, setTel] = useState("");
   const [forma, setForma] = useState("pix");
+  const [waUrl, setWaUrl] = useState("");
   const [erro, setErro] = useState("");
 
   const confirmar = () => {
     if (!nome.trim()) { setErro("Digite seu nome."); return; }
     if (!tel.trim()) { setErro("Digite seu WhatsApp para contato."); return; }
-    onConfirm(nome.trim(), tel.trim(), forma);
-    if (forma === "pix") setStep("pix");
+    const url = onConfirm(nome.trim(), tel.trim(), forma);
+    if (forma === "pix") { setWaUrl(url || ""); setStep("pix"); }
     else onFinish();
   };
 
   if (step === "pix") {
     return (
       <Modal title="💳 Pague com PIX" onClose={onFinish}>
-        <PixPagamento total={total} nome={nome} onDone={onFinish} />
+        <PixPagamento total={total} nome={nome} waUrl={waUrl} onDone={onFinish} />
       </Modal>
     );
   }
@@ -305,7 +309,7 @@ function CheckoutModal({ total, onClose, onConfirm, onFinish }) {
 }
 
 // Tela de pagamento PIX: QR Code + Copia e Cola já com o valor do pedido.
-function PixPagamento({ total, nome, onDone }) {
+function PixPagamento({ total, nome, waUrl, onDone }) {
   const txid = "PDL" + Date.now().toString().slice(-8);
   const payload = pixCopiaCola({ valor: total, txid });
   const qr = pixQrDataUrl(payload, 5);
@@ -330,12 +334,18 @@ function PixPagamento({ total, nome, onDone }) {
       </button>
       <div className="pix-info">
         <div><span>Recebedor</span><b>{PIX.titular}</b></div>
+        <div><span>Cidade</span><b>{PIX.cidade}</b></div>
         <div><span>Instituição</span><b>{PIX.banco}</b></div>
       </div>
-      <p className="mut" style={{ fontSize: 12, marginTop: 10 }}>
-        Depois de pagar, é só mandar o comprovante no nosso WhatsApp para confirmar o pedido. 💬
+      <p className="mut" style={{ fontSize: 12, margin: "12px 0 8px" }}>
+        Depois de pagar, envie o comprovante no nosso WhatsApp para confirmar o pedido. 💬
       </p>
-      <Btn onClick={onDone}>Já paguei / concluir ✅</Btn>
+      {waUrl && (
+        <a className="btn glassbtn pix-wa" href={waUrl} target="_blank" rel="noreferrer">
+          <Wa size={16} /> Enviar comprovante no WhatsApp
+        </a>
+      )}
+      <Btn onClick={onDone}>Concluir ✅</Btn>
     </div>
   );
 }

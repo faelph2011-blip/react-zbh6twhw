@@ -282,6 +282,7 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 .pix-info div{display:flex;justify-content:space-between;gap:10px;font-size:12.5px}
 .pix-info span{color:var(--mut)}
 .pix-info b{color:var(--ink);text-align:right}
+.pix-wa{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-bottom:10px;text-decoration:none}
 @media(max-width:720px){
   .flavor{flex-direction:column}
   .flavor-media{width:100%;min-height:190px}
