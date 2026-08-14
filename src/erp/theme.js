@@ -272,6 +272,8 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 .pay-opt.on{border-color:var(--brand);background:linear-gradient(180deg,rgba(200,112,28,.10),rgba(200,112,28,.02));box-shadow:0 0 0 3px rgba(200,112,28,.12)}
 /* Checkout — pagamento PIX */
 .pix-pay{text-align:center}
+.pix-num{display:inline-block;background:var(--glass);border:1px solid var(--line);border-radius:99px;padding:4px 14px;font-size:12.5px;color:var(--mut);margin-bottom:10px}
+.pix-num b{color:var(--ink)}
 .pix-total{display:flex;flex-direction:column;gap:2px;font-size:12.5px;color:var(--mut);margin-bottom:12px}
 .pix-total b{font-size:26px;color:var(--brand);font-weight:800;letter-spacing:-.5px}
 .pix-qr{display:flex;justify-content:center;margin-bottom:14px}

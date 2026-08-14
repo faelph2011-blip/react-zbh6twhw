@@ -416,22 +416,46 @@ export function useERP() {
 
   // Pedido vindo da loja online: cadastra o cliente E cria o pedido de uma vez
   // (um único passo, para não perder dados entre gravações).
-  const pedidoSite = ({ nome, tel, itens }) =>
+  // Próximo número de pedido (sequência limpa, ex.: 1043, 1044…), persistida em d.seqPedido.
+  // Ignora os números de venda rápida (7000+) para a sequência não pular.
+  const calcNumero = (d) => {
+    const nums = (d.pedidos || [])
+      .map((p) => Number(p.numero != null ? p.numero : p.id))
+      .filter((n) => Number.isFinite(n) && n < 7000);
+    return Math.max(1042, d.seqPedido || 0, ...(nums.length ? nums : [0])) + 1;
+  };
+
+  const pedidoSite = ({ nome, tel, itens, forma }) => {
+    const numero = calcNumero(db);
     up((d) => {
       const cid = uid();
       d.clientes.unshift({
         id: cid, nome: (nome || "").trim() || "Cliente do site", tel: (tel || "").trim(),
         wpp: true, aniv: "—", origem: "Site", cashback: 0, pontos: 0, pedidos: 0, gasto: 0, ultimo: "agora",
       });
-      const id = 1000 + Math.floor(Math.random() * 9000);
+      d.seqPedido = numero;
       const hojeISO = new Date().toISOString().slice(0, 10);
       const total = itens.reduce((t, it) => {
         const p = d.produtos.find((x) => x.id === it.id);
         return t + precoLinha(p, it.qtd);
       }, 0);
-      d.pedidos.unshift({ id, clienteId: cid, canal: "Site", status: "Novo", pagamento: "Pendente", itens, obs: "", criado: "hoje", data: hojeISO, ts: Date.now() });
-      d.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${id}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos", data: hojeISO });
-      log(d, `Pedido #${id} (Site) — ${nome || "cliente"} cadastrado no CRM · recebível lançado`);
+      const pagamento = forma === "pix" ? "Aguardando PIX" : "A combinar";
+      d.pedidos.unshift({ id: numero, numero, clienteId: cid, canal: "Site", status: "Novo", pagamento, forma: forma || null, itens, obs: "", criado: "hoje", data: hojeISO, ts: Date.now() });
+      d.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${numero}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos", data: hojeISO });
+      log(d, `Pedido #${numero} (Site) — ${nome || "cliente"} · ${pagamento} · recebível lançado`);
+    });
+    return numero;
+  };
+
+  // Confirma o pagamento de um pedido (ex.: comprovante do PIX recebido).
+  const marcarPago = (pedidoId) =>
+    up((d) => {
+      const p = d.pedidos.find((x) => x.id === pedidoId);
+      if (!p) return;
+      p.pagamento = "Pago";
+      const fin = d.financeiro.find((f) => f.tipo === "receita" && f.desc && f.desc.includes(`#${pedidoId}`));
+      if (fin) fin.status = "pago";
+      log(d, `Pedido #${pedidoId} — pagamento confirmado ✅`);
     });
 
   // Cadastro de cliente (CRM)
@@ -490,7 +514,7 @@ export function useERP() {
     });
 
   return {
-    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite, produzir,
+    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite, produzir, marcarPago,
     // nuvem (login + sincronização)
     cloud,
     // seletores

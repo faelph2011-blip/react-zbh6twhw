@@ -74,16 +74,16 @@ export default function Loja({ erp, full }) {
       acc[p.id] = acc[p.id] || { id: p.id, qtd: 0 };
       acc[p.id].qtd += 1; return acc;
     }, {}));
-    pedidoSite({ nome, tel, itens });
+    const numero = pedidoSite({ nome, tel, itens, forma });
     const pag = forma === "pix"
       ? `💳 Pagamento: PIX — ${brl(total)} (segue o comprovante 👇)`
       : "💳 Pagamento: combinar no WhatsApp";
     const url = waLink(msgPedido({
-      produtos: db.produtos, itens, total, canal: "Site", cliente: nome,
+      produtos: db.produtos, itens, total, canal: "Site", cliente: nome, numero, precoLinha,
       extra: `📞 ${tel}\n${pag}\nEnviado pela loja online 🌐`,
     }));
     if (forma !== "pix") window.open(url, "_blank", "noopener");
-    return url;
+    return { url, numero };
   };
 
   const finalizarCheckout = () => { setCart([]); setCheckout(false); };
@@ -260,20 +260,21 @@ function CheckoutModal({ total, onClose, onConfirm, onFinish }) {
   const [tel, setTel] = useState("");
   const [forma, setForma] = useState("pix");
   const [waUrl, setWaUrl] = useState("");
+  const [numero, setNumero] = useState(null);
   const [erro, setErro] = useState("");
 
   const confirmar = () => {
     if (!nome.trim()) { setErro("Digite seu nome."); return; }
     if (!tel.trim()) { setErro("Digite seu WhatsApp para contato."); return; }
-    const url = onConfirm(nome.trim(), tel.trim(), forma);
-    if (forma === "pix") { setWaUrl(url || ""); setStep("pix"); }
+    const res = onConfirm(nome.trim(), tel.trim(), forma) || {};
+    if (forma === "pix") { setWaUrl(res.url || ""); setNumero(res.numero || null); setStep("pix"); }
     else onFinish();
   };
 
   if (step === "pix") {
     return (
       <Modal title="💳 Pague com PIX" onClose={onFinish}>
-        <PixPagamento total={total} nome={nome} waUrl={waUrl} onDone={onFinish} />
+        <PixPagamento total={total} nome={nome} numero={numero} waUrl={waUrl} onDone={onFinish} />
       </Modal>
     );
   }
@@ -309,7 +310,7 @@ function CheckoutModal({ total, onClose, onConfirm, onFinish }) {
 }
 
 // Tela de pagamento PIX: QR Code + Copia e Cola já com o valor do pedido.
-function PixPagamento({ total, nome, waUrl, onDone }) {
+function PixPagamento({ total, nome, numero, waUrl, onDone }) {
   const txid = "PDL" + Date.now().toString().slice(-8);
   const payload = pixCopiaCola({ valor: total, txid });
   const qr = pixQrDataUrl(payload, 5);
@@ -324,6 +325,7 @@ function PixPagamento({ total, nome, waUrl, onDone }) {
 
   return (
     <div className="pix-pay">
+      {numero && <div className="pix-num">🧾 Pedido <b>#{numero}</b></div>}
       <p className="mut" style={{ fontSize: 13, marginBottom: 12 }}>
         {nome ? `${nome}, ` : ""}escaneie o QR Code no app do seu banco ou use o <b>PIX Copia e Cola</b>. 🍮
       </p>

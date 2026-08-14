@@ -4,9 +4,11 @@ import { brl, waLink, msgPedido } from "../erp/format";
 
 const STATUS_CLS = { Novo: "t-blu", Produção: "t-org", Pronto: "t-pur", Entregue: "t-grn", Cancelado: "t-red" };
 const CANAL_IC = { Balcão: "🏪", WhatsApp: "💬", Site: "🌐", Delivery: "🛵" };
+// Cor do selo de pagamento por status
+const pagCls = (pg) => (pg === "Pago" ? "t-grn" : pg === "Aguardando PIX" ? "t-org" : pg === "Pendente" ? "t-red" : "t-blu");
 
 export default function Pedidos({ erp }) {
-  const { db, totalPedido, enviarProducao, entregarPedido, cancelarPedido } = erp;
+  const { db, totalPedido, precoLinha, enviarProducao, entregarPedido, cancelarPedido, marcarPago } = erp;
   const [novo, setNovo] = useState(false);
   const [filtro, setFiltro] = useState("Todos");
 
@@ -34,7 +36,7 @@ export default function Pedidos({ erp }) {
           return (
             <Card key={p.id}>
               <div className="hdr" style={{ marginBottom: 8 }}>
-                <div><div className="name">#{p.id} · {CANAL_IC[p.canal]} {p.canal}</div>
+                <div><div className="name">#{p.numero || p.id} · {CANAL_IC[p.canal]} {p.canal}</div>
                   <div className="mut" style={{ fontSize: 12 }}>{cli?.nome} · {p.criado}</div></div>
                 <Tag cls={STATUS_CLS[p.status]}>{p.status}</Tag>
               </div>
@@ -46,16 +48,18 @@ export default function Pedidos({ erp }) {
               <div className="divider" style={{ margin: "10px 0" }} />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span className="num" style={{ fontWeight: 700, fontSize: 16 }}>{brl(totalPedido(p))}</span>
-                <Tag cls={p.pagamento === "Pendente" ? "t-red" : "t-grn"}>{p.pagamento}</Tag>
+                <Tag cls={pagCls(p.pagamento)}>{p.pagamento === "Pago" ? "✅ Pago" : p.pagamento}</Tag>
               </div>
               <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
                 {p.status === "Novo" && <Btn variant="mini" onClick={() => enviarProducao(p.id)}>→ Produção</Btn>}
                 {(p.status === "Pronto" || p.status === "Produção") && <Btn variant="mini" onClick={() => entregarPedido(p.id)}>Entregar</Btn>}
+                {p.pagamento !== "Pago" && p.status !== "Cancelado" && marcarPago &&
+                  <Btn variant="mini" onClick={() => marcarPago(p.id)}>✅ Confirmar pagamento</Btn>}
                 {p.status !== "Entregue" && p.status !== "Cancelado" &&
                   <Btn variant="mini soft" onClick={() => cancelarPedido(p.id)}>Cancelar</Btn>}
                 <a className="btn mini soft" style={{ textDecoration: "none" }} target="_blank" rel="noreferrer"
                   title="Abrir este pedido no WhatsApp"
-                  href={waLink(msgPedido({ produtos: db.produtos, itens: p.itens, total: totalPedido(p), canal: p.canal, cliente: cli?.nome, extra: `#${p.id} · ${p.pagamento}` }))}>
+                  href={waLink(msgPedido({ produtos: db.produtos, itens: p.itens, total: totalPedido(p), canal: p.canal, cliente: cli?.nome, numero: p.numero || p.id, precoLinha, extra: `${p.pagamento}` }))}>
                   📲 WhatsApp
                 </a>
               </div>
