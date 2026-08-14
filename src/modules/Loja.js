@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { brl, waLink, msgPedido } from "../erp/format";
 import { Modal, Btn, Wa } from "../erp/ui";
 import { Brand } from "../erp/Emblem";
+import { pixCopiaCola, pixQrDataUrl, PIX } from "../erp/pix";
 import { hero as heroPhoto, ind, med, gra, fresco, ninho, frutas } from "../erp/assets";
 
 // Apresentação do cardápio agrupada por sabor (3 tipos × tamanhos)
@@ -65,21 +66,24 @@ export default function Loja({ erp, full }) {
   }, []);
 
   // Cliente preenche os dados → cadastra na base, cria o pedido e envia pro WhatsApp.
-  const enviarPedido = (nome, tel) => {
+  const enviarPedido = (nome, tel, forma) => {
     if (!cart.length) return;
     const itens = Object.values(cart.reduce((acc, p) => {
       acc[p.id] = acc[p.id] || { id: p.id, qtd: 0 };
       acc[p.id].qtd += 1; return acc;
     }, {}));
     pedidoSite({ nome, tel, itens });
+    const pag = forma === "pix"
+      ? `💳 Pagamento: PIX — ${brl(total)}`
+      : "💳 Pagamento: combinar no WhatsApp";
     const url = waLink(msgPedido({
       produtos: db.produtos, itens, total, canal: "Site", cliente: nome,
-      extra: `📞 ${tel}\nEnviado pela loja online 🌐`,
+      extra: `📞 ${tel}\n${pag}\nEnviado pela loja online 🌐`,
     }));
-    setCart([]);
-    setCheckout(false);
     window.open(url, "_blank", "noopener");
   };
+
+  const finalizarCheckout = () => { setCart([]); setCheckout(false); };
 
   return (
     <div className={"store" + (full ? " store--full" : "")}>
@@ -242,26 +246,38 @@ export default function Loja({ erp, full }) {
       )}
       <a className="wa-float" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" title="Pedir no WhatsApp"><Wa size={30} /></a>
 
-      {checkout && <CheckoutModal total={total} onClose={() => setCheckout(false)} onConfirm={enviarPedido} />}
+      {checkout && <CheckoutModal total={total} onClose={() => setCheckout(false)} onConfirm={enviarPedido} onFinish={finalizarCheckout} />}
     </div>
   );
 }
 
-function CheckoutModal({ total, onClose, onConfirm }) {
+function CheckoutModal({ total, onClose, onConfirm, onFinish }) {
+  const [step, setStep] = useState("form"); // form → pix
   const [nome, setNome] = useState("");
   const [tel, setTel] = useState("");
+  const [forma, setForma] = useState("pix");
   const [erro, setErro] = useState("");
 
   const confirmar = () => {
     if (!nome.trim()) { setErro("Digite seu nome."); return; }
     if (!tel.trim()) { setErro("Digite seu WhatsApp para contato."); return; }
-    onConfirm(nome.trim(), tel.trim());
+    onConfirm(nome.trim(), tel.trim(), forma);
+    if (forma === "pix") setStep("pix");
+    else onFinish();
   };
+
+  if (step === "pix") {
+    return (
+      <Modal title="💳 Pague com PIX" onClose={onFinish}>
+        <PixPagamento total={total} nome={nome} onDone={onFinish} />
+      </Modal>
+    );
+  }
 
   return (
     <Modal title="🍮 Finalizar pedido" onClose={onClose}>
       <p className="mut" style={{ marginBottom: 14, fontSize: 13 }}>
-        Preencha seus dados — enviamos seu pedido pelo WhatsApp e confirmamos tudo com você. 💬
+        Preencha seus dados — o pedido também é enviado pelo WhatsApp e a gente confirma tudo com você. 💬
       </p>
       <div className="field"><label>Seu nome *</label>
         <input autoFocus value={nome} placeholder="Ex: Maria Silva"
@@ -269,9 +285,57 @@ function CheckoutModal({ total, onClose, onConfirm }) {
       <div className="field"><label>Seu WhatsApp *</label>
         <input value={tel} placeholder="(34) 9 9999-9999"
           onChange={(e) => { setTel(e.target.value); setErro(""); }} /></div>
+
+      <div className="field"><label>Forma de pagamento</label>
+        <div className="pay-opts">
+          <button type="button" className={"pay-opt" + (forma === "pix" ? " on" : "")}
+            onClick={() => setForma("pix")}>⚡ PIX <small>na hora</small></button>
+          <button type="button" className={"pay-opt" + (forma === "whats" ? " on" : "")}
+            onClick={() => setForma("whats")}>💬 Combinar <small>no WhatsApp</small></button>
+        </div>
+      </div>
+
       <div className="pill" style={{ marginBottom: 14 }}>Total do pedido: <b>{brl(total)}</b></div>
       {erro && <div style={{ marginBottom: 12 }}><span className="tag t-red">{erro}</span></div>}
-      <Btn onClick={confirmar}>Enviar pedido pelo WhatsApp <Wa size={16} /></Btn>
+      <Btn onClick={confirmar}>
+        {forma === "pix" ? <>Pagar com PIX ⚡</> : <>Enviar pedido pelo WhatsApp <Wa size={16} /></>}
+      </Btn>
     </Modal>
+  );
+}
+
+// Tela de pagamento PIX: QR Code + Copia e Cola já com o valor do pedido.
+function PixPagamento({ total, nome, onDone }) {
+  const txid = "PDL" + Date.now().toString().slice(-8);
+  const payload = pixCopiaCola({ valor: total, txid });
+  const qr = pixQrDataUrl(payload, 5);
+  const [copiado, setCopiado] = useState(false);
+
+  const copiar = async () => {
+    try { await navigator.clipboard.writeText(payload); }
+    catch { const t = document.createElement("textarea"); t.value = payload; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2500);
+  };
+
+  return (
+    <div className="pix-pay">
+      <p className="mut" style={{ fontSize: 13, marginBottom: 12 }}>
+        {nome ? `${nome}, ` : ""}escaneie o QR Code no app do seu banco ou use o <b>PIX Copia e Cola</b>. 🍮
+      </p>
+      <div className="pix-total">Valor a pagar <b>{brl(total)}</b></div>
+      <div className="pix-qr"><img src={qr} alt="QR Code PIX" /></div>
+      <button type="button" className={"btn pix-copy" + (copiado ? " ok" : "")} onClick={copiar}>
+        {copiado ? "✅ Código copiado!" : "📋 Copiar PIX Copia e Cola"}
+      </button>
+      <div className="pix-info">
+        <div><span>Recebedor</span><b>{PIX.titular}</b></div>
+        <div><span>Instituição</span><b>{PIX.banco}</b></div>
+      </div>
+      <p className="mut" style={{ fontSize: 12, marginTop: 10 }}>
+        Depois de pagar, é só mandar o comprovante no nosso WhatsApp para confirmar o pedido. 💬
+      </p>
+      <Btn onClick={onDone}>Já paguei / concluir ✅</Btn>
+    </div>
   );
 }

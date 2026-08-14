@@ -264,6 +264,24 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 .size-opt-price{font-family:'Space Grotesk';font-weight:700;font-size:19px;color:var(--caramel);white-space:nowrap}
 .combo-inline{display:inline-block;margin-left:8px;background:var(--grad);color:#1a1206;font-weight:700;font-size:10.5px;padding:2px 9px;border-radius:99px;vertical-align:middle;white-space:nowrap}
 .size-opt .btn{white-space:nowrap}
+/* Checkout — forma de pagamento */
+.pay-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pay-opt{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 8px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-weight:700;font-size:14px;cursor:pointer;transition:.2s}
+.pay-opt small{font-weight:500;font-size:11px;color:var(--mut)}
+.pay-opt:hover{border-color:var(--brand)}
+.pay-opt.on{border-color:var(--brand);background:linear-gradient(180deg,rgba(200,112,28,.10),rgba(200,112,28,.02));box-shadow:0 0 0 3px rgba(200,112,28,.12)}
+/* Checkout — pagamento PIX */
+.pix-pay{text-align:center}
+.pix-total{display:flex;flex-direction:column;gap:2px;font-size:12.5px;color:var(--mut);margin-bottom:12px}
+.pix-total b{font-size:26px;color:var(--brand);font-weight:800;letter-spacing:-.5px}
+.pix-qr{display:flex;justify-content:center;margin-bottom:14px}
+.pix-qr img{width:220px;height:220px;image-rendering:pixelated;border:8px solid #fff;border-radius:16px;box-shadow:var(--soft)}
+.pix-copy{width:100%;margin-bottom:14px;background:var(--surface);border:1.5px dashed var(--brand);color:var(--brand);font-weight:700}
+.pix-copy.ok{border-style:solid;background:linear-gradient(180deg,rgba(46,160,90,.12),rgba(46,160,90,.03));border-color:#2ea05a;color:#1f7d43}
+.pix-info{display:flex;flex-direction:column;gap:6px;background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;margin-bottom:4px}
+.pix-info div{display:flex;justify-content:space-between;gap:10px;font-size:12.5px}
+.pix-info span{color:var(--mut)}
+.pix-info b{color:var(--ink);text-align:right}
 @media(max-width:720px){
   .flavor{flex-direction:column}
   .flavor-media{width:100%;min-height:190px}
