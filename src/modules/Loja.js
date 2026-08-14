@@ -12,6 +12,10 @@ const DESC_SABOR = {
   "Ninho com Nutella": "Leite Ninho com Nutella — puro afeto em cada colherada.",
   "Ninho com Frutas Vermelhas": "Leite Ninho com morango e amora — docinho e irresistível.",
 };
+// Título exibido de cada sabor (o "Tradicional" ganha o complemento do sabor)
+const NOME_SABOR = {
+  "Tradicional": "Tradicional de Leite Condensado",
+};
 const FOTO_SABOR = { "Tradicional": med }; // novos sabores ainda sem foto (emoji)
 
 const WPP = "5534984432000"; // (34) 98443-2000
@@ -190,7 +194,7 @@ export default function Loja({ erp, full }) {
                 {comboItem && <span className="flavor-combo">🎉 {comboItem.combo}</span>}
               </div>
               <div className="flavor-info">
-                <h3>{sabor}</h3>
+                <h3>{NOME_SABOR[sabor] || sabor}</h3>
                 <p className="mut" style={{ fontSize: 13, marginBottom: 12 }}>{DESC_SABOR[sabor]}</p>
                 <div className="flavor-sizes">
                   {itens.map((p) => (
