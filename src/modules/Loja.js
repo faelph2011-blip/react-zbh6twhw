@@ -18,6 +18,11 @@ const NOME_SABOR = {
 };
 const FOTO_SABOR = { "Tradicional": med }; // novos sabores ainda sem foto (emoji)
 
+// Deduz sabor/porte caso o produto (vindo da nuvem antiga) não tenha as etiquetas
+const PORTE_BY_ID = { ind: "Individual", med: "Médio", gra: "Grande" };
+const saborDe = (p) => p.sabor || (p.cat === "Tradicional" ? "Tradicional" : p.nome);
+const porteDe = (p) => p.porte || PORTE_BY_ID[p.id] || p.tamanho || "";
+
 const WPP = "5534984432000"; // (34) 98443-2000
 const INSTA = "https://instagram.com/pudinsdalauren";
 
@@ -179,8 +184,8 @@ export default function Loja({ erp, full }) {
       <div className="cardapio">
         {SABORES.map((sabor) => {
           const itens = db.produtos
-            .filter((p) => p.sabor === sabor)
-            .sort((a, b) => (PORTE_ORDER[a.porte] ?? 9) - (PORTE_ORDER[b.porte] ?? 9));
+            .filter((p) => saborDe(p) === sabor)
+            .sort((a, b) => (PORTE_ORDER[porteDe(a)] ?? 9) - (PORTE_ORDER[porteDe(b)] ?? 9));
           if (!itens.length) return null;
           const rep = itens[0];
           const foto = FOTO_SABOR[sabor];
@@ -200,7 +205,7 @@ export default function Loja({ erp, full }) {
                   {itens.map((p) => (
                     <div className="size-opt" key={p.id}>
                       <div className="size-opt-info">
-                        <span className="size-opt-porte">{p.porte}</span>
+                        <span className="size-opt-porte">{porteDe(p)}</span>
                         <span className="mut" style={{ fontSize: 11.5 }}>{p.tamanho} · {p.rendimento > 1 ? `${p.rendimento} porções` : "individual"}</span>
                       </div>
                       <span className="size-opt-price">{brl(precoVenda(p))}</span>

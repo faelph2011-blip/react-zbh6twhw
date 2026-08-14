@@ -468,6 +468,7 @@ export function useERP() {
           p.rendimento = sp.rendimento; p.tamanho = sp.tamanho; p.nome = sp.nome;
           p.preco = sp.preco; p.promo = sp.promo;
           p.combo = sp.combo; p.comboQtd = sp.comboQtd; p.comboPreco = sp.comboPreco;
+          p.sabor = sp.sabor; p.porte = sp.porte;
         } else {
           d.produtos.push({ ...clone(sp), estoque: 0 });
         }
