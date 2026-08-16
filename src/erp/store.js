@@ -11,6 +11,7 @@ import { uid } from "./format";
 import { cloudEnabled } from "../cloud/config";
 import { sessaoAtual, aoMudarAuth, entrar, criarConta, sair } from "../cloud/auth";
 import { puxarEstado, gravarEstado } from "../cloud/sync";
+import { enviarPedidoOnline, puxarPedidosOnline, marcarPedidosProcessados } from "../cloud/pedidos";
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const LS_KEY = "pudimerp_state_v5";
@@ -95,6 +96,7 @@ export function useERP() {
   const dbRef = useRef(db);
   const loggedInRef = useRef(false);
   const pushTimer = useRef(null);
+  const absorbRef = useRef(null);
   useEffect(() => { dbRef.current = db; }, [db]);
 
   const writeLocal = useCallback((next) => {
@@ -137,8 +139,11 @@ export function useERP() {
       // estoque e transações) — assim mudanças de produto aparecem sozinhas
       const rec = aplicarCatalogo(clone(data));
       setDb(rec);
+      dbRef.current = rec;
       writeLocal(rec);
       setCloudStatus({ syncing: false, lastSync: Date.now(), error: null, ready: true });
+      // absorve pedidos feitos na loja online que ainda não entraram no ERP
+      if (absorbRef.current) absorbRef.current().catch(() => {});
     } else {
       const r = await gravarEstado(dbRef.current);
       setCloudStatus({ syncing: false, lastSync: r.ok ? Date.now() : null, error: r.ok ? null : r.erro, ready: true });
@@ -152,6 +157,16 @@ export function useERP() {
     const unsub = aoMudarAuth((s) => { if (!cancel) aplicarSessao(s); });
     return () => { cancel = true; unsub(); };
   }, [aplicarSessao]);
+
+  // Enquanto o dono está logado, verifica novos pedidos da loja a cada 40s.
+  const logadoAgora = !!(session && session.user && session.user.id);
+  useEffect(() => {
+    if (!cloudEnabled || !logadoAgora) return;
+    const t = setInterval(() => { if (absorbRef.current) absorbRef.current().catch(() => {}); }, 40000);
+    const onFocus = () => { if (absorbRef.current) absorbRef.current().catch(() => {}); };
+    window.addEventListener("focus", onFocus);
+    return () => { clearInterval(t); window.removeEventListener("focus", onFocus); };
+  }, [logadoAgora]);
 
   const cloud = {
     enabled: cloudEnabled,
@@ -427,6 +442,8 @@ export function useERP() {
 
   const pedidoSite = ({ nome, tel, itens, forma }) => {
     const numero = calcNumero(db);
+    const hojeISO = new Date().toISOString().slice(0, 10);
+    const ts = Date.now();
     up((d) => {
       const cid = uid();
       d.clientes.unshift({
@@ -434,18 +451,63 @@ export function useERP() {
         wpp: true, aniv: "—", origem: "Site", cashback: 0, pontos: 0, pedidos: 0, gasto: 0, ultimo: "agora",
       });
       d.seqPedido = numero;
-      const hojeISO = new Date().toISOString().slice(0, 10);
       const total = itens.reduce((t, it) => {
         const p = d.produtos.find((x) => x.id === it.id);
         return t + precoLinha(p, it.qtd);
       }, 0);
       const pagamento = forma === "pix" ? "Aguardando PIX" : "A combinar";
-      d.pedidos.unshift({ id: numero, numero, clienteId: cid, canal: "Site", status: "Novo", pagamento, forma: forma || null, itens, obs: "", criado: "hoje", data: hojeISO, ts: Date.now() });
+      d.pedidos.unshift({ id: numero, numero, clienteId: cid, canal: "Site", status: "Novo", pagamento, forma: forma || null, itens, obs: "", criado: "hoje", data: hojeISO, ts });
       d.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${numero}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos", data: hojeISO });
       log(d, `Pedido #${numero} (Site) — ${nome || "cliente"} · ${pagamento} · recebível lançado`);
     });
+    // Envia o pedido para a nuvem (fila) para aparecer no painel do dono.
+    // Segue mesmo se o dono não estiver logado — é o visitante inserindo.
+    enviarPedidoOnline({ numero, nome, tel, itens, forma: forma || null, criadoISO: hojeISO, ts })
+      .catch(() => {});
     return numero;
   };
+
+  // Painel do dono: puxa os pedidos feitos na loja online e os absorve no
+  // ERP (cria cliente, pedido e recebível), gravando na nuvem compartilhada.
+  const absorverPedidosOnline = async () => {
+    if (!cloudEnabled || !loggedInRef.current) return 0;
+    const { data } = await puxarPedidosOnline();
+    if (!data || !data.length) return 0;
+    const next = clone(dbRef.current);
+    const idsOk = [];
+    data.forEach((row) => {
+      if (next.pedidos.some((p) => p.onlineId === row.id)) { idsOk.push(row.id); return; }
+      const pl = row.payload || {};
+      const cid = uid();
+      next.clientes.unshift({
+        id: cid, nome: (pl.nome || "").trim() || "Cliente do site", tel: (pl.tel || "").trim(),
+        wpp: true, aniv: "—", origem: "Site", cashback: 0, pontos: 0, pedidos: 0, gasto: 0, ultimo: "agora",
+      });
+      let numero = Number(pl.numero) || calcNumero(next);
+      if (next.pedidos.some((p) => (p.numero || p.id) === numero)) numero = calcNumero(next);
+      next.seqPedido = Math.max(next.seqPedido || 0, numero);
+      const itens = Array.isArray(pl.itens) ? pl.itens : [];
+      const total = itens.reduce((t, it) => {
+        const p = next.produtos.find((x) => x.id === it.id);
+        return t + precoLinha(p, it.qtd);
+      }, 0);
+      const pagamento = pl.forma === "pix" ? "Aguardando PIX" : "A combinar";
+      const dia = pl.criadoISO || new Date().toISOString().slice(0, 10);
+      next.pedidos.unshift({ id: numero, numero, onlineId: row.id, clienteId: cid, canal: "Site", status: "Novo", pagamento, forma: pl.forma || null, itens, obs: "", criado: "loja online", data: dia, ts: pl.ts || Date.now() });
+      next.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${numero}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos", data: dia });
+      log(next, `🌐 Pedido online #${numero} recebido — ${pl.nome || "cliente"} · ${pagamento}`);
+      idsOk.push(row.id);
+    });
+    setDb(next);
+    writeLocal(next);
+    const r = await gravarEstado(next);
+    if (r.ok) {
+      setCloudStatus((s) => ({ ...s, lastSync: Date.now(), error: null }));
+      await marcarPedidosProcessados(idsOk);
+    }
+    return idsOk.length;
+  };
+  absorbRef.current = absorverPedidosOnline;
 
   // Confirma o pagamento de um pedido (ex.: comprovante do PIX recebido).
   const marcarPago = (pedidoId) =>
@@ -515,6 +577,7 @@ export function useERP() {
 
   return {
     db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite, produzir, marcarPago,
+    buscarPedidosOnline: absorverPedidosOnline,
     // nuvem (login + sincronização)
     cloud,
     // seletores

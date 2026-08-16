@@ -36,3 +36,42 @@ create policy "loja_update"
   on public.loja_state for update
   using (auth.uid() is not null)
   with check (auth.uid() is not null);
+
+-- ============================================================
+-- FILA DE PEDIDOS DA LOJA ONLINE (pedidos_online)
+-- ------------------------------------------------------------
+-- O cliente da loja NÃO está logado, então ele não pode gravar no
+-- estado compartilhado. Para o pedido chegar no painel, ele apenas
+-- INSERE uma linha aqui. O painel do dono (logado) lê, absorve no ERP
+-- e marca como processado.
+-- ============================================================
+create table if not exists public.pedidos_online (
+  id         uuid        primary key default gen_random_uuid(),
+  criado_at  timestamptz not null default now(),
+  payload    jsonb       not null,
+  processado boolean     not null default false
+);
+
+alter table public.pedidos_online enable row level security;
+
+-- Qualquer visitante pode CRIAR um pedido (apenas inserir).
+drop policy if exists "pedido_online_insert" on public.pedidos_online;
+create policy "pedido_online_insert"
+  on public.pedidos_online for insert
+  to anon, authenticated
+  with check (true);
+
+-- Só admin logado LÊ os pedidos.
+drop policy if exists "pedido_online_select" on public.pedidos_online;
+create policy "pedido_online_select"
+  on public.pedidos_online for select
+  to authenticated
+  using (true);
+
+-- Só admin logado MARCA como processado.
+drop policy if exists "pedido_online_update" on public.pedidos_online;
+create policy "pedido_online_update"
+  on public.pedidos_online for update
+  to authenticated
+  using (true)
+  with check (true);
