@@ -373,6 +373,39 @@ export function useERP() {
       if (l) { l.status = "pago"; log(d, `Baixa financeira — ${l.desc} · ${l.tipo}`); }
     });
 
+  // Lançamento financeiro manual (despesa como aluguel/luz/gás, ou receita avulsa).
+  const lancarFinanceiro = ({ tipo, cat, desc, valor, venc, status, data }) =>
+    up((d) => {
+      const hojeISO = new Date().toISOString().slice(0, 10);
+      const t = tipo === "receita" ? "receita" : "despesa";
+      d.financeiro.unshift({
+        id: uid(),
+        tipo: t,
+        cat: (cat || "").trim() || (t === "receita" ? "Outras receitas" : "Despesa"),
+        desc: (desc || "").trim() || "Lançamento manual",
+        valor: Math.max(0, Number(valor) || 0),
+        status: status === "pago" ? "pago" : "aberto",
+        venc: (venc || "").trim() || "hoje",
+        origem: "Manual",
+        data: data || hojeISO,
+      });
+      log(d, `Lançamento manual — ${t} · R$ ${(Number(valor) || 0).toFixed(2)} · ${(desc || "").trim() || "sem descrição"}`);
+    });
+
+  // Remove um lançamento (usado apenas para lançamentos manuais na UI).
+  const excluirLancamento = (id) =>
+    up((d) => {
+      const i = d.financeiro.findIndex((x) => x.id === id);
+      if (i >= 0) { const [rm] = d.financeiro.splice(i, 1); log(d, `Lançamento removido — ${rm.desc}`); }
+    });
+
+  // Define o saldo inicial do caixa (o dinheiro que já existe hoje).
+  const definirSaldoInicial = (valor) =>
+    up((d) => {
+      d.saldoInicial = Math.max(0, Number(valor) || 0);
+      log(d, `Saldo inicial de caixa definido — R$ ${(Number(valor) || 0).toFixed(2)}`);
+    });
+
   const setPagamento = (pedidoId, forma) =>
     up((d) => {
       const p = d.pedidos.find((x) => x.id === pedidoId);
@@ -584,7 +617,7 @@ export function useERP() {
     custoProduto, margemProduto, totalPedido, precoVenda, precoLinha,
     // ações
     criarPedido, enviarProducao, avancarOrdem, entregarPedido, cancelarPedido,
-    receberCompra, registrarCompra, liquidar, setPagamento, despacharEntrega, registrarVendaRapida,
+    receberCompra, registrarCompra, liquidar, lancarFinanceiro, excluirLancamento, definirSaldoInicial, setPagamento, despacharEntrega, registrarVendaRapida,
   };
 }
 
@@ -620,9 +653,10 @@ export function useKPIs(erp) {
 
     const porStatus = (s) => db.pedidos.filter((p) => p.status === s).length;
 
+    const saldoInicial = Number(db.saldoInicial) || 0;
     return {
-      receitaPaga, aReceber, aPagar, despesasPagas,
-      caixa: receitaPaga - despesasPagas,
+      receitaPaga, aReceber, aPagar, despesasPagas, saldoInicial,
+      caixa: saldoInicial + receitaPaga - despesasPagas,
       receitaBruta, cmv, lucroBruto, lucroLiquido: lucroBruto - despesasPagas,
       vendidos, produzidos, ticket, recorrentes, margemMedia,
       topProdutos, alertasInsumo, alertasProduto,
