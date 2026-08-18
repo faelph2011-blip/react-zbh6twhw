@@ -12,6 +12,7 @@ import { cloudEnabled } from "../cloud/config";
 import { sessaoAtual, aoMudarAuth, entrar, criarConta, sair } from "../cloud/auth";
 import { puxarEstado, gravarEstado } from "../cloud/sync";
 import { enviarPedidoOnline, puxarPedidosOnline, marcarPedidosProcessados } from "../cloud/pedidos";
+import { planejar as planejarImport } from "./importador";
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const LS_KEY = "pudimerp_state_v5";
@@ -230,11 +231,13 @@ export function useERP() {
   );
 
   const totalPedido = useCallback(
-    (ped) =>
-      ped.itens.reduce((t, it) => {
+    (ped) => {
+      if (ped.total != null) return ped.total; // pedido importado com valor fechado (ex.: desconto do histórico)
+      return ped.itens.reduce((t, it) => {
         const p = db.produtos.find((x) => x.id === it.id);
         return t + precoLinha(p, it.qtd);
-      }, 0),
+      }, 0);
+    },
     [db.produtos]
   );
 
@@ -405,6 +408,65 @@ export function useERP() {
       d.saldoInicial = Math.max(0, Number(valor) || 0);
       log(d, `Saldo inicial de caixa definido — R$ ${(Number(valor) || 0).toFixed(2)}`);
     });
+
+  // Prévia da importação (não grava) — usada pela tela de Importação.
+  const previewImportacao = (linhas, opts) => planejarImport(linhas, dbRef.current, opts);
+
+  // Importa o histórico: clientes, vendas (com desconto por qtd) e o consumo de
+  // insumos (backflush) — lançando a compra de produção. Opcionalmente zera os
+  // dados de teste antes.
+  const importarHistorico = (linhas, opts = {}) => {
+    const plano = planejarImport(linhas, dbRef.current, opts);
+    up((d) => {
+      if (opts.zerar) {
+        d.pedidos = []; d.clientes = []; d.financeiro = []; d.ordens = [];
+        d.produtos.forEach((p) => { p.estoque = 0; });
+        d.insumos.forEach((i) => { i.estoque = 0; });
+        d.seqPedido = 1042;
+      }
+      const nomeById = {};
+      const idmap = {};
+      plano.clientes.forEach((c) => {
+        nomeById[c.id] = c.nome;
+        const novo = {
+          id: uid(), nome: c.nome, tel: (c.tel || "").toString(), wpp: !!c.tel,
+          aniv: "—", origem: "Histórico", cashback: 0, pontos: 0,
+          pedidos: c.pedidos, gasto: Math.round(c.gasto * 100) / 100, ultimo: "—",
+        };
+        idmap[c.id] = novo.id;
+        d.clientes.unshift(novo);
+      });
+      // pedidos + recebíveis (do mais antigo para o mais novo → números crescentes)
+      plano.pedidos.slice().reverse().forEach((pe) => {
+        const numero = calcNumero(d); d.seqPedido = numero;
+        const pago = pe.statusPag === "pago";
+        d.pedidos.unshift({
+          id: numero, numero, clienteId: idmap[pe.clienteId] || null, canal: pe.canal,
+          status: "Entregue", pagamento: pago ? "Pago" : "Pendente", forma: pe.forma,
+          itens: pe.itens, total: pe.total, obs: "", criado: "histórico", data: pe.data,
+          ts: new Date(pe.data + "T12:00:00").getTime(), importado: true,
+        });
+        d.financeiro.unshift({
+          id: uid(), tipo: "receita", cat: "Vendas",
+          desc: `Pedido #${numero} — ${nomeById[pe.clienteId] || "cliente"}`,
+          valor: pe.total, status: pago ? "pago" : "aberto", venc: pe.data, data: pe.data, origem: "Importação",
+        });
+      });
+      // "compra para produção" das vendas (custo dos insumos consumidos)
+      const custo = plano.resumo.custoInsumos;
+      const dia0 = plano.resumo.periodo ? plano.resumo.periodo[0] : new Date().toISOString().slice(0, 10);
+      if (custo > 0) {
+        d.financeiro.unshift({
+          id: uid(), tipo: "despesa", cat: "Matéria-prima",
+          desc: "Compra de insumos p/ produção (histórico importado)",
+          valor: Math.round(custo * 100) / 100, status: "pago", venc: dia0, data: dia0, origem: "Compras",
+        });
+      }
+      const r = plano.resumo;
+      log(d, `🗂️ Histórico importado — ${r.nPedidos} pedidos · ${r.nItens} itens · faturamento R$ ${r.faturamento.toFixed(2)} · insumos R$ ${r.custoInsumos.toFixed(2)}`);
+    });
+    return plano.resumo;
+  };
 
   const setPagamento = (pedidoId, forma) =>
     up((d) => {
@@ -610,7 +672,7 @@ export function useERP() {
 
   return {
     db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite, produzir, marcarPago,
-    buscarPedidosOnline: absorverPedidosOnline,
+    buscarPedidosOnline: absorverPedidosOnline, previewImportacao, importarHistorico,
     // nuvem (login + sincronização)
     cloud,
     // seletores

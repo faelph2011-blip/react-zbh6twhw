@@ -264,6 +264,9 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 .size-opt-price{font-family:'Space Grotesk';font-weight:700;font-size:19px;color:var(--caramel);white-space:nowrap}
 .combo-inline{display:inline-block;margin-left:8px;background:var(--grad);color:#1a1206;font-weight:700;font-size:10.5px;padding:2px 9px;border-radius:99px;vertical-align:middle;white-space:nowrap}
 .size-opt .btn{white-space:nowrap}
+/* Checkbox com rótulo (opções de importação) */
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font-size:13px;color:var(--txt);cursor:pointer}
+.chk input{width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--brand);cursor:pointer}
 /* Botão de excluir lançamento */
 .lixo{background:transparent;border:none;color:var(--mut);cursor:pointer;font-size:13px;padding:4px 6px;border-radius:8px;line-height:1;transition:.15s}
 .lixo:hover{background:rgba(200,60,40,.12);color:var(--red)}

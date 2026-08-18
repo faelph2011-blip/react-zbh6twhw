@@ -19,6 +19,7 @@ import Engenharia from "./modules/Engenharia";
 import Producao from "./modules/Producao";
 import Estoque from "./modules/Estoque";
 import Compras from "./modules/Compras";
+import Importar from "./modules/Importar";
 import Financeiro from "./modules/Financeiro";
 import CRM from "./modules/CRM";
 import Pedidos from "./modules/Pedidos";
@@ -37,6 +38,7 @@ const NAV = [
     ["dash", "Dashboard", "📊"],
     ["estoque", "Estoque", "📦"],
     ["compras", "Compras", "🛒"],
+    ["importar", "Importar histórico", "🗂️"],
   ]],
   ["Catálogo", [
     ["produtos", "Produtos", "🍮"],
@@ -123,6 +125,7 @@ export default function App() {
     dash: <Dashboard {...props} />,
     estoque: <Estoque {...props} />,
     compras: <Compras {...props} />,
+    importar: <Importar {...props} />,
     produtos: <Produtos {...props} />,
     engenharia: <Engenharia {...props} />,
     crm: <CRM {...props} />,

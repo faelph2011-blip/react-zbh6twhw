@@ -136,6 +136,17 @@ export const produtos = [
       { id: "pote_gra", qtd: 1 }, { id: "rotulo", qtd: 1 },
     ],
   },
+  // ---- Degustação (amostra grátis) — abate insumos do estoque, sem receita ----
+  {
+    id: "degustacao", nome: "Pudim Degustação (amostra)", sabor: "Degustação", porte: "Amostra", cat: "Degustação", sku: "PUD-DEG-000",
+    tamanho: "~40g", emoji: "🥄", grad: "linear-gradient(135deg,#B8A48A,#D9C7AC)",
+    preco: 0, promo: null, tempo: 40, rendimento: 1, validade: 3, estoque: 0,
+    // ~1/3 da porção individual, sem pote/rótulo (copinho de amostra)
+    ficha: [
+      { id: "condensado", qtd: 0.037 }, { id: "leite", qtd: 0.015 }, { id: "ovos", qtd: 0.111 },
+      { id: "acucar", qtd: 0.013 }, { id: "agua", qtd: 0.007 }, { id: "gas", qtd: 0.006 },
+    ],
+  },
 ];
 
 // ---- Clientes (CRM) ----
