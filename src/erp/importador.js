@@ -58,7 +58,8 @@ export function parseCSV(texto) {
 
 // Converte uma data da planilha (yyyy-mm-dd ou dd/mm/aaaa) em ISO yyyy-mm-dd.
 function dataISO(v) {
-  const s = (v || "").toString().trim();
+  if (v instanceof Date && !isNaN(v)) return v.toISOString().slice(0, 10);
+  const s = (v == null ? "" : v).toString().trim();
   if (!s) return null;
   let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (m) return `${m[1]}-${m[2]}-${m[3]}`;
@@ -96,32 +97,39 @@ function mapaColunas(header) {
   };
 }
 
-// Linhas da planilha → objetos padronizados.
-export function linhasDeCSV(texto) {
-  const linhas = parseCSV(texto);
+// Matriz (linhas × colunas) → objetos padronizados. Serve p/ CSV e Excel.
+export function linhasDeMatriz(linhas) {
+  if (!Array.isArray(linhas) || !linhas.length) return [];
   // acha a linha de cabeçalho (a que tem "PRODUTO")
-  let hi = linhas.findIndex((l) => l.some((c) => norm(c).includes("PRODUTO")));
+  let hi = linhas.findIndex((l) => Array.isArray(l) && l.some((c) => norm(c).includes("PRODUTO")));
   if (hi < 0) hi = 0;
   const col = mapaColunas(linhas[hi]);
-  const val = (row, i) => (i >= 0 && i < row.length ? row[i] : "");
+  const val = (row, i) => (i >= 0 && i < row.length && row[i] != null ? row[i] : "");
+  const txt = (row, i) => val(row, i).toString().trim();
   const out = [];
   for (let r = hi + 1; r < linhas.length; r++) {
     const row = linhas[r];
-    const prod = val(row, col.prod);
+    if (!Array.isArray(row)) continue;
+    const prod = txt(row, col.prod);
     const data = dataISO(val(row, col.data));
     if (!prod || !data) continue;
     if (norm(prod) === "PRODUTO") continue;
     out.push({
       data,
-      nome: val(row, col.nome),
-      tel: val(row, col.tel),
+      nome: txt(row, col.nome),
+      tel: txt(row, col.tel),
       nsc: val(row, col.nsc),
-      pag: val(row, col.pag),
-      meio: val(row, col.meio),
+      pag: txt(row, col.pag),
+      meio: txt(row, col.meio),
       prod,
     });
   }
   return out;
+}
+
+// Linhas de um CSV → objetos padronizados.
+export function linhasDeCSV(texto) {
+  return linhasDeMatriz(parseCSV(texto));
 }
 
 function pagamentoInfo(pag) {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, Btn, Tag } from "../erp/ui";
 import { brl, num } from "../erp/format";
-import { linhasDeCSV } from "../erp/importador";
+import { linhasDeCSV, linhasDeMatriz } from "../erp/importador";
 
 export default function Importar({ erp }) {
   const { previewImportacao, importarHistorico } = erp;
@@ -12,17 +12,33 @@ export default function Importar({ erp }) {
   const [erro, setErro] = useState("");
   const [feito, setFeito] = useState(null);
 
+  const receber = (ls, file) => {
+    if (!ls.length) { setErro("Não encontrei linhas de venda no arquivo. Confira se as colunas têm DATA VENDA e PRODUTO."); setLinhas(null); return; }
+    setLinhas(ls); setNomeArq(file.name); setErro("");
+  };
+
   const abrir = (file) => {
     setErro(""); setFeito(null);
+    const ext = (file.name.split(".").pop() || "").toLowerCase();
     const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const ls = linhasDeCSV(String(reader.result));
-        if (!ls.length) { setErro("Não encontrei linhas de venda no arquivo. Confira se é o CSV certo."); setLinhas(null); return; }
-        setLinhas(ls); setNomeArq(file.name);
-      } catch (e) { setErro("Erro ao ler o arquivo: " + e.message); }
-    };
-    reader.readAsText(file, "utf-8");
+    if (ext === "xlsx" || ext === "xls") {
+      reader.onload = async () => {
+        try {
+          const XLSX = await import("xlsx");
+          const wb = XLSX.read(reader.result, { type: "array", cellDates: true });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: "" });
+          receber(linhasDeMatriz(aoa), file);
+        } catch (e) { setErro("Erro ao ler o Excel: " + e.message); }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.onload = () => {
+        try { receber(linhasDeCSV(String(reader.result)), file); }
+        catch (e) { setErro("Erro ao ler o arquivo: " + e.message); }
+      };
+      reader.readAsText(file, "utf-8");
+    }
   };
 
   const resumo = linhas ? previewImportacao(linhas, { agruparGenericos: agrupar }).resumo : null;
@@ -57,11 +73,11 @@ export default function Importar({ erp }) {
       )}
 
       <Card style={{ marginBottom: 14 }}>
-        <h2>1. Escolha o arquivo (.csv)</h2>
+        <h2>1. Escolha o arquivo (Excel .xlsx ou .csv)</h2>
         <p className="mut" style={{ fontSize: 12.5, marginBottom: 10 }}>
           Colunas esperadas: DATA VENDA · NOME · TELEFONE · DATA NSC · PAGAMENTO · MEIO DE VENDA · PRODUTO.
         </p>
-        <input type="file" accept=".csv,text/csv" onChange={(e) => e.target.files[0] && abrir(e.target.files[0])} />
+        <input type="file" accept=".xlsx,.xls,.csv,text/csv" onChange={(e) => e.target.files[0] && abrir(e.target.files[0])} />
         {nomeArq && <div className="mut" style={{ fontSize: 12, marginTop: 8 }}>📄 {nomeArq} — {linhas ? linhas.length : 0} linhas</div>}
         {erro && <div style={{ marginTop: 10 }}><span className="tag t-red">{erro}</span></div>}
       </Card>
