@@ -615,6 +615,17 @@ export function useERP() {
       log(d, `Pedido #${pedidoId} — pagamento confirmado ✅`);
     });
 
+  // Marca o pedido como pendente de pagamento (volta o recebível para "aberto").
+  const marcarPendente = (pedidoId) =>
+    up((d) => {
+      const p = d.pedidos.find((x) => x.id === pedidoId);
+      if (!p) return;
+      p.pagamento = "Pendente";
+      const fin = d.financeiro.find((f) => f.tipo === "receita" && f.desc && f.desc.includes(`#${pedidoId}`));
+      if (fin) fin.status = "aberto";
+      log(d, `Pedido #${pedidoId} — marcado como pendente de pagamento ⏳`);
+    });
+
   // Cadastro de cliente (CRM)
   const criarCliente = (dados) =>
     up((d) => {
@@ -671,7 +682,7 @@ export function useERP() {
     });
 
   return {
-    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite, produzir, marcarPago,
+    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite, produzir, marcarPago, marcarPendente,
     buscarPedidosOnline: absorverPedidosOnline, previewImportacao, importarHistorico,
     // nuvem (login + sincronização)
     cloud,

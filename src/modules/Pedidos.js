@@ -8,7 +8,7 @@ const CANAL_IC = { Balcão: "🏪", WhatsApp: "💬", Site: "🌐", Delivery: "�
 const pagCls = (pg) => (pg === "Pago" ? "t-grn" : pg === "Aguardando PIX" ? "t-org" : pg === "Pendente" ? "t-red" : "t-blu");
 
 export default function Pedidos({ erp }) {
-  const { db, totalPedido, precoLinha, enviarProducao, entregarPedido, cancelarPedido, marcarPago } = erp;
+  const { db, totalPedido, precoLinha, enviarProducao, entregarPedido, cancelarPedido, marcarPago, marcarPendente } = erp;
   const [novo, setNovo] = useState(false);
   const [filtro, setFiltro] = useState("Todos");
 
@@ -55,6 +55,8 @@ export default function Pedidos({ erp }) {
                 {(p.status === "Pronto" || p.status === "Produção") && <Btn variant="mini" onClick={() => entregarPedido(p.id)}>Entregar</Btn>}
                 {p.pagamento !== "Pago" && p.status !== "Cancelado" && marcarPago &&
                   <Btn variant="mini" onClick={() => marcarPago(p.id)}>✅ Confirmar pagamento</Btn>}
+                {p.pagamento !== "Pendente" && p.status !== "Cancelado" && marcarPendente &&
+                  <Btn variant="mini soft" onClick={() => marcarPendente(p.id)}>⏳ Pendente pagamento</Btn>}
                 {p.status !== "Entregue" && p.status !== "Cancelado" &&
                   <Btn variant="mini soft" onClick={() => cancelarPedido(p.id)}>Cancelar</Btn>}
                 <a className="btn mini soft" style={{ textDecoration: "none" }} target="_blank" rel="noreferrer"
