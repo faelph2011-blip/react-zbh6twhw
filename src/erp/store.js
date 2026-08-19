@@ -642,6 +642,28 @@ export function useERP() {
       log(d, `Cliente cadastrado — ${c.nome}`);
     });
 
+  // Edita os dados cadastrais de um cliente (não mexe em gasto/pontos/histórico).
+  const editarCliente = (id, dados) =>
+    up((d) => {
+      const c = d.clientes.find((x) => x.id === id);
+      if (!c) return;
+      if (dados.nome != null && dados.nome.trim()) c.nome = dados.nome.trim();
+      if (dados.tel != null) c.tel = dados.tel.trim();
+      if (dados.wpp != null) c.wpp = !!dados.wpp;
+      if (dados.aniv != null) c.aniv = dados.aniv.trim() || "—";
+      if (dados.origem != null && dados.origem.trim()) c.origem = dados.origem.trim();
+      log(d, `Cliente atualizado — ${c.nome}`);
+    });
+
+  // Exclui o cadastro do cliente. Os pedidos ficam, só perdem o vínculo.
+  const excluirCliente = (id) =>
+    up((d) => {
+      const c = d.clientes.find((x) => x.id === id);
+      d.clientes = d.clientes.filter((x) => x.id !== id);
+      d.pedidos.forEach((p) => { if (p.clienteId === id) p.clienteId = null; });
+      if (c) log(d, `Cliente excluído — ${c.nome}`);
+    });
+
   // Limpa TODOS os dados de exemplo para começar a jornada real do zero:
   // zera pedidos, ordens, clientes, financeiro, entregadores, fornecedores
   // e o estoque (insumos e produtos). Mantém o catálogo e os custos.
@@ -682,7 +704,7 @@ export function useERP() {
     });
 
   return {
-    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, limparExemplos, pedidoSite, produzir, marcarPago, marcarPendente,
+    db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, editarCliente, excluirCliente, limparExemplos, pedidoSite, produzir, marcarPago, marcarPendente,
     buscarPedidosOnline: absorverPedidosOnline, previewImportacao, importarHistorico,
     // nuvem (login + sincronização)
     cloud,

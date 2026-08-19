@@ -3,8 +3,13 @@ import { Card, Tag, Btn, Modal, Empty } from "../erp/ui";
 import { brl, classificar } from "../erp/format";
 
 export default function CRM({ erp }) {
-  const { db } = erp;
+  const { db, excluirCliente } = erp;
   const [novo, setNovo] = useState(false);
+  const [editar, setEditar] = useState(null); // cliente em edição
+
+  const remover = (c) => {
+    if (window.confirm(`Excluir o cadastro de "${c.nome}"? Os pedidos dele continuam, só perdem o vínculo.`)) excluirCliente(c.id);
+  };
   const clientes = [...db.clientes].sort((a, b) => b.gasto - a.gasto);
   const totalCashback = db.clientes.reduce((t, c) => t + c.cashback, 0);
   const recorrentes = db.clientes.filter((c) => c.pedidos >= 2).length;
@@ -33,7 +38,7 @@ export default function CRM({ erp }) {
         {nBase === 0 && <Empty>Nenhum cliente cadastrado ainda. Clique em “+ Novo cliente” para começar. 👥</Empty>}
         {nBase > 0 && <div className="scroll-x">
           <table>
-            <thead><tr><th>Cliente</th><th>Contato</th><th>Origem</th><th>Pedidos</th><th>Gasto</th><th>Cashback</th><th>Classe</th></tr></thead>
+            <thead><tr><th>Cliente</th><th>Contato</th><th>Origem</th><th>Pedidos</th><th>Gasto</th><th>Cashback</th><th>Classe</th><th style={{ textAlign: "right" }}>Ações</th></tr></thead>
             <tbody>
               {clientes.map((c) => {
                 const cl = classificar(c.pedidos, c.gasto);
@@ -50,6 +55,10 @@ export default function CRM({ erp }) {
                     <td className="num">{brl(c.gasto)}</td>
                     <td className="num" style={{ color: "var(--brand)" }}>{brl(c.cashback)}</td>
                     <td><Tag cls={cl.cls}>{cl.label}</Tag></td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                      <button className="lixo" title="Editar cliente" onClick={() => setEditar(c)}>✏️</button>
+                      <button className="lixo" title="Excluir cliente" onClick={() => remover(c)}>🗑️</button>
+                    </td>
                   </tr>
                 );
               })}
@@ -58,27 +67,32 @@ export default function CRM({ erp }) {
         </div>}
       </Card>
 
-      {novo && <NovoCliente erp={erp} onClose={() => setNovo(false)} />}
+      {novo && <ClienteModal erp={erp} onClose={() => setNovo(false)} />}
+      {editar && <ClienteModal erp={erp} cliente={editar} onClose={() => setEditar(null)} />}
     </>
   );
 }
 
-function NovoCliente({ erp, onClose }) {
-  const [nome, setNome] = useState("");
-  const [tel, setTel] = useState("");
-  const [wpp, setWpp] = useState(true);
-  const [aniv, setAniv] = useState("");
-  const [origem, setOrigem] = useState("WhatsApp");
+const ORIGENS = ["WhatsApp", "Instagram", "Indicação", "Google", "Fachada", "iFood", "Uber", "Histórico", "Cadastro"];
+
+function ClienteModal({ erp, cliente, onClose }) {
+  const edicao = !!cliente;
+  const [nome, setNome] = useState(cliente ? cliente.nome : "");
+  const [tel, setTel] = useState(cliente ? cliente.tel || "" : "");
+  const [wpp, setWpp] = useState(cliente ? !!cliente.wpp : true);
+  const [aniv, setAniv] = useState(cliente && cliente.aniv && cliente.aniv !== "—" ? cliente.aniv : "");
+  const [origem, setOrigem] = useState(cliente ? cliente.origem || "Cadastro" : "WhatsApp");
   const [erro, setErro] = useState("");
 
   const salvar = () => {
     if (!nome.trim()) { setErro("Informe o nome do cliente."); return; }
-    erp.criarCliente({ nome, tel, wpp, aniv, origem });
+    if (edicao) erp.editarCliente(cliente.id, { nome, tel, wpp, aniv, origem });
+    else erp.criarCliente({ nome, tel, wpp, aniv, origem });
     onClose();
   };
 
   return (
-    <Modal title="👥 Novo cliente" onClose={onClose}>
+    <Modal title={edicao ? "✏️ Editar cliente" : "👥 Novo cliente"} onClose={onClose}>
       <div className="field"><label>Nome *</label>
         <input autoFocus value={nome} placeholder="Ex: Maria Silva"
           onChange={(e) => { setNome(e.target.value); setErro(""); }} /></div>
@@ -94,10 +108,10 @@ function NovoCliente({ erp, onClose }) {
         <input value={aniv} placeholder="Ex: 12/08" onChange={(e) => setAniv(e.target.value)} /></div>
       <div className="field"><label>Como conheceu (origem)</label>
         <select value={origem} onChange={(e) => setOrigem(e.target.value)}>
-          {["WhatsApp", "Instagram", "Indicação", "Google", "Fachada", "iFood", "Cadastro"].map((o) => <option key={o}>{o}</option>)}
+          {[...new Set([origem, ...ORIGENS])].map((o) => <option key={o}>{o}</option>)}
         </select></div>
       {erro && <div style={{ marginBottom: 12 }}><span className="tag t-red">{erro}</span></div>}
-      <Btn onClick={salvar}>Cadastrar cliente</Btn>
+      <Btn onClick={salvar}>{edicao ? "Salvar alterações" : "Cadastrar cliente"}</Btn>
     </Modal>
   );
 }
