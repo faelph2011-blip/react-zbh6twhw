@@ -692,8 +692,14 @@ export function useKPIs(erp) {
     const aReceber = db.financeiro.filter((l) => l.tipo === "receita" && l.status === "aberto").reduce((t, l) => t + l.valor, 0);
     const aPagar = db.financeiro.filter((l) => l.tipo === "despesa" && l.status === "aberto").reduce((t, l) => t + l.valor, 0);
     const despesasPagas = db.financeiro.filter((l) => l.tipo === "despesa" && l.status === "pago").reduce((t, l) => t + l.valor, 0);
+    // Compras de matéria-prima/insumos são CUSTO DE PRODUTO (viram CMV quando vendidos),
+    // não despesa operacional — separamos para o DRE não contar o custo duas vezes.
+    const ehCusto = (l) => l.cat === "Matéria-prima" || l.cat === "Insumos" || l.origem === "Compras";
+    const despesasOperacionais = db.financeiro.filter((l) => l.tipo === "despesa" && l.status === "pago" && !ehCusto(l)).reduce((t, l) => t + l.valor, 0);
 
-    const receitaBruta = db.pedidos.filter((p) => p.status !== "Cancelado").reduce((t, p) => t + p.itens.reduce((s, it) => { const pr = db.produtos.find((x) => x.id === it.id); return s + precoLinha(pr, it.qtd); }, 0), 0);
+    // Receita do pedido: usa o total fechado (ex.: importado com desconto) quando houver.
+    const valorPedido = (p) => (p.total != null ? p.total : p.itens.reduce((s, it) => { const pr = db.produtos.find((x) => x.id === it.id); return s + precoLinha(pr, it.qtd); }, 0));
+    const receitaBruta = db.pedidos.filter((p) => p.status !== "Cancelado").reduce((t, p) => t + valorPedido(p), 0);
     const cmv = db.pedidos.filter((p) => p.status !== "Cancelado").reduce((t, p) => t + p.itens.reduce((s, it) => { const pr = db.produtos.find((x) => x.id === it.id); return s + (pr ? custoProduto(pr) * it.qtd : 0); }, 0), 0);
     const lucroBruto = receitaBruta - cmv;
 
@@ -717,9 +723,9 @@ export function useKPIs(erp) {
 
     const saldoInicial = Number(db.saldoInicial) || 0;
     return {
-      receitaPaga, aReceber, aPagar, despesasPagas, saldoInicial,
+      receitaPaga, aReceber, aPagar, despesasPagas, despesasOperacionais, saldoInicial,
       caixa: saldoInicial + receitaPaga - despesasPagas,
-      receitaBruta, cmv, lucroBruto, lucroLiquido: lucroBruto - despesasPagas,
+      receitaBruta, cmv, lucroBruto, lucroLiquido: lucroBruto - despesasOperacionais,
       vendidos, produzidos, ticket, recorrentes, margemMedia,
       topProdutos, alertasInsumo, alertasProduto,
       emProducao: porStatus("Produção"), entregues: porStatus("Entregue"),

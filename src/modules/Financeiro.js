@@ -17,7 +17,7 @@ export default function Financeiro({ erp, k }) {
     { label: "Receita bruta de vendas", v: k.receitaBruta, tipo: "+" },
     { label: "(–) CMV (custo dos produtos)", v: -k.cmv, tipo: "-" },
     { label: "= Lucro bruto", v: k.lucroBruto, tipo: "=" },
-    { label: "(–) Despesas operacionais", v: -k.despesasPagas, tipo: "-" },
+    { label: "(–) Despesas operacionais", v: -k.despesasOperacionais, tipo: "-" },
     { label: "= Lucro líquido", v: k.lucroLiquido, tipo: "==" },
   ];
 
