@@ -31,6 +31,7 @@ const PIN_DEMO = "1234"; // protótipo: em produção seria login real (JWT + 2F
 const NAV = [
   ["Operação", [
     ["venda", "Venda Rápida", "⚡"],
+    ["crm", "CRM & Fidelidade", "👥"],
     ["pedidos", "Pedidos", "🧾"],
     ["producao", "Produção · PCP", "🏭"],
   ]],
@@ -45,7 +46,6 @@ const NAV = [
     ["engenharia", "Engenharia", "⚗️"],
   ]],
   ["Comercial", [
-    ["crm", "CRM & Fidelidade", "👥"],
     ["delivery", "Delivery", "🛵"],
   ]],
   ["Inteligência", [
