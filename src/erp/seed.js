@@ -23,6 +23,11 @@ export const insumos = [
   { id: "pote_med", nome: "Pote pudim médio", cat: "Embalagem", un: "un", custo: 3.90, estoque: 120, min: 80, max: 500 },
   { id: "pote_gra", nome: "Pote pudim grande", cat: "Embalagem", un: "un", custo: 7.80, estoque: 40, min: 30, max: 200 },
   { id: "rotulo", nome: "Adesivo de divulgação", cat: "Embalagem", un: "un", custo: 0.90, estoque: 800, min: 400, max: 3000 },
+  // Embalagens da linha FESTA (mini pudim 40ml em vidro).
+  { id: "pote_vidro_p", nome: "Pote de vidro pequeno (festa)", cat: "Embalagem", un: "un", custo: 2.00, estoque: 0, min: 50, max: 500 },
+  { id: "adesivo_festa", nome: "Adesivo da marca (festa)", cat: "Embalagem", un: "un", custo: 0.50, estoque: 0, min: 50, max: 500 },
+  { id: "colherzinha", nome: "Colherzinha", cat: "Embalagem", un: "un", custo: 0.15, estoque: 0, min: 50, max: 500 },
+  { id: "liguinha", nome: "Liguinha elástico", cat: "Embalagem", un: "un", custo: 0.08, estoque: 0, min: 50, max: 500 },
   // Embalagens de entrega — usadas SÓ no delivery (não entram no custo do pudim).
   { id: "emb_peq", nome: "Embalagem de entrega P (delivery)", cat: "Delivery", un: "un", custo: 1.49, estoque: 50, min: 20, max: 200 },
   { id: "emb_med", nome: "Embalagem de entrega M (delivery)", cat: "Delivery", un: "un", custo: 1.89, estoque: 40, min: 15, max: 150 },
@@ -145,6 +150,18 @@ export const produtos = [
     ficha: [
       { id: "condensado", qtd: 0.037 }, { id: "leite", qtd: 0.015 }, { id: "ovos", qtd: 0.111 },
       { id: "acucar", qtd: 0.013 }, { id: "agua", qtd: 0.007 }, { id: "gas", qtd: 0.006 },
+    ],
+  },
+  // ---- Linha FESTA — mini pudim 40ml em vidro, encomenda a partir de 50 un ----
+  {
+    id: "festa", nome: "Tradicional Festa 40ml", sabor: "Festa", porte: "Festa 40ml", cat: "Festa", sku: "PUD-FES-040",
+    tamanho: "40ml", emoji: "🎉", grad: "linear-gradient(135deg,#E8B04B,#F6D488)",
+    preco: 7.0, promo: null, tempo: 60, rendimento: 1, validade: 5, estoque: 0, minEncomenda: 50,
+    // 1/3 da porção individual (120g → 40ml), mesmos ingredientes/custos + embalagem de festa
+    ficha: [
+      { id: "condensado", qtd: 0.037 }, { id: "leite", qtd: 0.0147 }, { id: "ovos", qtd: 0.111 },
+      { id: "acucar", qtd: 0.0133 }, { id: "agua", qtd: 0.0073 }, { id: "gas", qtd: 0.0061 },
+      { id: "pote_vidro_p", qtd: 1 }, { id: "adesivo_festa", qtd: 1 }, { id: "colherzinha", qtd: 1 }, { id: "liguinha", qtd: 1 },
     ],
   },
 ];
