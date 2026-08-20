@@ -17,18 +17,40 @@ import { planejar as planejarImport } from "./importador";
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const LS_KEY = "pudimerp_state_v5";
 
-// Preço unitário (considera promoção) e preço da LINHA (aplica combo,
-// ex.: "2 por R$ 20" → cada par sai por 20, sobra unitária no preço cheio).
+// Desconto por combinação: a partir de PROMO_MIN unidades NO TOTAL da venda
+// (misturando qualquer produto), cada item elegível sai pelo seu preço
+// promocional (produto.promoUnit). Ex.: 1 tradicional (R$10) + 1 sabor (R$15) = R$25.
+export const PROMO_MIN = 2;
 export const precoUnit = (p) => (p ? (p.promo && p.promo > 0 ? p.promo : p.preco) : 0);
+
+// Precifica a venda inteira de uma vez, aplicando o desconto por combinação.
+// Retorna { total, promo, totalUn, linhas:[{id, qtd, unit, cheio, subtotal}] }.
+export function precificarVenda(itens, produtos) {
+  const lista = itens || [];
+  const totalUn = lista.reduce((s, it) => s + (Number(it.qtd) || 0), 0);
+  const promo = totalUn >= PROMO_MIN;
+  let total = 0;
+  const linhas = lista.map((it) => {
+    const p = (produtos || []).find((x) => x.id === it.id);
+    const cheio = precoUnit(p);
+    const unit = promo && p && p.promoUnit != null ? p.promoUnit : cheio;
+    const subtotal = +(unit * (Number(it.qtd) || 0)).toFixed(2);
+    total += subtotal;
+    return { id: it.id, qtd: it.qtd, unit, cheio, subtotal };
+  });
+  return { total: +total.toFixed(2), promo, totalUn, linhas };
+}
+
+// Atalho: total da venda com o desconto por combinação aplicado.
+export const totalVenda = (itens, produtos) => precificarVenda(itens, produtos).total;
+
+// Preço de UMA linha isolada (usado em exibições por item). Aplica o preço
+// promocional quando aquele item, sozinho, já atinge o mínimo de unidades.
 export const precoLinha = (p, qtd) => {
   if (!p) return 0;
-  const u = precoUnit(p);
-  if (p.comboQtd && p.comboPreco && qtd >= p.comboQtd) {
-    const pares = Math.floor(qtd / p.comboQtd);
-    const resto = qtd % p.comboQtd;
-    return pares * p.comboPreco + resto * u;
-  }
-  return u * qtd;
+  const q = Number(qtd) || 0;
+  const unit = q >= PROMO_MIN && p.promoUnit != null ? p.promoUnit : precoUnit(p);
+  return +(unit * q).toFixed(2);
 };
 
 function carregar() {
@@ -72,7 +94,7 @@ function aplicarCatalogo(d) {
     if (p) {
       p.ficha = sp.ficha.map((f) => ({ ...f }));
       p.rendimento = sp.rendimento; p.tamanho = sp.tamanho; p.nome = sp.nome;
-      p.preco = sp.preco; p.promo = sp.promo;
+      p.preco = sp.preco; p.promo = sp.promo; p.promoUnit = sp.promoUnit;
       p.combo = sp.combo; p.comboQtd = sp.comboQtd; p.comboPreco = sp.comboPreco;
       p.sabor = sp.sabor; p.porte = sp.porte;
       p.emoji = sp.emoji; p.grad = sp.grad; p.cat = sp.cat; p.sku = sp.sku;
@@ -233,10 +255,7 @@ export function useERP() {
   const totalPedido = useCallback(
     (ped) => {
       if (ped.total != null) return ped.total; // pedido importado com valor fechado (ex.: desconto do histórico)
-      return ped.itens.reduce((t, it) => {
-        const p = db.produtos.find((x) => x.id === it.id);
-        return t + precoLinha(p, it.qtd);
-      }, 0);
+      return totalVenda(ped.itens, db.produtos);
     },
     [db.produtos]
   );
@@ -250,10 +269,7 @@ export function useERP() {
       const hojeISO = new Date().toISOString().slice(0, 10);
       const ped = { id, clienteId, canal, status: "Novo", pagamento: "Pendente", itens, obs: "", criado: "hoje", data: hojeISO, ts: Date.now() };
       d.pedidos.unshift(ped);
-      const total = itens.reduce((t, it) => {
-        const p = d.produtos.find((x) => x.id === it.id);
-        return t + precoLinha(p, it.qtd);
-      }, 0);
+      const total = totalVenda(itens, d.produtos);
       d.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${id}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos" });
       const cli = d.clientes.find((c) => c.id === clienteId);
       log(d, `Pedido #${id} criado (${canal}) — ${cli ? cli.nome : "cliente"} · recebível lançado`);
@@ -310,10 +326,7 @@ export function useERP() {
       ped.status = "Entregue";
       ped.pagamento = ped.pagamento === "Pendente" ? "PIX" : ped.pagamento;
       const lanc = d.financeiro.find((l) => l.desc.includes(`#${pedidoId}`) && l.tipo === "receita");
-      const total = ped.itens.reduce((t, it) => {
-        const p = d.produtos.find((x) => x.id === it.id);
-        return t + precoLinha(p, it.qtd);
-      }, 0);
+      const total = totalVenda(ped.itens, d.produtos);
       if (lanc) lanc.status = "pago";
       const cli = d.clientes.find((c) => c.id === ped.clienteId);
       if (cli) {
@@ -527,10 +540,7 @@ export function useERP() {
   const registrarVendaRapida = (itens, canal, forma, quando, dataISO, clienteId) =>
     up((d) => {
       const id = 7000 + Math.floor(Math.random() * 2999);
-      const total = itens.reduce((t, it) => {
-        const p = d.produtos.find((x) => x.id === it.id);
-        return t + precoLinha(p, it.qtd);
-      }, 0);
+      const total = totalVenda(itens, d.produtos);
       const hojeISO = new Date().toISOString().slice(0, 10);
       const dia = dataISO || hojeISO;
       const ts = dataISO && dataISO !== hojeISO ? new Date(dia + "T12:00:00").getTime() : Date.now();
@@ -568,7 +578,7 @@ export function useERP() {
       const idx = d.pedidos.findIndex((x) => x.id === pedidoId && x.rapida);
       if (idx < 0) return;
       const v = d.pedidos[idx];
-      const total = v.itens.reduce((s, it) => { const p = d.produtos.find((x) => x.id === it.id); return s + precoLinha(p, it.qtd); }, 0);
+      const total = v.total != null ? v.total : totalVenda(v.itens, d.produtos);
       v.itens.forEach((it) => { const p = d.produtos.find((x) => x.id === it.id); if (p) p.estoque = +(p.estoque + it.qtd).toFixed(3); });
       const fi = d.financeiro.findIndex((f) => f.origem === "Venda Rápida" && f.desc && f.desc.includes(`#${pedidoId}`));
       if (fi >= 0) d.financeiro.splice(fi, 1);
@@ -624,10 +634,7 @@ export function useERP() {
         wpp: true, aniv: "—", origem: "Site", cashback: 0, pontos: 0, pedidos: 0, gasto: 0, ultimo: "agora",
       });
       d.seqPedido = numero;
-      const total = itens.reduce((t, it) => {
-        const p = d.produtos.find((x) => x.id === it.id);
-        return t + precoLinha(p, it.qtd);
-      }, 0);
+      const total = totalVenda(itens, d.produtos);
       const pagamento = forma === "pix" ? "Aguardando PIX" : "A combinar";
       d.pedidos.unshift({ id: numero, numero, clienteId: cid, canal: "Site", status: "Novo", pagamento, forma: forma || null, itens, obs: "", criado: "hoje", data: hojeISO, ts });
       d.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${numero}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos", data: hojeISO });
@@ -660,10 +667,7 @@ export function useERP() {
       if (next.pedidos.some((p) => (p.numero || p.id) === numero)) numero = calcNumero(next);
       next.seqPedido = Math.max(next.seqPedido || 0, numero);
       const itens = Array.isArray(pl.itens) ? pl.itens : [];
-      const total = itens.reduce((t, it) => {
-        const p = next.produtos.find((x) => x.id === it.id);
-        return t + precoLinha(p, it.qtd);
-      }, 0);
+      const total = totalVenda(itens, next.produtos);
       const pagamento = pl.forma === "pix" ? "Aguardando PIX" : "A combinar";
       const dia = pl.criadoISO || new Date().toISOString().slice(0, 10);
       next.pedidos.unshift({ id: numero, numero, onlineId: row.id, clienteId: cid, canal: "Site", status: "Novo", pagamento, forma: pl.forma || null, itens, obs: "", criado: "loja online", data: dia, ts: pl.ts || Date.now() });
@@ -787,7 +791,7 @@ export function useERP() {
     // nuvem (login + sincronização)
     cloud,
     // seletores
-    custoProduto, margemProduto, totalPedido, precoVenda, precoLinha,
+    custoProduto, margemProduto, totalPedido, precoVenda, precoLinha, precificarVenda, totalVenda,
     // ações
     criarPedido, enviarProducao, avancarOrdem, entregarPedido, cancelarPedido,
     receberCompra, registrarCompra, editarCompra, excluirCompra, liquidar, lancarFinanceiro, excluirLancamento, definirSaldoInicial, setPagamento, despacharEntrega, registrarVendaRapida, editarVendaRapida, excluirVendaRapida,
@@ -809,7 +813,7 @@ export function useKPIs(erp) {
     const despesasOperacionais = db.financeiro.filter((l) => l.tipo === "despesa" && l.status === "pago" && !ehCusto(l)).reduce((t, l) => t + l.valor, 0);
 
     // Receita do pedido: usa o total fechado (ex.: importado com desconto) quando houver.
-    const valorPedido = (p) => (p.total != null ? p.total : p.itens.reduce((s, it) => { const pr = db.produtos.find((x) => x.id === it.id); return s + precoLinha(pr, it.qtd); }, 0));
+    const valorPedido = (p) => (p.total != null ? p.total : totalVenda(p.itens, db.produtos));
     const receitaBruta = db.pedidos.filter((p) => p.status !== "Cancelado").reduce((t, p) => t + valorPedido(p), 0);
     const cmv = db.pedidos.filter((p) => p.status !== "Cancelado").reduce((t, p) => t + p.itens.reduce((s, it) => { const pr = db.produtos.find((x) => x.id === it.id); return s + (pr ? custoProduto(pr) * it.qtd : 0); }, 0), 0);
     const lucroBruto = receitaBruta - cmv;

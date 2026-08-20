@@ -20,11 +20,16 @@ export const waLink = (texto, numero = WPP_LOJA) =>
   `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
 
 // Monta a mensagem de um pedido para o WhatsApp.
-export const msgPedido = ({ produtos, itens, total, canal, cliente, extra, numero, precoLinha }) => {
+export const msgPedido = ({ produtos, itens, total, canal, cliente, extra, numero, linhas: precos }) => {
+  const subDe = (it) => {
+    const l = precos && precos.find((x) => x.id === it.id);
+    if (l) return l.subtotal;
+    const p = produtos.find((x) => x.id === it.id);
+    return p ? (p.promo || p.preco) * it.qtd : 0;
+  };
   const linhas = itens.map((it) => {
     const p = produtos.find((x) => x.id === it.id);
-    const sub = precoLinha ? precoLinha(p, it.qtd) : (p ? (p.promo || p.preco) * it.qtd : 0);
-    return `• ${it.qtd}× ${p ? p.nome : "item"} — ${brl(sub)}`;
+    return `• ${it.qtd}× ${p ? p.nome : "item"} — ${brl(subDe(it))}`;
   });
   return [
     "🍮 *Pudins da Lauren — Pedido*",

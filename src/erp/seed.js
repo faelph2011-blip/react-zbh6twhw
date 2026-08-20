@@ -35,7 +35,7 @@ export const produtos = [
   {
     id: "ind", nome: "Tradicional de Leite Condensado - Individual", sabor: "Tradicional", porte: "Individual", cat: "Tradicional", sku: "PUD-IND-120",
     tamanho: "120g", emoji: "🍮", grad: "linear-gradient(135deg,#E0A45C,#F3C583)",
-    preco: 12.0, promo: null, combo: "2 por R$ 20", comboQtd: 2, comboPreco: 20, tempo: 70, rendimento: 1, validade: 5, estoque: 30,
+    preco: 12.0, promo: null, promoUnit: 10, combo: "2+ un: R$ 10 cada", comboQtd: 2, comboPreco: 20, tempo: 70, rendimento: 1, validade: 5, estoque: 30,
     // Base: 1 receita = 9 individuais (400ml leite · 1 lata condensado · 2 xíc. açúcar · 200ml água · 3 ovos)
     ficha: [
       { id: "condensado", qtd: 0.111 }, { id: "leite", qtd: 0.044 }, { id: "ovos", qtd: 0.333 },
@@ -69,7 +69,7 @@ export const produtos = [
   {
     id: "nutella", nome: "Ninho com Nutella", sabor: "Ninho com Nutella", porte: "Individual", cat: "Especial", sku: "PUD-NUT-120",
     tamanho: "120g", emoji: "🍫", grad: "linear-gradient(135deg,#4A2C18,#8A5A34)",
-    preco: 16.0, promo: null, tempo: 70, rendimento: 1, validade: 5, estoque: 0,
+    preco: 16.0, promo: null, promoUnit: 15, combo: "2+ un: R$ 15 cada", tempo: 70, rendimento: 1, validade: 5, estoque: 0,
     // base individual + creme de leite (2 caixas/9) + ninho (50g/9) + nutella (200g de 700g /9)
     ficha: [
       { id: "condensado", qtd: 0.111 }, { id: "leite", qtd: 0.044 }, { id: "ovos", qtd: 0.333 },
@@ -81,7 +81,7 @@ export const produtos = [
   {
     id: "frutas", nome: "Ninho com Frutas Vermelhas", sabor: "Ninho com Frutas Vermelhas", porte: "Individual", cat: "Especial", sku: "PUD-FRV-120",
     tamanho: "120g", emoji: "🍓", grad: "linear-gradient(135deg,#B23A5B,#E86A86)",
-    preco: 16.0, promo: null, tempo: 70, rendimento: 1, validade: 5, estoque: 0,
+    preco: 16.0, promo: null, promoUnit: 15, combo: "2+ un: R$ 15 cada", tempo: 70, rendimento: 1, validade: 5, estoque: 0,
     // base individual + creme de leite + ninho + morango/amora (500g/9)
     ficha: [
       { id: "condensado", qtd: 0.111 }, { id: "leite", qtd: 0.044 }, { id: "ovos", qtd: 0.333 },

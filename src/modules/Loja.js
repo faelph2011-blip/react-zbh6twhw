@@ -30,13 +30,15 @@ const INSTA = "https://instagram.com/pudinsdalauren";
 // Vitrine premium da Pudins da Lauren — identidade caramelo/creme.
 // "Feito com amor em cada detalhe". Acesso ao ERP atrás de "Área do dono".
 export default function Loja({ erp, full }) {
-  const { db, precoVenda, precoLinha, pedidoSite } = erp;
+  const { db, precoVenda, precificarVenda, totalVenda, pedidoSite } = erp;
   const [cart, setCart] = useState([]);
   const [checkout, setCheckout] = useState(false);
   const add = (p) => setCart((c) => [...c, p]);
-  // total do carrinho já com o combo aplicado (ex.: 2 individuais por R$ 20)
-  const total = Object.entries(cart.reduce((a, p) => { a[p.id] = (a[p.id] || 0) + 1; return a; }, {}))
-    .reduce((t, [id, qtd]) => t + precoLinha(db.produtos.find((x) => x.id === id), qtd), 0);
+  // itens do carrinho agregados por produto
+  const cartItens = Object.entries(cart.reduce((a, p) => { a[p.id] = (a[p.id] || 0) + 1; return a; }, {}))
+    .map(([id, qtd]) => ({ id, qtd }));
+  // total já com o desconto por combinação (2+ unidades no total da venda)
+  const total = totalVenda(cartItens, db.produtos);
 
   // Efeitos de rolagem: elementos ".sr" surgem ao entrar na tela; vídeos de
   // fundo tocam quando visíveis e pausam quando saem (economia). Só visual.
@@ -79,7 +81,8 @@ export default function Loja({ erp, full }) {
       ? `💳 Pagamento: PIX — ${brl(total)} (segue o comprovante 👇)`
       : "💳 Pagamento: combinar no WhatsApp";
     const url = waLink(msgPedido({
-      produtos: db.produtos, itens, total, canal: "Site", cliente: nome, numero, precoLinha,
+      produtos: db.produtos, itens, total, canal: "Site", cliente: nome, numero,
+      linhas: precificarVenda(itens, db.produtos).linhas,
       extra: `📞 ${tel}\n${pag}\nEnviado pela loja online 🌐`,
     }));
     if (forma !== "pix") window.open(url, "_blank", "noopener");

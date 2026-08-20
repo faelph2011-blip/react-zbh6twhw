@@ -8,7 +8,7 @@ const CANAL_IC = { Balcão: "🏪", WhatsApp: "💬", Site: "🌐", Delivery: "�
 const pagCls = (pg) => (pg === "Pago" ? "t-grn" : pg === "Aguardando PIX" ? "t-org" : pg === "Pendente" ? "t-red" : "t-blu");
 
 export default function Pedidos({ erp }) {
-  const { db, totalPedido, precoLinha, enviarProducao, entregarPedido, cancelarPedido, marcarPago, marcarPendente } = erp;
+  const { db, totalPedido, precificarVenda, enviarProducao, entregarPedido, cancelarPedido, marcarPago, marcarPendente } = erp;
   const [novo, setNovo] = useState(false);
   const [filtro, setFiltro] = useState("Todos");
 
@@ -61,7 +61,7 @@ export default function Pedidos({ erp }) {
                   <Btn variant="mini soft" onClick={() => cancelarPedido(p.id)}>Cancelar</Btn>}
                 <a className="btn mini soft" style={{ textDecoration: "none" }} target="_blank" rel="noreferrer"
                   title="Abrir este pedido no WhatsApp"
-                  href={waLink(msgPedido({ produtos: db.produtos, itens: p.itens, total: totalPedido(p), canal: p.canal, cliente: cli?.nome, numero: p.numero || p.id, precoLinha, extra: `${p.pagamento}` }))}>
+                  href={waLink(msgPedido({ produtos: db.produtos, itens: p.itens, total: totalPedido(p), canal: p.canal, cliente: cli?.nome, numero: p.numero || p.id, linhas: precificarVenda(p.itens, db.produtos).linhas, extra: `${p.pagamento}` }))}>
                   📲 WhatsApp
                 </a>
               </div>
@@ -76,14 +76,14 @@ export default function Pedidos({ erp }) {
 }
 
 function NovoPedido({ erp, onClose }) {
-  const { db, criarPedido, precoVenda, precoLinha } = erp;
+  const { db, criarPedido, precoVenda, totalVenda } = erp;
   const [cliente, setCliente] = useState(db.clientes[0]?.id || "");
   const [canal, setCanal] = useState("Balcão");
   const [cart, setCart] = useState({});
 
   const add = (id, d) => setCart((c) => { const q = (c[id] || 0) + d; const n = { ...c }; if (q <= 0) delete n[id]; else n[id] = q; return n; });
-  const total = Object.entries(cart).reduce((t, [id, q]) => { const p = db.produtos.find((x) => x.id === id); return t + precoLinha(p, q); }, 0);
   const itens = Object.entries(cart).map(([id, qtd]) => ({ id, qtd }));
+  const total = totalVenda(itens, db.produtos);
 
   return (
     <Modal title="Novo pedido" onClose={onClose}>
