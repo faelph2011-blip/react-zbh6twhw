@@ -82,7 +82,12 @@ function aplicarCatalogo(d) {
   seed.insumos.forEach((si) => {
     const ex = d.insumos.find((i) => i.id === si.id);
     if (ex) {
-      ex.nome = si.nome; ex.cat = si.cat; ex.un = si.un; ex.custo = si.custo;
+      // Insumos existentes: respeita as edições do dono (custo, nome, un, min/max
+      // e estoque). Só preenche o que estiver faltando — não sobrescreve.
+      if (ex.nome == null) ex.nome = si.nome;
+      if (ex.cat == null) ex.cat = si.cat;
+      if (ex.un == null) ex.un = si.un;
+      if (ex.custo == null) ex.custo = si.custo;
       if (ex.min == null) ex.min = si.min;
       if (ex.max == null) ex.max = si.max;
     } else {
@@ -777,6 +782,49 @@ export function useERP() {
       log(d, `Produção: +${n}× ${prod.nome} ao estoque pronto · insumos baixados`);
     });
 
+  // --- Gestão de estoque (insumos) ---
+  const criarInsumo = (dados) =>
+    up((d) => {
+      const nome = (dados.nome || "").trim() || "Novo insumo";
+      d.insumos.push({
+        id: uid(), nome, cat: (dados.cat || "Outros").trim() || "Outros", un: (dados.un || "un").trim() || "un",
+        custo: Math.max(0, Number(dados.custo) || 0), estoque: Math.max(0, Number(dados.estoque) || 0),
+        min: Math.max(0, Number(dados.min) || 0), max: Math.max(0, Number(dados.max) || 0),
+      });
+      log(d, `Insumo cadastrado — ${nome}`);
+    });
+
+  const editarInsumo = (id, dados) =>
+    up((d) => {
+      const i = d.insumos.find((x) => x.id === id);
+      if (!i) return;
+      if (dados.nome != null && dados.nome.trim()) i.nome = dados.nome.trim();
+      if (dados.cat != null && dados.cat.trim()) i.cat = dados.cat.trim();
+      if (dados.un != null && dados.un.trim()) i.un = dados.un.trim();
+      if (dados.custo != null) i.custo = Math.max(0, Number(dados.custo) || 0);
+      if (dados.estoque != null) i.estoque = Math.max(0, +(Number(dados.estoque) || 0).toFixed(3));
+      if (dados.min != null) i.min = Math.max(0, Number(dados.min) || 0);
+      if (dados.max != null) i.max = Math.max(0, Number(dados.max) || 0);
+      log(d, `Insumo atualizado — ${i.nome}`);
+    });
+
+  const excluirInsumo = (id) =>
+    up((d) => {
+      const i = d.insumos.find((x) => x.id === id);
+      d.insumos = d.insumos.filter((x) => x.id !== id);
+      d.produtos.forEach((p) => { if (Array.isArray(p.ficha)) p.ficha = p.ficha.filter((f) => f.id !== id); });
+      if (i) log(d, `Insumo excluído — ${i.nome}`);
+    });
+
+  // Ajusta diretamente o estoque de um produto pronto (inventário / correção).
+  const ajustarEstoqueProduto = (id, qtd) =>
+    up((d) => {
+      const p = d.produtos.find((x) => x.id === id);
+      if (!p) return;
+      p.estoque = Math.max(0, Math.floor(Number(qtd) || 0));
+      log(d, `Estoque pronto ajustado — ${p.nome}: ${p.estoque}`);
+    });
+
   // Aplica o catálogo de custos do seed (custos reais, gás, insumos novos)
   // sobre os dados atuais, SEM apagar vendas, clientes ou estoque.
   const sincronizarCatalogo = () =>
@@ -787,6 +835,7 @@ export function useERP() {
 
   return {
     db, theme, toggleTheme, resetar, sincronizarCatalogo, criarCliente, editarCliente, excluirCliente, limparExemplos, pedidoSite, produzir, marcarPago, marcarPendente,
+    criarInsumo, editarInsumo, excluirInsumo, ajustarEstoqueProduto,
     buscarPedidosOnline: absorverPedidosOnline, previewImportacao, importarHistorico,
     // nuvem (login + sincronização)
     cloud,
