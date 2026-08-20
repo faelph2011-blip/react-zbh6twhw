@@ -12,7 +12,14 @@ export default function Pedidos({ erp }) {
   const [novo, setNovo] = useState(false);
   const [filtro, setFiltro] = useState("Todos");
 
-  const list = db.pedidos.filter((p) => filtro === "Todos" || p.status === filtro);
+  const pendentePag = (p) => p.pagamento !== "Pago" && p.status !== "Cancelado";
+  const nPendPag = db.pedidos.filter(pendentePag).length;
+
+  const list = db.pedidos.filter((p) => {
+    if (filtro === "Todos") return true;
+    if (filtro === "pendpag") return pendentePag(p);
+    return p.status === filtro;
+  });
 
   return (
     <>
@@ -27,6 +34,9 @@ export default function Pedidos({ erp }) {
           <button key={s} className={"nav " + (filtro === s ? "on" : "")} style={{ width: "auto", padding: "6px 14px", borderRadius: 99 }}
             onClick={() => setFiltro(s)}>{s}</button>
         ))}
+        <button className={"nav " + (filtro === "pendpag" ? "on" : "")}
+          style={{ width: "auto", padding: "6px 14px", borderRadius: 99, borderColor: "var(--red)", color: filtro === "pendpag" ? undefined : "var(--red)" }}
+          onClick={() => setFiltro("pendpag")}>⏳ Pendente pagamento{nPendPag ? ` (${nPendPag})` : ""}</button>
       </div>
 
       <div className="grid g3">
