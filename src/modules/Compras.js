@@ -5,8 +5,14 @@ import { brl } from "../erp/format";
 const hojeISO = () => new Date().toISOString().slice(0, 10);
 
 export default function Compras({ erp }) {
-  const { db } = erp;
+  const { db, excluirCompra } = erp;
   const [modal, setModal] = useState(false); // false | true | insumoId
+  const [editar, setEditar] = useState(null); // compra em edição
+
+  const remover = (l) => {
+    const volta = l.insumoId ? " O estoque somado por ela será devolvido." : "";
+    if (window.confirm(`Excluir esta compra (${l.desc.replace("Compra: ", "")})?${volta}`)) excluirCompra(l.id);
+  };
 
   const compras = db.financeiro.filter((l) => l.origem === "Compras");
   const totalInvestido = compras.reduce((t, l) => t + l.valor, 0);
@@ -39,6 +45,8 @@ export default function Compras({ erp }) {
                 <div className="mut" style={{ fontSize: 11.5 }}>📅 {l.venc === "hoje" ? "hoje" : (l.data || l.venc)}</div>
               </div>
               <span className="num" style={{ fontWeight: 700, color: "var(--red)" }}>{brl(l.valor)}</span>
+              <button className="lixo" title="Editar compra" onClick={() => setEditar(l)}>✏️</button>
+              <button className="lixo" title="Excluir compra" onClick={() => remover(l)}>🗑️</button>
             </div>
           ))}
         </Card>
@@ -60,7 +68,52 @@ export default function Compras({ erp }) {
       </div>
 
       {modal && <CompraModal erp={erp} preId={typeof modal === "string" ? modal : null} onClose={() => setModal(false)} />}
+      {editar && <EditarCompra erp={erp} compra={editar} onClose={() => setEditar(null)} />}
     </>
+  );
+}
+
+function EditarCompra({ erp, compra, onClose }) {
+  const { db, editarCompra } = erp;
+  const ins = compra.insumoId ? db.insumos.find((i) => i.id === compra.insumoId) : null;
+  const [qtd, setQtd] = useState(compra.qtd != null ? String(compra.qtd) : "");
+  const [valor, setValor] = useState(String(compra.valor));
+  const [data, setData] = useState(compra.data || hojeISO());
+  const [nome, setNome] = useState(compra.nome || compra.desc.replace("Compra: ", "").replace(/\s*\(.*\)\s*$/, ""));
+  const [erro, setErro] = useState("");
+
+  const salvar = () => {
+    if (!valor || Number(valor) <= 0) { setErro("Informe o valor total pago."); return; }
+    editarCompra(compra.id, {
+      valor: Number(valor),
+      qtd: ins ? Number(qtd) || 0 : undefined,
+      data,
+      nome: ins ? undefined : nome,
+    });
+    onClose();
+  };
+
+  return (
+    <Modal title="✏️ Editar compra" onClose={onClose}>
+      {ins ? (
+        <>
+          <div className="field"><label>Insumo</label>
+            <input value={ins.nome} disabled /></div>
+          <div className="field"><label>Quantidade ({ins.un}) — ajusta o estoque</label>
+            <input type="number" min="0" step="any" value={qtd} onChange={(e) => setQtd(e.target.value)} /></div>
+        </>
+      ) : (
+        <div className="field"><label>Descrição</label>
+          <input value={nome} onChange={(e) => { setNome(e.target.value); setErro(""); }} /></div>
+      )}
+      <div className="field"><label>Valor total pago (R$)</label>
+        <input type="number" min="0" step="any" value={valor}
+          onChange={(e) => { setValor(e.target.value); setErro(""); }} /></div>
+      <div className="field"><label>Data da compra</label>
+        <input type="date" value={data} max={hojeISO()} onChange={(e) => setData(e.target.value || hojeISO())} /></div>
+      {erro && <div style={{ marginBottom: 12 }}><span className="tag t-red">{erro}</span></div>}
+      <Btn onClick={salvar}>Salvar alterações</Btn>
+    </Modal>
   );
 }
 

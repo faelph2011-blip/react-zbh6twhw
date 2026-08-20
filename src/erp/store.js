@@ -366,8 +366,45 @@ export function useERP() {
         desc: `Compra: ${nome}${qtd ? ` (${qtd})` : ""}`,
         valor, status: "pago", venc: dia === hojeISO ? "hoje" : dia,
         origem: "Compras", data: dia,
+        insumoId: insumoId || null, qtd: Number(qtd) || 0, nome,
       });
       log(d, `Compra registrada — ${nome} · R$ ${valor.toFixed(2)} (${dia})`);
+    });
+
+  // Edita uma compra do histórico. Ajusta o estoque do insumo pela diferença
+  // de quantidade e atualiza valor/data/descrição.
+  const editarCompra = (id, { valor, qtd, data, nome }) =>
+    up((d) => {
+      const l = d.financeiro.find((x) => x.id === id && x.origem === "Compras");
+      if (!l) return;
+      if (l.insumoId && qtd != null) {
+        const ins = d.insumos.find((i) => i.id === l.insumoId);
+        if (ins) {
+          const delta = (Number(qtd) || 0) - (Number(l.qtd) || 0);
+          ins.estoque = Math.max(0, +(ins.estoque + delta).toFixed(3));
+        }
+        l.qtd = Number(qtd) || 0;
+      }
+      if (valor != null) l.valor = +(Number(valor) || 0).toFixed(2);
+      if (data != null) { l.data = data; l.venc = data; }
+      if (!l.insumoId && nome != null && nome.trim()) l.nome = nome.trim();
+      const base = l.insumoId ? (d.insumos.find((i) => i.id === l.insumoId)?.nome || l.nome || "Item") : (l.nome || "Item");
+      l.desc = `Compra: ${base}${l.qtd ? ` (${l.qtd})` : ""}`;
+      log(d, `Compra editada — ${base} · R$ ${(l.valor || 0).toFixed(2)}`);
+    });
+
+  // Exclui uma compra do histórico e devolve (subtrai) o estoque que ela somou.
+  const excluirCompra = (id) =>
+    up((d) => {
+      const i = d.financeiro.findIndex((x) => x.id === id && x.origem === "Compras");
+      if (i < 0) return;
+      const l = d.financeiro[i];
+      if (l.insumoId) {
+        const ins = d.insumos.find((x) => x.id === l.insumoId);
+        if (ins) ins.estoque = Math.max(0, +(ins.estoque - (Number(l.qtd) || 0)).toFixed(3));
+      }
+      d.financeiro.splice(i, 1);
+      log(d, `Compra excluída — ${l.nome || l.desc}`);
     });
 
   const liquidar = (lancId) =>
@@ -712,7 +749,7 @@ export function useERP() {
     custoProduto, margemProduto, totalPedido, precoVenda, precoLinha,
     // ações
     criarPedido, enviarProducao, avancarOrdem, entregarPedido, cancelarPedido,
-    receberCompra, registrarCompra, liquidar, lancarFinanceiro, excluirLancamento, definirSaldoInicial, setPagamento, despacharEntrega, registrarVendaRapida,
+    receberCompra, registrarCompra, editarCompra, excluirCompra, liquidar, lancarFinanceiro, excluirLancamento, definirSaldoInicial, setPagamento, despacharEntrega, registrarVendaRapida,
   };
 }
 
