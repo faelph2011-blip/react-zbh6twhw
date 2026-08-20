@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Card, Tag, Btn, Empty } from "../erp/ui";
+import { Card, Tag, Btn, Empty, Modal } from "../erp/ui";
 import { brl, num } from "../erp/format";
 
 const CANAIS = [
@@ -14,7 +14,8 @@ const agora = () =>
 const hojeISO = () => new Date().toISOString().slice(0, 10);
 
 export default function VendaRapida({ erp }) {
-  const { db, precoVenda, precoLinha, registrarVendaRapida } = erp;
+  const { db, precoVenda, precoLinha, registrarVendaRapida, excluirVendaRapida } = erp;
+  const [editar, setEditar] = useState(null); // venda em edição
   const [canal, setCanal] = useState("Balcão");
   const [forma, setForma] = useState("PIX");
   const [cart, setCart] = useState({});
@@ -168,10 +169,54 @@ export default function VendaRapida({ erp }) {
                 <div className="mut" style={{ fontSize: 11.5 }}>{v.canal} · {v.criado} · {v.pagamento}</div>
               </div>
               <span className="num" style={{ fontWeight: 700 }}>{brl(t)}</span>
+              <button className="lixo" title="Editar (canal/forma/data)" onClick={() => setEditar(v)}>✏️</button>
+              <button className="lixo" title="Excluir venda" onClick={() => {
+                if (window.confirm("Excluir esta venda? O estoque volta, a receita sai do caixa e o cashback do cliente é revertido.")) excluirVendaRapida(v.id);
+              }}>🗑️</button>
             </div>
           );
         })}
       </Card>
+
+      {editar && <EditarVenda erp={erp} venda={editar} onClose={() => setEditar(null)} />}
     </>
+  );
+}
+
+function EditarVenda({ erp, venda, onClose }) {
+  const [canal, setCanal] = useState(venda.canal);
+  const [forma, setForma] = useState(venda.pagamento);
+  const [data, setData] = useState(venda.data || hojeISO());
+
+  const salvar = () => {
+    erp.editarVendaRapida(venda.id, { canal, forma, data });
+    onClose();
+  };
+
+  return (
+    <Modal title="✏️ Editar venda" onClose={onClose}>
+      <p className="mut" style={{ fontSize: 12.5, marginBottom: 12 }}>
+        Ajuste canal, forma de pagamento ou data. Para mudar itens/valor, exclua e registre de novo.
+      </p>
+      <div className="field"><label>Canal</label>
+        <div className="qs-chips">
+          {CANAIS.map(([c, ic]) => (
+            <button key={c} type="button" className={"qs-chip " + (canal === c ? "on" : "")} onClick={() => setCanal(c)}>
+              <span>{ic}</span>{c}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="field"><label>Forma de pagamento</label>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {FORMAS.map((f) => (
+            <button key={f} type="button" className={"qs-chip " + (forma === f ? "on" : "")} onClick={() => setForma(f)}>{f}</button>
+          ))}
+        </div>
+      </div>
+      <div className="field"><label>Data da venda</label>
+        <input type="date" value={data} max={hojeISO()} onChange={(e) => setData(e.target.value || hojeISO())} /></div>
+      <Btn onClick={salvar}>Salvar alterações</Btn>
+    </Modal>
   );
 }

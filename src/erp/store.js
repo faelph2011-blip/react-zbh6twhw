@@ -561,6 +561,47 @@ export function useERP() {
       log(d, `Venda rápida #${id} — ${canal} · ${un} un · ${forma} · caixa +${total.toFixed(2)}`);
     });
 
+  // Exclui uma venda rápida: devolve o estoque, tira a receita do caixa e
+  // reverte cashback/pontos/gasto do cliente.
+  const excluirVendaRapida = (pedidoId) =>
+    up((d) => {
+      const idx = d.pedidos.findIndex((x) => x.id === pedidoId && x.rapida);
+      if (idx < 0) return;
+      const v = d.pedidos[idx];
+      const total = v.itens.reduce((s, it) => { const p = d.produtos.find((x) => x.id === it.id); return s + precoLinha(p, it.qtd); }, 0);
+      v.itens.forEach((it) => { const p = d.produtos.find((x) => x.id === it.id); if (p) p.estoque = +(p.estoque + it.qtd).toFixed(3); });
+      const fi = d.financeiro.findIndex((f) => f.origem === "Venda Rápida" && f.desc && f.desc.includes(`#${pedidoId}`));
+      if (fi >= 0) d.financeiro.splice(fi, 1);
+      if (v.clienteId) {
+        const cli = d.clientes.find((c) => c.id === v.clienteId);
+        if (cli) {
+          cli.cashback = Math.max(0, +(cli.cashback - total * 0.03).toFixed(2));
+          cli.pontos = Math.max(0, cli.pontos - Math.round(total));
+          cli.pedidos = Math.max(0, cli.pedidos - 1);
+          cli.gasto = Math.max(0, +(cli.gasto - total).toFixed(2));
+        }
+      }
+      d.pedidos.splice(idx, 1);
+      log(d, `Venda rápida #${pedidoId} excluída — estoque e caixa revertidos`);
+    });
+
+  // Edita dados leves de uma venda rápida (canal, forma, data) sem mexer nos itens.
+  const editarVendaRapida = (pedidoId, { canal, forma, data, quando }) =>
+    up((d) => {
+      const v = d.pedidos.find((x) => x.id === pedidoId && x.rapida);
+      if (!v) return;
+      if (canal != null) v.canal = canal;
+      if (forma != null) v.pagamento = forma;
+      if (quando != null) v.criado = quando;
+      if (data != null) { v.data = data; v.ts = new Date(data + "T12:00:00").getTime(); }
+      const fi = d.financeiro.find((f) => f.origem === "Venda Rápida" && f.desc && f.desc.includes(`#${pedidoId}`));
+      if (fi) {
+        if (canal != null) fi.desc = `Venda rápida #${pedidoId} (${canal})`;
+        if (data != null) { fi.data = data; fi.venc = data; }
+      }
+      log(d, `Venda rápida #${pedidoId} editada`);
+    });
+
   // Pedido vindo da loja online: cadastra o cliente E cria o pedido de uma vez
   // (um único passo, para não perder dados entre gravações).
   // Próximo número de pedido (sequência limpa, ex.: 1043, 1044…), persistida em d.seqPedido.
@@ -749,7 +790,7 @@ export function useERP() {
     custoProduto, margemProduto, totalPedido, precoVenda, precoLinha,
     // ações
     criarPedido, enviarProducao, avancarOrdem, entregarPedido, cancelarPedido,
-    receberCompra, registrarCompra, editarCompra, excluirCompra, liquidar, lancarFinanceiro, excluirLancamento, definirSaldoInicial, setPagamento, despacharEntrega, registrarVendaRapida,
+    receberCompra, registrarCompra, editarCompra, excluirCompra, liquidar, lancarFinanceiro, excluirLancamento, definirSaldoInicial, setPagamento, despacharEntrega, registrarVendaRapida, editarVendaRapida, excluirVendaRapida,
   };
 }
 
