@@ -20,6 +20,7 @@ import Producao from "./modules/Producao";
 import Estoque from "./modules/Estoque";
 import Compras from "./modules/Compras";
 import Importar from "./modules/Importar";
+import VendasDia from "./modules/VendasDia";
 import Financeiro from "./modules/Financeiro";
 import CRM from "./modules/CRM";
 import Pedidos from "./modules/Pedidos";
@@ -37,6 +38,7 @@ const NAV = [
   ]],
   ["Gestão", [
     ["dash", "Dashboard", "📊"],
+    ["vendasdia", "Vendas por dia", "📅"],
     ["estoque", "Estoque", "📦"],
     ["compras", "Compras", "🛒"],
     ["importar", "Importar histórico", "🗂️"],
@@ -123,6 +125,7 @@ export default function App() {
     pedidos: <Pedidos {...props} />,
     producao: <Producao {...props} />,
     dash: <Dashboard {...props} />,
+    vendasdia: <VendasDia {...props} />,
     estoque: <Estoque {...props} />,
     compras: <Compras {...props} />,
     importar: <Importar {...props} />,

@@ -12,6 +12,7 @@ const agora = () =>
   "hoje " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
 const hojeISO = () => new Date().toISOString().slice(0, 10);
+const fmtDia = (iso) => { const [a, m, d] = (iso || "").split("-"); return d ? `${d}/${m}/${a}` : (iso || ""); };
 
 export default function VendaRapida({ erp }) {
   const { db, precoVenda, totalVenda, registrarVendaRapida, excluirVendaRapida } = erp;
@@ -53,8 +54,9 @@ export default function VendaRapida({ erp }) {
     setCliente("");
   };
 
-  // vendas rápidas de hoje (resumo)
-  const vendasHoje = useMemo(() => db.pedidos.filter((p) => p.rapida), [db.pedidos]);
+  // vendas rápidas (todas, mais recentes primeiro) e o recorte de HOJE
+  const vendasRapidas = useMemo(() => [...db.pedidos.filter((p) => p.rapida)].sort((a, b) => (b.ts || 0) - (a.ts || 0)), [db.pedidos]);
+  const vendasHoje = useMemo(() => vendasRapidas.filter((v) => (v.data || "") === hoje), [vendasRapidas, hoje]);
   const resumo = useMemo(() => {
     let un = 0, valor = 0;
     const porCanal = {};
@@ -65,7 +67,7 @@ export default function VendaRapida({ erp }) {
       porCanal[v.canal] = (porCanal[v.canal] || 0) + t;
     });
     return { un, valor, n: vendasHoje.length, porCanal };
-  }, [vendasHoje, db.produtos, precoVenda]);
+  }, [vendasHoje, db.produtos]);
 
   return (
     <>
@@ -146,13 +148,15 @@ export default function VendaRapida({ erp }) {
       <Card style={{ marginTop: 14 }}>
         <div className="hdr"><h2 style={{ margin: 0 }}>Últimas vendas rápidas</h2>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {Object.entries(resumo.porCanal).map(([c, v]) => <Tag key={c} cls="t-mut">{c} {brl(v)}</Tag>)}
+            {Object.entries(resumo.porCanal).map(([c, v]) => <Tag key={c} cls="t-mut">hoje · {c} {brl(v)}</Tag>)}
           </div>
         </div>
-        {vendasHoje.length === 0 && <Empty>Nenhuma venda rápida ainda. Registre a primeira acima. ⚡</Empty>}
-        {vendasHoje.slice(0, 12).map((v) => {
+        {vendasRapidas.length === 0 && <Empty>Nenhuma venda rápida ainda. Registre a primeira acima. ⚡</Empty>}
+        {vendasRapidas.slice(0, 15).map((v) => {
           const t = totalVenda(v.itens, db.produtos);
           const canalIc = (CANAIS.find((c) => c[0] === v.canal) || ["", "🧾"])[1];
+          const hora = (v.criado || "").match(/\d{1,2}:\d{2}/);
+          const quando = fmtDia(v.data) + (hora ? " " + hora[0] : "");
           return (
             <div className="row" key={v.id}>
               <div className="thumb" style={{ background: "var(--elev)", width: 34, height: 34, fontSize: 17 }}>{canalIc}</div>
@@ -160,7 +164,7 @@ export default function VendaRapida({ erp }) {
                 <div className="name" style={{ fontSize: 13 }}>
                   {v.itens.map((it, i) => { const p = db.produtos.find((x) => x.id === it.id); return (i ? ", " : "") + it.qtd + "× " + (p ? p.nome.replace("Pudim ", "") : ""); })}
                 </div>
-                <div className="mut" style={{ fontSize: 11.5 }}>{v.canal} · {v.criado} · {v.pagamento}</div>
+                <div className="mut" style={{ fontSize: 11.5 }}>📅 {quando} · {v.canal} · {v.pagamento}</div>
               </div>
               <span className="num" style={{ fontWeight: 700 }}>{brl(t)}</span>
               <button className="lixo" title="Editar (canal/forma/data)" onClick={() => setEditar(v)}>✏️</button>

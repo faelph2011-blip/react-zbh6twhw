@@ -291,6 +291,20 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 .pix-info span{color:var(--mut)}
 .pix-info b{color:var(--ink);text-align:right}
 .pix-wa{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-bottom:10px;text-decoration:none}
+/* Vendas por dia — gráfico de barras (série única, cor da marca) */
+.vd-chart-wrap{display:flex;gap:10px;margin-top:8px}
+.vd-yaxis{display:flex;flex-direction:column;justify-content:space-between;height:220px;flex-shrink:0;padding-bottom:22px}
+.vd-yline{font-size:10px;color:var(--mut);white-space:nowrap;text-align:right;min-width:56px}
+.vd-bars{display:flex;gap:4px;align-items:flex-end;height:220px;overflow-x:auto;flex:1;padding-bottom:0;border-left:1px solid var(--line);border-bottom:1px solid var(--line);padding-left:6px}
+.vd-col{display:flex;flex-direction:column;align-items:center;min-width:26px;height:100%;cursor:pointer}
+.vd-bar-area{position:relative;flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.vd-bar{width:66%;max-width:26px;min-height:2px;background:var(--grad);border-radius:4px 4px 0 0;transition:filter .15s,transform .15s}
+.vd-bar.on{filter:brightness(1.08) saturate(1.1);transform:scaleY(1.005)}
+.vd-xlabel{font-size:9.5px;color:var(--mut);margin-top:5px;height:20px;line-height:1.1;transform:rotate(-45deg);transform-origin:top left;white-space:nowrap}
+.vd-tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:7px 10px;border-radius:10px;font-size:11px;line-height:1.4;white-space:nowrap;z-index:5;box-shadow:0 6px 20px rgba(0,0,0,.28);pointer-events:none;text-align:center}
+.vd-tip .mut{color:rgba(255,255,255,.7)}
+.vd-track{height:8px;background:var(--elev);border-radius:99px;overflow:hidden}
+.vd-fill{height:100%;background:var(--grad);border-radius:99px}
 @media(max-width:720px){
   .flavor{flex-direction:column}
   .flavor-media{width:100%;min-height:190px}
