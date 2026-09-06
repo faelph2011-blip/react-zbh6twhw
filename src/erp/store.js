@@ -12,6 +12,7 @@ import { cloudEnabled } from "../cloud/config";
 import { sessaoAtual, aoMudarAuth, entrar, criarConta, sair } from "../cloud/auth";
 import { puxarEstado, gravarEstado } from "../cloud/sync";
 import { enviarPedidoOnline, puxarPedidosOnline, marcarPedidosProcessados } from "../cloud/pedidos";
+import { gravarPublico, puxarPublico } from "../cloud/publico";
 import { planejar as planejarImport } from "./importador";
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -138,6 +139,8 @@ export function useERP() {
     pushTimer.current = setTimeout(async () => {
       setCloudStatus((s) => ({ ...s, syncing: true }));
       const r = await gravarEstado(next);
+      // espelho público do estoque/preço para a loja do cliente refletir o painel
+      gravarPublico(next.produtos).catch(() => {});
       setCloudStatus((s) => ({
         ...s, syncing: false,
         lastSync: r.ok ? Date.now() : s.lastSync,
@@ -158,7 +161,28 @@ export function useERP() {
     setSession(s);
     const logado = !!(s && s.user && s.user.id);
     loggedInRef.current = logado;
-    if (!logado) { setCloudStatus((cs) => ({ ...cs, ready: true })); return; }
+    if (!logado) {
+      // Cliente anônimo: puxa o espelho público (estoque/preço ao vivo) e reflete
+      // na vitrine, sem acessar dados privados.
+      try {
+        const { data } = await puxarPublico();
+        if (data && Array.isArray(data.produtos)) {
+          const next = clone(dbRef.current);
+          data.produtos.forEach((sp) => {
+            const p = next.produtos.find((x) => x.id === sp.id);
+            if (p) {
+              if (sp.estoque != null) p.estoque = sp.estoque;
+              if (sp.preco != null) p.preco = sp.preco;
+              if (sp.promo !== undefined) p.promo = sp.promo;
+              if (sp.promoUnit !== undefined) p.promoUnit = sp.promoUnit;
+            }
+          });
+          setDb(next); dbRef.current = next; writeLocal(next);
+        }
+      } catch (_) {}
+      setCloudStatus((cs) => ({ ...cs, ready: true }));
+      return;
+    }
     setCloudStatus((cs) => ({ ...cs, syncing: true, error: null }));
     const { data, erro } = await puxarEstado();
     if (erro) { setCloudStatus({ syncing: false, lastSync: null, error: erro, ready: true }); return; }
@@ -170,10 +194,12 @@ export function useERP() {
       dbRef.current = rec;
       writeLocal(rec);
       setCloudStatus({ syncing: false, lastSync: Date.now(), error: null, ready: true });
-      // absorve pedidos feitos na loja online que ainda não entraram no ERP
+      // publica o espelho de estoque para a loja do cliente + absorve pedidos online
+      gravarPublico(rec.produtos).catch(() => {});
       if (absorbRef.current) absorbRef.current().catch(() => {});
     } else {
       const r = await gravarEstado(dbRef.current);
+      gravarPublico(dbRef.current.produtos).catch(() => {});
       setCloudStatus({ syncing: false, lastSync: r.ok ? Date.now() : null, error: r.ok ? null : r.erro, ready: true });
     }
   }, [writeLocal]);

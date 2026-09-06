@@ -75,3 +75,29 @@ create policy "pedido_online_update"
   to authenticated
   using (true)
   with check (true);
+
+-- ============================================================
+-- ESPELHO PÚBLICO DO CATÁLOGO (loja_publica)
+-- Snapshot enxuto (id, estoque, preço) que a loja do cliente lê SEM
+-- login, para a vitrine refletir o estoque real do painel. Sem dados
+-- sensíveis. Só o dono (logado) escreve; qualquer visitante lê.
+-- ============================================================
+create table if not exists public.loja_publica (
+  id         text        primary key default 'catalogo',
+  data       jsonb       not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.loja_publica enable row level security;
+
+drop policy if exists "publica_read" on public.loja_publica;
+create policy "publica_read" on public.loja_publica
+  for select to anon, authenticated using (true);
+
+drop policy if exists "publica_insert" on public.loja_publica;
+create policy "publica_insert" on public.loja_publica
+  for insert to authenticated with check (true);
+
+drop policy if exists "publica_update" on public.loja_publica;
+create policy "publica_update" on public.loja_publica
+  for update to authenticated using (true) with check (true);
