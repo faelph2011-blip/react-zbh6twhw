@@ -40,6 +40,17 @@ export default function Loja({ erp, full }) {
   // total já com o desconto por combinação (2+ unidades no total da venda)
   const total = totalVenda(cartItens, db.produtos);
 
+  // Horário de funcionamento da loja: todos os dias, das 9h às 20h.
+  const aberta = (() => { const h = new Date().getHours(); return h >= 9 && h < 20; })();
+  const abrirCheckout = () => {
+    if (!cart.length) return;
+    if (!aberta) {
+      window.open(waLink("Olá! Gostaria de fazer um pedido 🍮 (vi que a loja está fechada agora — o site funciona todos os dias das 9h às 20h)"), "_blank", "noopener");
+      return;
+    }
+    setCheckout(true);
+  };
+
   // Efeitos de rolagem: elementos ".sr" surgem ao entrar na tela; vídeos de
   // fundo tocam quando visíveis e pausam quando saem (economia). Só visual.
   useEffect(() => {
@@ -101,11 +112,18 @@ export default function Loja({ erp, full }) {
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           {cart.length > 0 && (
             <div className="pill">🛒 {cart.length} · {brl(total)}
-              <button className="btn mini" style={{ marginLeft: 8 }} onClick={() => setCheckout(true)}>Finalizar</button></div>
+              <button className="btn mini" style={{ marginLeft: 8 }} onClick={abrirCheckout}>Finalizar</button></div>
           )}
           <a className="btn mini" href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}><Wa size={15} /> WhatsApp</a>
         </div>
       </div>
+
+      {!aberta && (
+        <div className="loja-fechada">
+          🕘 Estamos <b>fechados</b> agora — pedidos pelo site todos os dias, das <b>9h às 20h</b>.
+          Fora do horário, é só <a href={`https://wa.me/${WPP}`} target="_blank" rel="noreferrer">chamar no WhatsApp</a>. 💬
+        </div>
+      )}
 
       <div className="hero hero--cine">
         <video className="hero-bg" data-autoplay
@@ -210,16 +228,25 @@ export default function Loja({ erp, full }) {
                 <h3>{NOME_SABOR[sabor] || sabor}</h3>
                 <p className="mut" style={{ fontSize: 13, marginBottom: 12 }}>{DESC_SABOR[sabor]}</p>
                 <div className="flavor-sizes">
-                  {itens.map((p) => (
-                    <div className="size-opt" key={p.id}>
-                      <div className="size-opt-info">
-                        <span className="size-opt-porte">{porteDe(p)}{p.combo && <span className="combo-inline">🎉 {p.combo}</span>}</span>
-                        <span className="mut" style={{ fontSize: 11.5 }}>{p.tamanho} · {p.rendimento > 1 ? `${p.rendimento} porções` : "individual"}</span>
+                  {itens.map((p) => {
+                    const disp = (p.estoque || 0) > 0;
+                    return (
+                      <div className="size-opt" key={p.id}>
+                        <div className="size-opt-info">
+                          <span className="size-opt-porte">{porteDe(p)}
+                            {p.combo && <span className="combo-inline">🎉 {p.combo}</span>}
+                            {!disp && <span className="tag t-org" style={{ marginLeft: 6 }}>sob encomenda</span>}</span>
+                          <span className="mut" style={{ fontSize: 11.5 }}>{p.tamanho} · {p.rendimento > 1 ? `${p.rendimento} porções` : "individual"}</span>
+                        </div>
+                        <span className="size-opt-price">{brl(precoVenda(p))}</span>
+                        {disp
+                          ? <button className="btn mini" onClick={() => add(p)}>+ Carrinho</button>
+                          : <a className="btn mini soft" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 5 }}
+                              href={waLink(`Olá! Gostaria de encomendar o Pudim ${p.nome} 🍮`)} target="_blank" rel="noreferrer">
+                              <Wa size={13} /> Encomendar</a>}
                       </div>
-                      <span className="size-opt-price">{brl(precoVenda(p))}</span>
-                      <button className="btn mini" onClick={() => add(p)}>+ Carrinho</button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -246,7 +273,7 @@ export default function Loja({ erp, full }) {
       </footer>
 
       {cart.length > 0 && (
-        <button className="cart-float" onClick={() => setCheckout(true)} aria-label="Ver carrinho" title="Ver carrinho">
+        <button className="cart-float" onClick={abrirCheckout} aria-label="Ver carrinho" title="Ver carrinho">
           🛒<span className="cart-float-badge">{cart.length}</span>
         </button>
       )}

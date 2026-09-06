@@ -208,6 +208,8 @@ label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6
 .store--full{border:none;border-radius:0;min-height:100vh;max-width:1180px;margin:0 auto;background:transparent}
 .size-badge{display:inline-block;background:rgba(20,12,6,.55);border:1px solid rgba(255,255,255,.18);color:#FFF3E0;border-radius:99px;padding:3px 11px;font-size:11px;font-weight:600;backdrop-filter:blur(6px)}
 .store-nav{display:flex;justify-content:space-between;align-items:center;padding:15px 26px;position:sticky;top:0;background:var(--glass-2);backdrop-filter:blur(20px) saturate(1.3);border-bottom:1px solid var(--line);z-index:5}
+.loja-fechada{background:linear-gradient(90deg,#8a5a34,#b3803f);color:#fff;text-align:center;padding:11px 18px;font-size:13.5px;line-height:1.5}
+.loja-fechada a{color:#fff;font-weight:700;text-decoration:underline}
 .store-logo{font-weight:700;font-size:18px;display:flex;align-items:center;gap:9px}
 .hero{position:relative;text-align:center;padding:66px 24px 36px;overflow:hidden}
 .hero:before{content:"";position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:min(720px,92%);height:480px;background:radial-gradient(circle,rgba(232,138,37,.20),transparent 62%);pointer-events:none;z-index:0;animation:pulse 6s ease-in-out infinite}
