@@ -1,0 +1,1003 @@
+<title>Pudins da Lauren · Plano 44 Dias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+  :root{
+    --ground:#FBF7F0;
+    --surface:#FFFFFF;
+    --surface-2:#F5ECDD;
+    --ink:#2B2118;
+    --ink-soft:#6B5A45;
+    --ink-faint:#9C8A70;
+    --line:#E7DBC6;
+    --line-strong:#D8C6A6;
+    --caramel:#9A4B12;
+    --caramel-deep:#6E340B;
+    --gold:#E3A72E;
+    --gold-soft:#F7E7BF;
+    --cream-band:#F3E7CF;
+    --good:#3E7C4E;
+    --warn:#B5721A;
+    --crit:#B23A2E;
+    --shadow:0 1px 2px rgba(43,33,24,.06),0 8px 24px -12px rgba(43,33,24,.18);
+    --shadow-lift:0 2px 4px rgba(43,33,24,.08),0 18px 40px -18px rgba(110,52,11,.35);
+    --radius:14px;
+    --radius-sm:9px;
+    --maxw:1120px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#1B130C;
+      --surface:#241A11;
+      --surface-2:#2E2115;
+      --ink:#F3E7D4;
+      --ink-soft:#C6B49A;
+      --ink-faint:#998A72;
+      --line:#3A2B1B;
+      --line-strong:#4C3A25;
+      --caramel:#E88A3C;
+      --caramel-deep:#F0A85A;
+      --gold:#F0C24E;
+      --gold-soft:#4A3617;
+      --cream-band:#2A1E12;
+      --good:#6FBF80;
+      --warn:#E0A24A;
+      --crit:#E8776A;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+      --shadow-lift:0 2px 6px rgba(0,0,0,.5),0 22px 46px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#1B130C;
+    --surface:#241A11;
+    --surface-2:#2E2115;
+    --ink:#F3E7D4;
+    --ink-soft:#C6B49A;
+    --ink-faint:#998A72;
+    --line:#3A2B1B;
+    --line-strong:#4C3A25;
+    --caramel:#E88A3C;
+    --caramel-deep:#F0A85A;
+    --gold:#F0C24E;
+    --gold-soft:#4A3617;
+    --cream-band:#2A1E12;
+    --good:#6FBF80;
+    --warn:#E0A24A;
+    --crit:#E8776A;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+    --shadow-lift:0 2px 6px rgba(0,0,0,.5),0 22px 46px -18px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6;
+    margin:0;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:20px}
+
+  h1,h2,h3,h4{font-family:"Fraunces",Georgia,serif;text-wrap:balance;line-height:1.08;margin:0}
+  p{margin:0}
+  a{color:var(--caramel);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  .eyebrow{
+    font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--caramel);
+  }
+
+  /* ---------- top nav ---------- */
+  nav.jump{
+    position:sticky;top:0;z-index:50;
+    background:color-mix(in srgb,var(--ground) 90%,transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.jump .inner{
+    max-width:var(--maxw);margin:0 auto;padding:10px 20px;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  }
+  nav.jump .brand{font-family:"Fraunces";font-weight:900;font-size:1rem;color:var(--ink);margin-right:auto;display:flex;align-items:center;gap:8px}
+  nav.jump .brand .dot{width:22px;height:22px;border-radius:50%;background:
+    radial-gradient(circle at 35% 30%,var(--gold),var(--caramel) 70%,var(--caramel-deep));
+    box-shadow:inset 0 -3px 4px rgba(0,0,0,.25)}
+  nav.jump a.chip{
+    font-size:.78rem;font-weight:600;color:var(--ink-soft);
+    padding:5px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap;
+  }
+  nav.jump a.chip:hover{background:var(--surface-2);color:var(--ink);text-decoration:none}
+  .toggle{
+    font:inherit;font-size:.78rem;font-weight:600;cursor:pointer;
+    background:var(--surface-2);color:var(--ink-soft);border:1px solid var(--line);
+    border-radius:999px;padding:5px 12px;
+  }
+
+  /* ---------- header ---------- */
+  header.hero{
+    position:relative;overflow:hidden;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(120% 90% at 88% -10%,var(--gold-soft),transparent 55%),
+      linear-gradient(180deg,var(--surface-2),var(--ground));
+  }
+  header.hero .wrap{padding-block:46px 40px}
+  .hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;
+    color:var(--caramel-deep);background:var(--gold-soft);border:1px solid var(--line-strong);
+    padding:5px 12px;border-radius:999px;letter-spacing:.02em}
+  header.hero h1{font-size:clamp(2.1rem,6vw,3.5rem);font-weight:900;margin:16px 0 0;letter-spacing:-.01em}
+  header.hero h1 em{font-style:italic;color:var(--caramel)}
+  header.hero .lede{max-width:56ch;margin-top:16px;color:var(--ink-soft);font-size:1.06rem}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .meta{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:10px 14px;box-shadow:var(--shadow);min-width:120px}
+  .meta .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);font-weight:700}
+  .meta .v{font-family:"Fraunces";font-weight:600;font-size:1.15rem;margin-top:2px}
+  .warnbar{margin-top:26px;background:color-mix(in srgb,var(--warn) 14%,var(--surface));
+    border:1px solid color-mix(in srgb,var(--warn) 40%,var(--line));
+    border-left:4px solid var(--warn);border-radius:var(--radius-sm);padding:13px 16px;font-size:.92rem;color:var(--ink)}
+  .warnbar b{color:var(--warn)}
+
+  /* ---------- section frame ---------- */
+  section{padding-block:52px;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  .sec-head{display:flex;gap:16px;align-items:baseline;margin-bottom:8px}
+  .sec-num{font-family:"Fraunces";font-weight:900;font-size:1rem;color:var(--gold);
+    border:2px solid var(--gold);border-radius:50%;width:38px;height:38px;flex:0 0 38px;
+    display:grid;place-items:center;line-height:1}
+  .sec-head h2{font-size:clamp(1.5rem,4vw,2.05rem);font-weight:600}
+  .sec-intro{color:var(--ink-soft);max-width:68ch;margin:14px 0 30px;font-size:1.02rem}
+
+  /* ---------- generic cards ---------- */
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;box-shadow:var(--shadow)}
+  .card h3{font-size:1.12rem;font-weight:600;margin-bottom:6px}
+  .card h4{font-size:.98rem;font-weight:600;margin-bottom:4px}
+  .card p{color:var(--ink-soft);font-size:.94rem}
+  .card ul{margin:8px 0 0;padding-left:18px;color:var(--ink-soft);font-size:.94rem}
+  .card ul li{margin:4px 0}
+  .card ul li::marker{color:var(--gold)}
+
+  .tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:3px 8px;border-radius:6px;margin:0 6px 6px 0}
+  .t-good{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+  .t-warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+  .t-crit{background:color-mix(in srgb,var(--crit) 16%,transparent);color:var(--crit)}
+  .t-neutral{background:var(--surface-2);color:var(--ink-soft)}
+  .t-gold{background:var(--gold-soft);color:var(--caramel-deep)}
+
+  .split{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+  @media(max-width:760px){.split{grid-template-columns:1fr}}
+
+  /* SWOT-ish diagnostic grid */
+  .diag{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.diag{grid-template-columns:1fr}}
+  .diag .card{border-top:3px solid var(--line-strong)}
+  .diag .pos{border-top-color:var(--good)}
+  .diag .neg{border-top-color:var(--crit)}
+  .diag .opp{border-top-color:var(--gold)}
+  .diag .thr{border-top-color:var(--warn)}
+
+  /* ---------- phase blocks ---------- */
+  .phase{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+  .phase-top{padding:18px 20px;display:flex;gap:14px;align-items:flex-start;
+    background:linear-gradient(180deg,var(--cream-band),transparent)}
+  .phase-days{font-family:"Fraunces";font-weight:900;font-size:.82rem;color:#fff;
+    background:var(--caramel);border-radius:8px;padding:7px 10px;white-space:nowrap;line-height:1.1;text-align:center}
+  :root[data-theme="dark"] .phase-days,
+  .phase-days{color:#fff}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .phase-days{color:#1B130C}}
+  :root[data-theme="dark"] .phase-days{color:#1B130C}
+  .phase-top h3{font-size:1.18rem;font-weight:600}
+  .phase-top .goal{color:var(--ink-soft);font-size:.9rem;margin-top:3px}
+
+  .tbl-scroll{overflow-x:auto}
+  table.cal{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+  table.cal th,table.cal td{text-align:left;padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
+  table.cal th{background:var(--surface-2);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--ink-faint);font-weight:700;position:sticky;top:0}
+  table.cal td.d{font-family:"Fraunces";font-weight:700;color:var(--caramel);white-space:nowrap;font-variant-numeric:tabular-nums}
+  table.cal td.fmt{white-space:nowrap}
+  table.cal tbody tr:hover,table.cal tbody tr:hover{background:color-mix(in srgb,var(--gold-soft) 40%,transparent)}
+  .fmt-pill{font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
+  .f-reel{background:color-mix(in srgb,var(--caramel) 15%,transparent);color:var(--caramel)}
+  .f-carr{background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--caramel-deep)}
+  .f-story{background:var(--surface-2);color:var(--ink-soft)}
+  .f-live{background:color-mix(in srgb,var(--crit) 15%,transparent);color:var(--crit)}
+
+  /* persona columns */
+  .persona{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:900px){.persona{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.persona{grid-template-columns:1fr}}
+  .pcol h4{display:flex;align-items:center;gap:8px;font-size:.98rem;font-weight:700;margin-bottom:8px;font-family:"Figtree"}
+  .pcol h4 .ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:.9rem;background:var(--gold-soft);color:var(--caramel-deep);flex:0 0 26px}
+  .pcol ul{list-style:none;margin:0;padding:0}
+  .pcol li{font-size:.9rem;color:var(--ink-soft);padding:7px 0;border-top:1px solid var(--line)}
+  .pcol li:first-child{border-top:0}
+
+  /* reels */
+  .reel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px}
+  .reel summary{list-style:none;cursor:pointer;padding:16px 18px;display:flex;gap:14px;align-items:center}
+  .reel summary::-webkit-details-marker{display:none}
+  .reel .rn{font-family:"Fraunces";font-weight:900;font-size:1.25rem;color:var(--gold);width:34px;flex:0 0 34px;text-align:center;font-variant-numeric:tabular-nums}
+  .reel .rt{flex:1}
+  .reel .rt .rk{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);font-weight:700}
+  .reel .rt .rh{font-weight:700;font-size:1rem;color:var(--ink);margin-top:1px}
+  .reel .chev{color:var(--ink-faint);transition:transform .2s;font-size:1.1rem}
+  .reel[open] .chev{transform:rotate(90deg)}
+  .reel .body{padding:2px 18px 20px 66px;border-top:1px solid var(--line);margin-top:-2px}
+  @media(max-width:560px){.reel .body{padding-left:18px}}
+  .rblock{margin-top:14px}
+  .rblock .lbl{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--caramel);margin-bottom:4px}
+  .rblock p,.rblock li{font-size:.92rem;color:var(--ink-soft)}
+  .rblock ol,.rblock ul{margin:6px 0 0;padding-left:18px}
+  .rblock ol li{margin:5px 0}
+  .hook{background:var(--gold-soft);border-radius:var(--radius-sm);padding:12px 14px;font-family:"Fraunces";
+    font-weight:600;font-style:italic;color:var(--caramel-deep);font-size:1.02rem}
+  .screen{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.82rem;background:var(--surface-2);
+    border:1px dashed var(--line-strong);border-radius:8px;padding:10px 12px;color:var(--ink);white-space:pre-line}
+  .cta-line{font-weight:600;color:var(--ink)}
+
+  /* metrics / analysis */
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:820px){.kpi{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:440px){.kpi{grid-template-columns:1fr}}
+  .kpi .card{border-left:4px solid var(--gold)}
+  .kpi .n{font-family:"Fraunces";font-weight:900;font-size:1.6rem;color:var(--caramel);font-variant-numeric:tabular-nums}
+  .kpi .lab{font-size:.82rem;color:var(--ink-soft);margin-top:2px}
+  .kpi .sub{font-size:.76rem;color:var(--ink-faint);margin-top:6px}
+
+  .steps{counter-reset:st;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+  .steps li{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);
+    padding:14px 16px 14px 52px;position:relative;box-shadow:var(--shadow)}
+  .steps li::before{counter-increment:st;content:counter(st);position:absolute;left:14px;top:14px;
+    width:26px;height:26px;border-radius:50%;background:var(--caramel);color:#fff;font-family:"Fraunces";
+    font-weight:900;font-size:.85rem;display:grid;place-items:center}
+  .steps li b{color:var(--ink)}
+  .steps li p{font-size:.92rem;color:var(--ink-soft);margin-top:3px}
+
+  /* offer ladder */
+  .ladder{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:760px){.ladder{grid-template-columns:1fr}}
+  .ladder .card{position:relative;border-top:4px solid var(--gold)}
+  .ladder .price{font-family:"Fraunces";font-weight:900;font-size:1.3rem;color:var(--caramel);margin-top:6px}
+  .ladder .card .rung{position:absolute;top:-12px;right:16px;background:var(--caramel);color:#fff;
+    font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:999px}
+
+  .callout{background:var(--surface-2);border:1px solid var(--line);border-left:4px solid var(--caramel);
+    border-radius:var(--radius-sm);padding:16px 18px;margin-top:18px}
+  .callout .lbl{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--caramel)}
+  .callout p{color:var(--ink-soft);font-size:.94rem;margin-top:4px}
+
+  footer{padding:34px 20px 48px;text-align:center;color:var(--ink-faint);font-size:.86rem}
+  footer .wrap{max-width:60ch}
+  .adjust{color:var(--warn);font-weight:700}
+
+  details>summary:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<nav class="jump">
+  <div class="inner">
+    <span class="brand"><span class="dot" aria-hidden="true"></span>Pudins da Lauren</span>
+    <a class="chip" href="#estrategia">1 · Estratégia</a>
+    <a class="chip" href="#calendario">2 · Calendário</a>
+    <a class="chip" href="#reels">3 · Reels</a>
+    <a class="chip" href="#analise">4 · Análise</a>
+    <a class="chip" href="#sistema">5 · Sistema</a>
+    <button class="toggle" id="themeBtn" type="button" aria-label="Alternar tema">◐ Tema</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="hero-tag">🍮 Plano de crescimento · 44 dias</span>
+    <h1>Diretor de crescimento <em>@pudinsdalauren</em></h1>
+    <p class="lede">Um playbook operacional para transformar um perfil de pudim em uma máquina de alcance, comunidade e vendas — do gancho na tela ao caixa. Aberto todos os dias durante os próximos 44.</p>
+    <div class="meta-row">
+      <div class="meta"><div class="k">Nicho</div><div class="v">Pudim & confeitaria caseira</div></div>
+      <div class="meta"><div class="k">Horizonte</div><div class="v">44 dias · 4 fases</div></div>
+      <div class="meta"><div class="k">Meta central</div><div class="v">Alcance → seguidor → venda</div></div>
+      <div class="meta"><div class="k">Produtos</div><div class="v">Pudins · receitas · curso</div></div>
+    </div>
+    <div class="warnbar">
+      <b>Antes de começar:</b> os prints do perfil, dos conteúdos e dos resultados <b>não chegaram</b> na conversa. Montei tudo com base no comportamento comprovado do nicho de pudim no Instagram BR. Onde você vê <span class="adjust">🔧 ajuste ao seu perfil</span>, é ponto pra calibrar com os seus dados reais — cole os prints aqui e eu refino na hora.
+    </div>
+  </div>
+</header>
+
+<!-- ==================== 1. ESTRATÉGIA ==================== -->
+<section id="estrategia">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">1</span><h2>Diagnóstico & estratégia de crescimento</h2></div>
+    <p class="sec-intro">Primeiro leio o posicionamento como um estrategista leria: o que a bio promete, quem para no seu vídeo, o que trava o crescimento. Depois viro isso em um plano de 4 fases. Como não tenho o print, uso o diagnóstico típico de contas de pudim — confirme cada ponto com o seu perfil.</p>
+
+    <h3 style="font-size:1.15rem;margin-bottom:14px">Diagnóstico do posicionamento</h3>
+    <div class="diag">
+      <div class="card pos">
+        <span class="tag t-good">Forças prováveis</span>
+        <ul>
+          <li><b>Nicho apetitoso e universal:</b> pudim é desejo nacional — gera parada de rolagem por si só (comida em close = ouro no algoritmo).</li>
+          <li><b>Produto visual:</b> a calda escorrendo, o corte, o balanço do pudim são "money shots" naturais.</li>
+          <li><b>Nome claro:</b> "Pudins da Lauren" já diz nicho + pessoa. Fácil de lembrar e marcar.</li>
+        </ul>
+      </div>
+      <div class="card neg">
+        <span class="tag t-crit">O que costuma travar</span>
+        <ul>
+          <li><b>Bio genérica</b> ("amo fazer pudim 🍮") sem promessa, sem prova, sem CTA. Não diz por que seguir.</li>
+          <li><b>Feed bonito, sem gancho:</b> foto do pudim pronto não retém — falta o "como" e o "erro".</li>
+          <li><b>Vídeo sem áudio/legenda</b> nos 2 primeiros segundos → morre na retenção.</li>
+          <li><b>Sem produto claro:</b> as pessoas seguem mas não sabem que dá pra comprar/aprender.</li>
+        </ul>
+      </div>
+      <div class="card opp">
+        <span class="tag t-gold">Oportunidades</span>
+        <ul>
+          <li><b>Conteúdo de erro:</b> "por que seu pudim fica com furinhos" viraliza porque quase todo mundo já errou.</li>
+          <li><b>Séries recorrentes</b> ("Pudim de R$X", "Testando pudim viral") criam hábito de voltar.</li>
+          <li><b>Datas quentes</b> nos 44 dias: fim de semana, festa junina fora de época? Aniversários, encomendas.</li>
+          <li><b>Monetização em 3 níveis</b> (receita → curso → pudim físico) ainda inexplorada.</li>
+        </ul>
+      </div>
+      <div class="card thr">
+        <span class="tag t-warn">Riscos / limitadores</span>
+        <ul>
+          <li><b>Postar bonito ≠ postar estratégico:</b> sem gancho e CTA, alcance não vira seguidor nem venda.</li>
+          <li><b>Frequência irregular</b> derruba o alcance — o algoritmo premia consistência.</li>
+          <li><b>Nicho concorrido:</b> precisa de ângulo/persona forte (a "Lauren") pra não virar mais uma conta de receita.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">🔧 Ajuste ao seu perfil</div>
+      <p>Confirme comigo: (a) quantos seguidores hoje e média de views por Reel; (b) a bio atual palavra por palavra; (c) se já vende algo e como; (d) se aparece o rosto/mãos nos vídeos. Com isso o diagnóstico deixa de ser "típico" e vira <em>seu</em>.</p>
+    </div>
+
+    <h3 style="font-size:1.15rem;margin:34px 0 8px">Bio reposicionada (modelo pronto)</h3>
+    <p class="sec-intro" style="margin-bottom:16px">A bio tem 3 funções: dizer o nicho, dar uma razão pra seguir e apontar pra ação. Modelo:</p>
+    <div class="split">
+      <div class="card" style="border-top:3px solid var(--caramel)">
+        <h4>🍮 Versão "criadora de conteúdo"</h4>
+        <div class="screen">Pudins da Lauren 🍮
+Pudim liso, sem furinho e sem mistério
+Receitas que dão certo de primeira ↓
+Novo vídeo toda [seg/qua/sex]
+👇 Pega a receita completa</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--gold)">
+        <h4>💰 Versão "vende pudim/curso"</h4>
+        <div class="screen">Pudins da Lauren 🍮
+Ensino você a fazer pudim de padaria em casa
++2.000 alunas já desenformaram sem quebrar
+📍 Encomendas [cidade]
+👇 Receita grátis + curso</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.15rem;margin:34px 0 16px">A estratégia em 4 fases</h3>
+    <div class="grid g4">
+      <div class="card" style="border-top:3px solid var(--caramel)">
+        <span class="tag t-neutral">Dias 1–11</span>
+        <h4>Fase 1 · Autoridade</h4>
+        <p>Provar em vídeo que você domina o pudim. Conteúdo de erro/acerto e "segredos". Objetivo: retenção alta e primeiros salvamentos.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--gold)">
+        <span class="tag t-neutral">Dias 12–22</span>
+        <h4>Fase 2 · Viralização</h4>
+        <p>Ganchos de identificação em massa e trends. Objetivo: explodir alcance e compartilhamentos, atrair não-seguidores.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--good)">
+        <span class="tag t-neutral">Dias 23–33</span>
+        <h4>Fase 3 · Comunidade</h4>
+        <p>Séries, receitas completas, respostas a comentários. Objetivo: salvamentos, DMs e vínculo — transformar viewer em fã.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--caramel-deep)">
+        <span class="tag t-neutral">Dias 34–44</span>
+        <h4>Fase 4 · Conversão</h4>
+        <p>Aquecer e vender: receita → curso → pudim físico. Objetivo: transformar audiência em caixa sem queimar o alcance.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">Formatos e proporção recomendada</div>
+      <p><b>70% Reels</b> (alcance e novos seguidores) · <b>20% Carrossel</b> (salvamento e autoridade) · <b>10% Stories diários</b> (vínculo, bastidores, enquetes e venda). Poste de forma consistente — melhor 4 Reels fortes por semana do que 7 fracos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 2. CALENDÁRIO ==================== -->
+<section id="calendario">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">2</span><h2>Calendário de conteúdo · 44 dias</h2></div>
+    <p class="sec-intro">Cada dia tem tema, formato, gancho e objetivo. A ideia é aproveitar os padrões que mais funcionam no nicho (erro, transformação, "de R$X", trend) e ir subindo a força das ideias. <span class="adjust">🔧</span> Reordene conforme os seus melhores dias/horários reais. Legenda: <span class="fmt-pill f-reel">Reel</span> <span class="fmt-pill f-carr">Carrossel</span> <span class="fmt-pill f-story">Story</span> <span class="fmt-pill f-live">Live</span></p>
+
+    <!-- FASE 1 -->
+    <div class="phase">
+      <div class="phase-top">
+        <div class="phase-days">DIAS<br>1–11</div>
+        <div><h3>Fase 1 · Autoridade & reposicionamento</h3><div class="goal">Objetivo: retenção e prova de domínio. Nada de venda ainda.</div></div>
+      </div>
+      <div class="tbl-scroll">
+        <table class="cal">
+          <thead><tr><th>Dia</th><th>Formato</th><th>Tema / gancho</th><th>Objetivo</th></tr></thead>
+          <tbody>
+            <tr><td class="d">1</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"O erro nº1 que deixa seu pudim cheio de furinhos"</b> — mostra o furinho em close e revela a causa (bater demais).</td><td>Retenção + salvamento</td></tr>
+            <tr><td class="d">2</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>Enquete: "Seu pudim já deu errado?" + caixinha "manda sua dúvida de pudim".</td><td>Vínculo + pauta</td></tr>
+            <tr><td class="d">3</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Desenformei sem quebrar"</b> — o gesto do desenforme perfeito em câmera lenta com áudio satisfatório.</td><td>Compartilhamento (ASMR visual)</td></tr>
+            <tr><td class="d">4</td><td class="fmt"><span class="fmt-pill f-carr">Carrossel</span></td><td><b>"5 segredos do pudim liso de padaria"</b> — 1 segredo por slide, último com CTA de salvar.</td><td>Salvamento + autoridade</td></tr>
+            <tr><td class="d">5</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Calda perfeita em 90 segundos"</b> — do açúcar ao âmbar, sem queimar; alerta do erro comum.</td><td>Retenção + salvamento</td></tr>
+            <tr><td class="d">6</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>Bastidor: você fazendo a calda + responde 3 dúvidas da caixinha do dia 2.</td><td>Proximidade</td></tr>
+            <tr><td class="d">7</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Fiz o pudim mais fácil do mundo (3 ingredientes)"</b> — receita infalível, tela cheia de ingredientes.</td><td>Alcance + seguidores</td></tr>
+            <tr><td class="d">8</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Forno x fogão x airfryer: qual faz o melhor pudim?"</b> — comparação lado a lado.</td><td>Retenção (curiosidade)</td></tr>
+            <tr><td class="d">9</td><td class="fmt"><span class="fmt-pill f-carr">Carrossel</span></td><td><b>"Guia do banho-maria sem medo"</b> — passo a passo visual; combate a objeção "tenho medo".</td><td>Salvamento</td></tr>
+            <tr><td class="d">10</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>"Antes/depois" do seguidor: repost de alguém que testou uma dica sua (peça nos stories).</td><td>Prova social</td></tr>
+            <tr><td class="d">11</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Por que seu pudim solta água (e como resolver)"</b> — dor clássica, solução em 3 passos.</td><td>Salvamento + comentário</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FASE 2 -->
+    <div class="phase">
+      <div class="phase-top">
+        <div class="phase-days">DIAS<br>12–22</div>
+        <div><h3>Fase 2 · Viralização & alcance</h3><div class="goal">Objetivo: máximo de compartilhamento e não-seguidores. Ganchos de identificação e trends.</div></div>
+      </div>
+      <div class="tbl-scroll">
+        <table class="cal">
+          <thead><tr><th>Dia</th><th>Formato</th><th>Tema / gancho</th><th>Objetivo</th></tr></thead>
+          <tbody>
+            <tr><td class="d">12</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"POV: você prometeu pudim pra família"</b> — humor + receita rápida por cima. Trend de áudio.</td><td>Compartilhamento</td></tr>
+            <tr><td class="d">13</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Testando o pudim viral de [X] — será que presta?"</b> — reação honesta, veredito no fim.</td><td>Retenção até o fim</td></tr>
+            <tr><td class="d">14</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>Bastidor do teste + "qual próximo pudim viral eu testo?" (enquete com 2 opções).</td><td>Co-criação</td></tr>
+            <tr><td class="d">15</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Pudim de R$5 x pudim de R$50: dá pra notar?"</b> — comparação de valor, corte final.</td><td>Compartilhamento + comentário</td></tr>
+            <tr><td class="d">16</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Coisas que ninguém te conta sobre fazer pudim"</b> — 3 verdades rápidas, ritmo alto.</td><td>Salvamento + seguidor</td></tr>
+            <tr><td class="d">17</td><td class="fmt"><span class="fmt-pill f-carr">Carrossel</span></td><td><b>"7 pudins diferentes pra você nunca enjoar"</b> — 1 por slide (leite, coco, paçoca, ninho...).</td><td>Salvamento (referência)</td></tr>
+            <tr><td class="d">18</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Pudim de vulcão / pudim de colher"</b> — money shot da calda vazando; áudio satisfatório.</td><td>Alcance viral</td></tr>
+            <tr><td class="d">19</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>Caixinha: "adivinha o ingrediente secreto" + revela no próximo story.</td><td>Interação</td></tr>
+            <tr><td class="d">20</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Reagindo aos erros de pudim que me mandaram"</b> — usa fotos/vídeos dos seguidores (com permissão).</td><td>Comunidade + compart.</td></tr>
+            <tr><td class="d">21</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Transformei sobra de pão/leite em pudim"</b> — economia + criatividade, gancho de utilidade.</td><td>Compartilhamento (útil)</td></tr>
+            <tr><td class="d">22</td><td class="fmt"><span class="fmt-pill f-carr">Carrossel</span></td><td><b>"Checklist do pudim perfeito (salva e nunca mais erra)"</b> — resumo das fases 1–2.</td><td>Salvamento pico</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FASE 3 -->
+    <div class="phase">
+      <div class="phase-top">
+        <div class="phase-days">DIAS<br>23–33</div>
+        <div><h3>Fase 3 · Comunidade & salvamento</h3><div class="goal">Objetivo: aprofundar vínculo, séries recorrentes e receitas completas. Preparar terreno pra venda.</div></div>
+      </div>
+      <div class="tbl-scroll">
+        <table class="cal">
+          <thead><tr><th>Dia</th><th>Formato</th><th>Tema / gancho</th><th>Objetivo</th></tr></thead>
+          <tbody>
+            <tr><td class="d">23</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>Série "Pudim da Semana" #1</b> — pudim de leite ninho completo, receita na tela.</td><td>Hábito de voltar</td></tr>
+            <tr><td class="d">24</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>"Você faria esse?" enquete + link/print da receita salva nos destaques.</td><td>Organização + vínculo</td></tr>
+            <tr><td class="d">25</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Respondendo: 'meu pudim nunca desenforma'"</b> — responde comentário real na tela.</td><td>Comentário + confiança</td></tr>
+            <tr><td class="d">26</td><td class="fmt"><span class="fmt-pill f-carr">Carrossel</span></td><td><b>"A história do meu primeiro pudim (deu tudo errado)"</b> — storytelling da Lauren, humaniza.</td><td>Conexão + seguidor fiel</td></tr>
+            <tr><td class="d">27</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>Série "Pudim da Semana" #2</b> — pudim de coco / prestígio, com corte satisfatório.</td><td>Salvamento</td></tr>
+            <tr><td class="d">28</td><td class="fmt"><span class="fmt-pill f-live">Live</span></td><td><b>"Faço pudim ao vivo e tiro suas dúvidas"</b> — anuncie 24h antes nos stories.</td><td>Vínculo profundo</td></tr>
+            <tr><td class="d">29</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"3 utensílios que mudaram meus pudins"</b> — indica ferramentas (semente de venda/afiliado).</td><td>Autoridade + venda leve</td></tr>
+            <tr><td class="d">30</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>Bastidor de encomenda / cozinha real + caixinha "qual sabor você mais quer aprender?".</td><td>Pesquisa de produto</td></tr>
+            <tr><td class="d">31</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>Série "Pudim da Semana" #3</b> — pudim mais pedido na caixinha do dia 30.</td><td>Co-criação + salvamento</td></tr>
+            <tr><td class="d">32</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Quanto custa e quanto rende um pudim pra vender"</b> — abre o tema renda extra.</td><td>Aquece venda de curso</td></tr>
+            <tr><td class="d">33</td><td class="fmt"><span class="fmt-pill f-carr">Carrossel</span></td><td><b>"Depoimentos de quem aprendeu comigo"</b> — prints de resultados de seguidores.</td><td>Prova social pré-venda</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FASE 4 -->
+    <div class="phase">
+      <div class="phase-top">
+        <div class="phase-days">DIAS<br>34–44</div>
+        <div><h3>Fase 4 · Conversão & venda</h3><div class="goal">Objetivo: transformar audiência em caixa (pudim físico, receitas, curso) sem matar o alcance.</div></div>
+      </div>
+      <div class="tbl-scroll">
+        <table class="cal">
+          <thead><tr><th>Dia</th><th>Formato</th><th>Tema / gancho</th><th>Objetivo</th></tr></thead>
+          <tbody>
+            <tr><td class="d">34</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Como eu comecei a ganhar dinheiro com pudim"</b> — história + convite pra saber mais na DM.</td><td>Interesse na oferta</td></tr>
+            <tr><td class="d">35</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>Sequência "bastidor do curso/receitas" + enquete "você quer aprender isso?".</td><td>Segmenta interessados</td></tr>
+            <tr><td class="d">36</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"O que tem no meu curso de pudim (spoiler)"</b> — mostra transformação de aluna.</td><td>Desejo pela oferta</td></tr>
+            <tr><td class="d">37</td><td class="fmt"><span class="fmt-pill f-carr">Carrossel</span></td><td><b>"5 objeções sobre aprender pudim (e a verdade)"</b> — quebra "receita eu acho de graça".</td><td>Quebra de objeção</td></tr>
+            <tr><td class="d">38</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td><b>Abre carrinho / encomendas:</b> link, prazo, condição especial de lançamento. Conte pra caixinha de recado.</td><td>Venda direta</td></tr>
+            <tr><td class="d">39</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Receita grátis completa"</b> — entrega valor real; no fim, "quer o passo a passo em vídeo? link na bio".</td><td>Alcance + tráfego pra oferta</td></tr>
+            <tr><td class="d">40</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>Depoimentos em tempo real + contagem "faltam X vagas/dias".</td><td>Urgência</td></tr>
+            <tr><td class="d">41</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"Erros de quem tenta vender pudim (e como acertar)"</b> — atrai quem quer renda extra.</td><td>Novos leads + venda</td></tr>
+            <tr><td class="d">42</td><td class="fmt"><span class="fmt-pill f-story">Story</span></td><td>Últimas horas / FAQ da oferta respondendo dúvidas reais da DM.</td><td>Fechamento</td></tr>
+            <tr><td class="d">43</td><td class="fmt"><span class="fmt-pill f-reel">Reel</span></td><td><b>"O pudim que mais vendeu / mais amado"</b> — celebra, mantém alcance alto pós-venda.</td><td>Retomada de alcance</td></tr>
+            <tr><td class="d">44</td><td class="fmt"><span class="fmt-pill f-carr">Carrossel</span></td><td><b>"O que vem por aí + obrigada"</b> — recap, prova social e teaser do próximo ciclo de 44 dias.</td><td>Fidelização + próximo ciclo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">Padrões que puxam cada métrica</div>
+      <p><b>Views/alcance:</b> gancho de erro, POV, "testando viral", trends de áudio. · <b>Compartilhamento:</b> identificação ("marca aquela pessoa que…"), utilidade, humor. · <b>Salvamento:</b> receita completa, checklist, "guia". · <b>Visita ao perfil:</b> gancho de autoridade + CTA "tem mais no perfil". · <b>Seguidor:</b> série recorrente + promessa clara na bio.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 3. REELS ==================== -->
+<section id="reels">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">3</span><h2>Público + 20 Reels virais</h2></div>
+    <p class="sec-intro">Antes das ideias, quem é a pessoa que ama pudim — porque todo gancho nasce de uma dor, desejo ou dúvida real. Depois, 20 Reels com gancho, roteiro, retenção, texto de tela e CTA. Toque em cada um para abrir.</p>
+
+    <h3 style="font-size:1.15rem;margin-bottom:14px">Quem é o público do pudim</h3>
+    <div class="persona">
+      <div class="pcol card">
+        <h4><span class="ic">😣</span>Dores</h4>
+        <ul>
+          <li>Pudim com furinhos / cheio de bolha</li>
+          <li>Solta água, talha ou fica "chocho"</li>
+          <li>Quebra na hora de desenformar</li>
+          <li>Calda queima ou cristaliza</li>
+          <li>Medo do banho-maria e do forno</li>
+          <li>"O meu nunca fica igual ao da padaria"</li>
+        </ul>
+      </div>
+      <div class="pcol card">
+        <h4><span class="ic">✨</span>Desejos</h4>
+        <ul>
+          <li>Pudim liso, brilhante, de padaria</li>
+          <li>Calda âmbar perfeita escorrendo</li>
+          <li>Receita infalível que dá certo de 1ª</li>
+          <li>Impressionar família/visitas</li>
+          <li>Ganhar dinheiro vendendo pudim</li>
+          <li>Variar sabores sem enjoar</li>
+        </ul>
+      </div>
+      <div class="pcol card">
+        <h4><span class="ic">❓</span>Dúvidas</h4>
+        <ul>
+          <li>Quanto tempo de forno / ponto certo</li>
+          <li>Bater quanto tempo no liquidificador</li>
+          <li>Precisa tampar a forma? Furo no meio?</li>
+          <li>Dá pra fazer sem forno / na airfryer?</li>
+          <li>Por que dá bolha / como evitar?</li>
+          <li>Quanto tempo antes de desenformar</li>
+        </ul>
+      </div>
+      <div class="pcol card">
+        <h4><span class="ic">🛑</span>Objeções (venda)</h4>
+        <ul>
+          <li>"Já sei fazer pudim"</li>
+          <li>"Receita eu acho de graça na internet"</li>
+          <li>"O meu não dá certo mesmo"</li>
+          <li>"Não tenho tempo / paciência"</li>
+          <li>"Será que vale o preço?"</li>
+          <li>"Não sei se consigo vender"</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="lbl">O que faz esse público PARAR o vídeo</div>
+      <p>Close da calda escorrendo · o corte/fatia perfeita · um "erro" que ele reconhece em si · a promessa de "sem furinhos" · números ("3 ingredientes", "R$5") · a colher afundando no pudim de colher · áudio satisfatório. Comece o Reel por um desses — sempre.</p>
+    </div>
+
+    <h3 style="font-size:1.15rem;margin:34px 0 16px">20 ideias de Reels (gancho · roteiro · retenção · tela · CTA)</h3>
+
+    <details class="reel"><summary><span class="rn">1</span><span class="rt"><span class="rk">Erro · alta identificação</span><span class="rh">O furinho que denuncia seu pudim</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Se o seu pudim tá saindo assim ó… você tá cometendo ESSE erro." (close no furinho)</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Close no pudim furadinho (a "dor" na tela).</li><li>"O problema não é a receita, é o liquidificador."</li><li>Mostra: bater demais incorpora ar = furinho.</li><li>Solução: bater só o necessário + coar + bater na forma pra tirar bolha.</li><li>Corte do pudim liso final ("olha a diferença").</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Abre com o problema visível, promete a solução e só entrega no fim → segura até o corte final. Cortes rápidos a cada 2–3s.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">TÁ VENDO ESSES FURINHOS?
+o erro é antes do forno
+NÃO bata demais
+espera o final…
+👀 liso assim</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Salva pra não esquecer e me conta: seu pudim fica com furinho?"</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">2</span><span class="rt"><span class="rk">ASMR · compartilhamento</span><span class="rh">O desenforme perfeito</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"O som mais satisfatório da cozinha é esse aqui 👇" (mão virando a forma)</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Forma na mão, suspense de 1s.</li><li>Vira devagar — a calda escorrendo em câmera lenta.</li><li>O "plop" do pudim deslizando inteiro.</li><li>Balanço do pudim na tremida.</li><li>Corte da fatia brilhando.</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Puro prazer visual + áudio real (sem música alta). O balanço no fim é o "loop bait" que faz reassistir.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">espera o desenforme…
+3… 2… 1…
+🍮 inteirinho
+o segredo? ↓</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Marca alguém que precisa desse pudim no fim de semana."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">3</span><span class="rt"><span class="rk">Números · utilidade</span><span class="rh">Pudim de 3 ingredientes</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Pudim com só 3 ingredientes que engana qualquer um."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Mostra os 3 ingredientes lado a lado na bancada.</li><li>Bate, coa, calda, forno — ritmo rápido.</li><li>Desenforma e corta.</li><li>"Ninguém acredita que é só isso."</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Simplicidade = promessa cumprível. Cada etapa é um micro-gancho ("será que dá certo com só isso?").</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">SÓ 3 INGREDIENTES
+1 lata leite condensado
+mesma medida de leite
+3 ovos
++ calda 🍮</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Salva a receita e me diz se você faz com 2 ou 3 ovos."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">4</span><span class="rt"><span class="rk">Comparação · retenção</span><span class="rh">Forno x airfryer x fogão</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Fiz o MESMO pudim de 3 jeitos. Um deles foi um desastre."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Split de tela com as 3 formas.</li><li>Mostra tempo e resultado de cada.</li><li>Suspense: "adivinha qual quebrou".</li><li>Revela o campeão e o pior.</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Curiosidade + competição. As pessoas ficam pra saber "qual venceu" e comentam discordando.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">MESMA receita, 3 métodos
+🔥 fogão  ✳️ airfryer  🔲 forno
+qual ganha?
+resposta no fim 👀</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Comenta qual método você usa — quero ver o time de cada um."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">5</span><span class="rt"><span class="rk">Trend/humor · compartilhamento</span><span class="rh">POV: prometi pudim pra família</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"POV: você falou que ia levar pudim e agora tem 1h pra fazer."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Cena de "correria" bem-humorada.</li><li>Receita expressa por cima, cortes rápidos.</li><li>Chega com o pudim pronto e a família aprovando.</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Áudio de trend + situação universal. Humor prende e gera "sou eu total".</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">POV: prometi pudim 😅
+faltam 60 min
+modo turbo ON
+🍮 salvo o almoço</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Marca quem SEMPRE deixa o pudim pra última hora 😂"</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">6</span><span class="rt"><span class="rk">Teste viral · retenção máxima</span><span class="rh">Testando o pudim viral do momento</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Todo mundo tá fazendo esse pudim viral. Será que presta MESMO?"</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Mostra o pudim viral de referência.</li><li>Reproduz passo a passo, com desconfiança.</li><li>Prova na câmera — reação honesta.</li><li>Veredito: "vale ou não vale".</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Ninguém sai antes do veredito. A honestidade gera confiança e comentário ("concordo/discordo").</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">testando o pudim viral 🍮
+"será que é hype?"
+provando ao vivo…
+veredito 👇</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Qual pudim viral eu testo no próximo? Comenta aí."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">7</span><span class="rt"><span class="rk">Valor · comparação</span><span class="rh">Pudim de R$5 x de R$50</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Um custou R$5, o outro R$50. Você consegue ver a diferença?"</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Dois pudins lado a lado, sem dizer qual é qual.</li><li>Corta os dois, mostra textura.</li><li>Revela os custos.</li><li>"O caseiro ganha (e é mais barato)."</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Jogo de adivinhação + valor. Comentários explodem com palpites.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">R$5 vs R$50
+qual é qual?
+👀 olha o corte
+resposta 👇</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Chuta nos comentários qual é o de R$5."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">8</span><span class="rt"><span class="rk">Segredos · salvamento</span><span class="rh">3 coisas que ninguém te conta</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"3 segredos de pudim que confeiteiro não conta de graça."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Segredo 1: coar a mistura (adeus furinho).</li><li>Segredo 2: forma untada com a própria calda.</li><li>Segredo 3: esperar esfriar total antes de desenformar.</li><li>Recap rápido dos 3.</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Contagem (1,2,3) cria expectativa de fechamento. Recap no fim segura pra "ter os 3".</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">3 SEGREDOS 🍮
+1 · coar sempre
+2 · untar com a calda
+3 · esfriar ANTES
+salva os 3 ↓</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Salva os 3 segredos e manda pra alguém que ama pudim."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">9</span><span class="rt"><span class="rk">Dor clássica · comentário</span><span class="rh">Por que o pudim solta água</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Seu pudim solta água no prato? O culpado é o FORNO."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Close no pudim "chorando" água.</li><li>Explica: temperatura alta demais talha o ovo.</li><li>Mostra o forno baixo + banho-maria correto.</li><li>Resultado firme e liso.</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Nomeia a dor exata → quem sofre disso não sai. Gera "era isso!" nos comentários.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">pudim soltando água? 💧
+culpa do forno quente
+160°C + banho-maria
+firme assim ✅</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Comenta 'ÁGUA' que eu te mando o guia completo de forno."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">10</span><span class="rt"><span class="rk">Money shot · viral</span><span class="rh">Pudim de colher / vulcão</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Espera a colher afundar nesse pudim…" (colher parada sobre o pudim)</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Colher afunda devagar, calda transborda.</li><li>Puxa a colher cheia, cremoso escorrendo.</li><li>Corta e mostra o interior "vulcão".</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Puro desejo. O momento da colher é feito pra loop e compartilhamento imediato.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">pudim de colher 🥄
+espera transbordar…
+😍 quem quer?</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Salva e marca quem ia comer isso agora."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">11</span><span class="rt"><span class="rk">Comunidade · UGC</span><span class="rh">Reagindo aos pudins de vocês</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Vocês me mandaram os pudins de vocês e eu preciso ser sincera…"</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Mostra fotos enviadas (com permissão), nota de 0 a 10.</li><li>Elogia acertos, aponta o erro com carinho.</li><li>Dica rápida pra cada.</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Quem enviou volta pra ver o próprio; os demais querem "ser avaliados" → gera envios (pauta infinita).</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">avaliando os SEUS pudins 🍮
+nota 0 a 10
+manda o seu no próximo ↓</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Manda foto do seu pudim na DM pra entrar no próximo vídeo."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">12</span><span class="rt"><span class="rk">Utilidade · compartilhamento</span><span class="rh">Sobra de pão vira pudim</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Não joga o pão amanhecido fora — vira o melhor pudim."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Mostra o pão "velho".</li><li>Transforma em pudim de pão passo a passo.</li><li>Corte final surpreendente.</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Transformação "feio → lindo" + economia = compartilhável e útil.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">pão amanhecido? 🍞
+NÃO joga fora
+vira pudim 🍮
+olha isso…</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Salva pra fazer com a sua próxima sobra de pão."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">13</span><span class="rt"><span class="rk">Mito · comentário</span><span class="rh">Mitos de pudim que você ainda acredita</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"'Pudim tem que ter furinho' — MENTIRA. Deixa eu explicar."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Cita 3 mitos comuns.</li><li>Desmente cada um com demonstração.</li><li>"Agora você sabe mais que muita gente."</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Contradizer uma crença gera comentário (concorda/discorda) e faz reassistir pra "conferir".</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">MITOS DE PUDIM 🚫
+"tem que ter furinho"
+"não pode coar"
+"airfryer não faz"
+tudo mentira ↓</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Qual desses você achava verdade? Comenta o número."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">14</span><span class="rt"><span class="rk">Variedade · salvamento</span><span class="rh">5 sabores num vídeo só</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"5 pudins diferentes pra você nunca mais enjoar."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Ritmo acelerado, 1 sabor a cada 3s (leite ninho, coco, café, paçoca, chocolate).</li><li>Cada um com o corte satisfatório.</li><li>"Qual você faz primeiro?"</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Densidade de valor: 5 ideias num vídeo = motivo forte pra salvar e reassistir pra "pegar todas".</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">5 PUDINS 🍮
+ninho · coco · café
+paçoca · chocolate
+salva TODOS ↓</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Salva o vídeo e comenta qual você faz primeiro."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">15</span><span class="rt"><span class="rk">Storytelling · conexão</span><span class="rh">Meu primeiro pudim (deu tudo errado)</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Meu primeiro pudim foi tão feio que eu quase desisti. Olha."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Foto/recriação do desastre inicial.</li><li>Conta a virada, o que aprendeu.</li><li>Mostra o pudim de hoje ("de onde vim, pra onde cheguei").</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>História com começo-meio-fim + vulnerabilidade = conexão. Prende pela curiosidade do "antes/depois".</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">meu 1º pudim 😳
+(foi um desastre)
+o que mudou tudo…
+hoje 👇 🍮</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Me conta: qual foi o seu maior fracasso na cozinha?"</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">16</span><span class="rt"><span class="rk">Renda extra · lead</span><span class="rh">Quanto rende vender pudim</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Um pudim de R$4 de ingrediente vende por R$25. Deixa eu mostrar a conta."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Custo dos ingredientes na tela.</li><li>Preço de venda e margem.</li><li>Quanto dá vendendo X por semana.</li><li>"E é mais fácil do que parece."</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Dinheiro + números concretos atraem quem quer renda extra — público ótimo pra curso.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">custo: R$4
+venda: R$25
+10 por semana = R$210
+renda de pudim 💰</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Quer aprender a vender? Comenta 'RENDA' que eu te explico."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">17</span><span class="rt"><span class="rk">Antes/depois · autoridade</span><span class="rh">Consertando um pudim que deu errado</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Me mandaram esse pudim 'sem salvação'. Bora consertar?"</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Mostra o pudim problemático.</li><li>Diagnóstico do erro.</li><li>Refaz aplicando a correção.</li><li>Antes x depois lado a lado.</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Formato "problema → solução visível" mantém até o antes/depois. Reforça sua autoridade.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">"não tem salvação" 😬
+diagnóstico: ___
+correção ao vivo
+ANTES x DEPOIS 👇</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Manda o seu 'pudim problema' que eu conserto no próximo."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">18</span><span class="rt"><span class="rk">Sazonal · alcance</span><span class="rh">Pudim temático da data</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"O pudim perfeito pra [data/fim de semana] que vai roubar a cena."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Contextualiza a ocasião.</li><li>Receita temática (ex.: pudim de paçoca em junho, de coco no verão).</li><li>Decoração e apresentação final.</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Relevância temporal surfa a busca da data. <span class="adjust">🔧</span> Encaixe nas datas reais dentro dos seus 44 dias.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">pudim pra [DATA] 🍮
+o que impressiona
+receita completa ↓</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Salva pra fazer no [dia] e marca quem vai comer com você."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">19</span><span class="rt"><span class="rk">Objeção · pré-venda</span><span class="rh">"Receita eu acho de graça" — será?</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"'Receita de pudim é de graça na internet.' Então por que o seu não dá certo?"</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Mostra o "mar" de receitas iguais online.</li><li>Explica: falta o porquê de cada passo (o que evita o erro).</li><li>Demonstra 1 detalhe que muda tudo e "nenhuma receita explica".</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Quebra a objeção central da venda sem soar vendedora. Entrega valor e planta o desejo pelo método completo.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">"acho de graça" 🤔
+então por que erra?
+falta o PORQUÊ
+o detalhe que muda tudo ↓</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Se quer o método passo a passo, o link tá na bio."</p></div>
+    </div></details>
+
+    <details class="reel"><summary><span class="rn">20</span><span class="rt"><span class="rk">Prova social · conversão</span><span class="rh">Transformação de uma aluna/seguidora</span></span><span class="chev">›</span></summary>
+    <div class="body">
+      <div class="rblock"><div class="lbl">Gancho (0–3s)</div><div class="hook">"Ela não conseguia desenformar. Olha o pudim dela HOJE."</div></div>
+      <div class="rblock"><div class="lbl">Roteiro</div><ol><li>Print do "antes" da seguidora + relato.</li><li>O que ela mudou (com a sua dica/curso).</li><li>Foto/vídeo do "depois" impecável.</li><li>"Isso pode ser você."</li></ol></div>
+      <div class="rblock"><div class="lbl">Retenção</div><p>Prova social real gera identificação ("se ela conseguiu, eu consigo") e confiança pra comprar.</p></div>
+      <div class="rblock"><div class="lbl">Texto na tela</div><div class="screen">ANTES: quebrava tudo 😢
+DEPOIS: pudim de padaria 🍮
+o que mudou? ↓
+pode ser você</div></div>
+      <div class="rblock"><div class="lbl">CTA</div><p class="cta-line">"Quer o mesmo resultado? Chama na DM 'QUERO' ou link na bio."</p></div>
+    </div></details>
+
+    <div class="callout">
+      <div class="lbl">Regra de ouro dos Reels</div>
+      <p>Sempre <b>legenda na tela</b> (80% assiste sem som), <b>gancho nos 3 primeiros segundos</b>, vídeo entre <b>7–20s</b> na maioria, <b>1 CTA só</b> por vídeo, e <b>responda os comentários na 1ª hora</b> — isso empurra o alcance. Reaproveite os que performam em Stories e como carrossel.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 4. ANÁLISE ==================== -->
+<section id="analise">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">4</span><h2>Framework de análise de resultados</h2></div>
+    <p class="sec-intro">Quando você me enviar os prints das métricas, eu comparo os conteúdos e acho os padrões vencedores. Como ainda não tenho os números, aqui está o sistema exato que vou usar — e que você já pode aplicar sozinha a cada semana.</p>
+
+    <h3 style="font-size:1.15rem;margin-bottom:14px">As métricas que importam (e o que cada uma revela)</h3>
+    <div class="kpi">
+      <div class="card"><div class="n">Views</div><div class="lab">Alcance / topo de funil</div><div class="sub">Puxada por gancho e formato. Baixo = gancho fraco ou tema saturado.</div></div>
+      <div class="card"><div class="n">Compart.</div><div class="lab">Sinal nº1 de viral</div><div class="sub">Puxada por identificação/utilidade/humor. O que mais expande alcance.</div></div>
+      <div class="card"><div class="n">Salvos</div><div class="lab">Valor percebido</div><div class="sub">Receita, checklist, guia. Indica intenção de fazer depois.</div></div>
+      <div class="card"><div class="n">Visitas ao perfil</div><div class="lab">Intenção de seguir</div><div class="sub">Gancho de autoridade + CTA "tem mais no perfil".</div></div>
+      <div class="card"><div class="n">Seguidores</div><div class="lab">Crescimento real</div><div class="sub">Visita → seguir depende da bio e da consistência do feed.</div></div>
+      <div class="card"><div class="n">Retenção %</div><div class="lab">Qualidade do vídeo</div><div class="sub">Queda nos 3s = gancho. Queda no meio = ritmo. Olhe a curva.</div></div>
+      <div class="card"><div class="n">Comentários</div><div class="lab">Engajamento ativo</div><div class="sub">Perguntas e "polêmicas leves" geram. Empurra alcance na 1ª hora.</div></div>
+      <div class="card"><div class="n">DMs</div><div class="lab">Termômetro de venda</div><div class="sub">"Comenta X que eu mando" → mede interesse em oferta.</div></div>
+    </div>
+
+    <h3 style="font-size:1.15rem;margin:34px 0 14px">Como eu vou comparar os conteúdos</h3>
+    <ol class="steps">
+      <li><b>Ranquear por objetivo, não por curtida.</b><p>Ordeno os Reels por <em>compartilhamento</em> (viral), <em>salvo</em> (valor) e <em>seguidores ganhos</em> — não por likes, que enganam.</p></li>
+      <li><b>Isolar o padrão vencedor.</b><p>O que os 3 melhores têm em comum? Gancho de erro? Money shot? Números? Formato? Áudio de trend? Anoto o denominador comum.</p></li>
+      <li><b>Diagnosticar os fracos.</b><p>Baixo view = gancho/tema. Bom view mas pouco compart. = faltou identificação/CTA. Bom view mas 0 seguidor = perfil/bio não converte.</p></li>
+      <li><b>Definir o que repetir, adaptar e abandonar.</b><p>Repito o padrão vencedor com <em>novos ângulos</em>, adapto os medianos e paro o que não performa há 3 tentativas.</p></li>
+      <li><b>Gerar as próximas pautas.</b><p>Crio 3–5 novos Reels derivados do vencedor, cada um com um ângulo/assunto diferente pra não saturar.</p></li>
+    </ol>
+
+    <div class="split" style="margin-top:26px">
+      <div class="card">
+        <h4>🟢 Sinais de "repetir e escalar"</h4>
+        <ul>
+          <li>Compartilhamentos acima da sua média</li>
+          <li>Retenção segura após os 3s</li>
+          <li>Ganho de seguidores no dia do post</li>
+          <li>Comentários pedindo "faz mais disso"</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>🔴 Sinais de "abandonar ou refazer"</h4>
+        <ul>
+          <li>Queda brusca nos primeiros 3s (gancho fraco)</li>
+          <li>Muitos views, quase nenhum salvo/compart.</li>
+          <li>Tema já repetido sem crescimento</li>
+          <li>Vídeo longo demais sem payoff</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">🔧 O que me mandar pra eu analisar de verdade</div>
+      <p>Print do <b>Insights</b> de cada Reel (views, alcance, interações, contas alcançadas, seguidores vs não-seguidores, salvos, compart.) e, se der, a <b>curva de retenção</b>. Me diga também a data e o tema de cada um. Com 5–8 posts eu já identifico o padrão vencedor com segurança.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 5. SISTEMA ==================== -->
+<section id="sistema">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">5</span><h2>Sistema de crescimento contínuo + venda</h2></div>
+    <p class="sec-intro">O plano não termina no dia 44 — ele vira um ciclo. Aqui está o ritmo semanal que eu mantenho como seu diretor de crescimento, e a escada que transforma seguidores em vendas de receitas, curso e pudins.</p>
+
+    <h3 style="font-size:1.15rem;margin-bottom:14px">O ciclo semanal (repita durante os 44 dias)</h3>
+    <div class="grid g4">
+      <div class="card" style="border-top:3px solid var(--gold)">
+        <h4>Segunda · Planejar</h4>
+        <p>Reveja os números da semana anterior. Escolha os 4–5 conteúdos da semana com base no que venceu.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--caramel)">
+        <h4>Ter–Sex · Publicar</h4>
+        <p>Poste no melhor horário, com gancho e CTA. Responda comentários na 1ª hora. Stories todo dia.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--good)">
+        <h4>Sábado · Testar</h4>
+        <p>1 experimento por semana: novo formato, gancho ou horário. Marque a hipótese.</p>
+      </div>
+      <div class="card" style="border-top:3px solid var(--caramel-deep)">
+        <h4>Domingo · Analisar</h4>
+        <p>Me envie os prints. Eu digo o que priorizar, o que abandonar e as próximas pautas.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.15rem;margin:34px 0 14px">A escada de monetização</h3>
+    <p class="sec-intro" style="margin-bottom:16px">Não venda tudo pra todo mundo. Ofereça o degrau certo pro nível de relação. O conteúdo aquece; a oferta colhe.</p>
+    <div class="ladder">
+      <div class="card">
+        <span class="rung">Entrada</span>
+        <h4>Receitas / e-book</h4>
+        <div class="price">R$ 9–27</div>
+        <p>Isca de baixo risco. Coleção de receitas testadas em PDF. Converte quem "quer de graça" com um preço simbólico e gera lista de clientes.</p>
+        <ul><li>Vende no CTA de Reels de receita</li><li>Combate a objeção do preço</li></ul>
+      </div>
+      <div class="card">
+        <span class="rung">Núcleo</span>
+        <h4>Curso de pudim</h4>
+        <div class="price">R$ 47–197</div>
+        <p>Método completo: liso sem furinho, sabores, calda, e módulo "como vender". Maior margem e transformação.</p>
+        <ul><li>Vende com prova social (Reels 20 e 17)</li><li>Aquece nos dias 34–42</li></ul>
+      </div>
+      <div class="card">
+        <span class="rung">Físico</span>
+        <h4>Pudins por encomenda</h4>
+        <div class="price">local / sob consulta</div>
+        <p>Venda direta pra audiência local. Também vira conteúdo (bastidor de produção, embalagem, entrega).</p>
+        <ul><li>Stories de bastidor + CTA de encomenda</li><li>Depoimentos de clientes viram Reel</li></ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.15rem;margin:34px 0 14px">Como vender sem queimar o alcance</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4>A regra 4:1</h4>
+        <p>Pra cada oferta direta, entregue 4 conteúdos de puro valor. O algoritmo e o público perdoam a venda quando a maioria é generosa.</p>
+      </div>
+      <div class="card">
+        <h4>Venda no meio do valor</h4>
+        <p>Entregue uma receita completa e, no fim, ofereça o "próximo nível" (curso). A venda vira consequência natural da entrega.</p>
+      </div>
+      <div class="card">
+        <h4>Use a DM como funil</h4>
+        <p>"Comenta RENDA" ou "manda QUERO na DM" filtra os interessados e abre conversa 1:1 — onde a conversão é altíssima.</p>
+      </div>
+      <div class="card">
+        <h4>Stories fecham, Reels atraem</h4>
+        <p>Reels trazem gente nova; Stories (enquetes, bastidor, depoimento, contagem) aquecem e fecham a venda com quem já segue.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">Nosso combinado pros próximos 44 dias</div>
+      <p>A cada atualização que você me mandar (perfil, conteúdos, resultados), eu: <b>1)</b> analiso o desempenho, <b>2)</b> ajusto a estratégia com base nos dados, <b>3)</b> digo o que priorizar e o que abandonar, <b>4)</b> proponho os próximos testes e <b>5)</b> conecto o crescimento a oportunidades de venda. Quanto mais dados reais, mais afiado o plano fica. <span class="adjust">🔧 Me mande os primeiros prints quando puder e a gente calibra tudo.</span></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b>Pudins da Lauren · Plano de 44 dias.</b> Estratégia construída sobre o comportamento do nicho de pudim no Instagram BR. Os pontos marcados 🔧 são calibráveis com os seus dados reais — envie os prints do perfil, conteúdos e métricas e o plano deixa de ser modelo e passa a ser 100% seu.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var KEY="pudins-theme";
+  var btn=document.getElementById("themeBtn");
+  function cur(){
+    var t=document.documentElement.getAttribute("data-theme");
+    if(t) return t;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+  }
+  try{var s=localStorage.getItem(KEY); if(s) document.documentElement.setAttribute("data-theme",s);}catch(e){}
+  btn.addEventListener("click",function(){
+    var next=cur()==="dark"?"light":"dark";
+    document.documentElement.setAttribute("data-theme",next);
+    try{localStorage.setItem(KEY,next);}catch(e){}
+  });
+})();
+</script>
