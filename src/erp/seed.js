@@ -16,7 +16,7 @@ export const insumos = [
   { id: "creme_leite", nome: "Creme de leite (caixa 200g)", cat: "Sabores", un: "caixa", custo: 3.00, estoque: 0, min: 6, max: 40 },
   { id: "morango", nome: "Morango / Amora", cat: "Sabores", un: "kg", custo: 22.00, estoque: 0, min: 1, max: 6 },
   { id: "leite_ninho", nome: "Leite em pó Ninho", cat: "Sabores", un: "kg", custo: 40.00, estoque: 0, min: 1, max: 5 },
-  { id: "adocante", nome: "Adoçante (gotas) — custo a confirmar", cat: "Secos", un: "gota", custo: 0.006, estoque: 0, min: 200, max: 4000 },
+  { id: "adocante", nome: "Adoçante Zero-Cal Eritritol líquido (65ml)", cat: "Secos", un: "gota", custo: 0.0135, estoque: 0, min: 200, max: 4000 },
   { id: "limao", nome: "Limão (unidade)", cat: "Sabores", un: "un", custo: 3.00, estoque: 0, min: 3, max: 30 },
   { id: "baunilha", nome: "Baunilha (frasco 30ml)", cat: "Sabores", un: "gota", custo: 0.025, estoque: 0, min: 100, max: 1800 },
   // Gás modelado como kg de botijão (13kg = R$100 → R$7,69/kg). Consumo por
