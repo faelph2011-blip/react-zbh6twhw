@@ -21,6 +21,7 @@ import Estoque from "./modules/Estoque";
 import Compras from "./modules/Compras";
 import Importar from "./modules/Importar";
 import VendasDia from "./modules/VendasDia";
+import Fechamento from "./modules/Fechamento";
 import Financeiro from "./modules/Financeiro";
 import CRM from "./modules/CRM";
 import Pedidos from "./modules/Pedidos";
@@ -52,6 +53,7 @@ const NAV = [
   ]],
   ["Inteligência", [
     ["financeiro", "Financeiro", "💰"],
+    ["fechamento", "Fechamento", "📆"],
     ["ia", "IA & BI", "🤖"],
   ]],
 ];
@@ -134,6 +136,7 @@ export default function App() {
     crm: <CRM {...props} />,
     delivery: <Delivery {...props} />,
     financeiro: <Financeiro {...props} />,
+    fechamento: <Fechamento {...props} />,
     ia: <IA {...props} />,
   };
 
