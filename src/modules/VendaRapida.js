@@ -15,7 +15,7 @@ const hojeISO = () => new Date().toISOString().slice(0, 10);
 const fmtDia = (iso) => { const [a, m, d] = (iso || "").split("-"); return d ? `${d}/${m}/${a}` : (iso || ""); };
 
 export default function VendaRapida({ erp }) {
-  const { db, precoVenda, totalVenda, registrarVendaRapida, excluirVendaRapida } = erp;
+  const { db, precoVenda, totalVenda, totalPedido, registrarVendaRapida, excluirVendaRapida } = erp;
   const [editar, setEditar] = useState(null); // venda em edição
   const [canal, setCanal] = useState("Balcão");
   const [forma, setForma] = useState("PIX");
@@ -23,6 +23,7 @@ export default function VendaRapida({ erp }) {
   const [manual, setManual] = useState("");
   const [data, setData] = useState(hojeISO());
   const [cliente, setCliente] = useState("");
+  const [desconto, setDesconto] = useState("");
   const hoje = hojeISO();
   const retroativo = data !== hoje;
 
@@ -35,7 +36,9 @@ export default function VendaRapida({ erp }) {
     });
 
   const itens = Object.entries(cart).map(([id, qtd]) => ({ id, qtd }));
-  const total = totalVenda(itens, db.produtos);
+  const bruto = totalVenda(itens, db.produtos);
+  const desc = Math.max(0, Math.min(bruto, Number(String(desconto).replace(",", ".")) || 0));
+  const total = +(bruto - desc).toFixed(2);
   const totalUn = itens.reduce((t, i) => t + i.qtd, 0);
 
   const registrar = () => {
@@ -47,11 +50,12 @@ export default function VendaRapida({ erp }) {
       const dLabel = new Date(data + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
       quando = manual ? `${dLabel} ${manual}` : dLabel;
     }
-    registrarVendaRapida(itens, canal, forma, quando, data, cliente || null);
+    registrarVendaRapida(itens, canal, forma, quando, data, cliente || null, desc);
     setCart({});
     setManual("");
     setData(hoje);
     setCliente("");
+    setDesconto("");
   };
 
   // vendas rápidas (todas, mais recentes primeiro) e o recorte de HOJE
@@ -61,7 +65,7 @@ export default function VendaRapida({ erp }) {
     let un = 0, valor = 0;
     const porCanal = {};
     vendasHoje.forEach((v) => {
-      const t = totalVenda(v.itens, db.produtos);
+      const t = totalPedido(v);
       valor += t;
       un += v.itens.reduce((s, i) => s + i.qtd, 0);
       porCanal[v.canal] = (porCanal[v.canal] || 0) + t;
@@ -123,11 +127,16 @@ export default function VendaRapida({ erp }) {
             <option value="">👤 Sem cliente</option>
             {db.clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
           </select>
+          <input inputMode="decimal" placeholder="🏷️ desconto R$" value={desconto}
+            onChange={(e) => setDesconto(e.target.value)} title="Desconto no valor da venda (opcional)" style={{ width: 130 }} />
           {retroativo && <span className="tag t-org">📅 retroativo</span>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div>
-            <div className="mut" style={{ fontSize: 11.5 }}>{totalUn} un · {canal} · {forma}</div>
+            <div className="mut" style={{ fontSize: 11.5 }}>
+              {totalUn} un · {canal} · {forma}
+              {desc > 0 && <> · <span style={{ textDecoration: "line-through" }}>{brl(bruto)}</span> <span style={{ color: "var(--green)" }}>−{brl(desc)}</span></>}
+            </div>
             <div className="num" style={{ fontSize: 24, fontWeight: 700 }}>{brl(total)}</div>
           </div>
           <Btn className="" onClick={registrar} disabled={!itens.length}
@@ -153,7 +162,7 @@ export default function VendaRapida({ erp }) {
         </div>
         {vendasRapidas.length === 0 && <Empty>Nenhuma venda rápida ainda. Registre a primeira acima. ⚡</Empty>}
         {vendasRapidas.slice(0, 15).map((v) => {
-          const t = totalVenda(v.itens, db.produtos);
+          const t = totalPedido(v);
           const canalIc = (CANAIS.find((c) => c[0] === v.canal) || ["", "🧾"])[1];
           const hora = (v.criado || "").match(/\d{1,2}:\d{2}/);
           const quando = fmtDia(v.data) + (hora ? " " + hora[0] : "");
@@ -164,7 +173,7 @@ export default function VendaRapida({ erp }) {
                 <div className="name" style={{ fontSize: 13 }}>
                   {v.itens.map((it, i) => { const p = db.produtos.find((x) => x.id === it.id); return (i ? ", " : "") + it.qtd + "× " + (p ? p.nome.replace("Pudim ", "") : ""); })}
                 </div>
-                <div className="mut" style={{ fontSize: 11.5 }}>📅 {quando} · {v.canal} · {v.pagamento}</div>
+                <div className="mut" style={{ fontSize: 11.5 }}>📅 {quando} · {v.canal} · {v.pagamento}{v.desconto > 0 && <span style={{ color: "var(--green)" }}> · 🏷️ desc. {brl(v.desconto)}</span>}</div>
               </div>
               <span className="num" style={{ fontWeight: 700 }}>{brl(t)}</span>
               <button className="lixo" title="Editar (canal/forma/data)" onClick={() => setEditar(v)}>✏️</button>

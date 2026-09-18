@@ -568,26 +568,29 @@ export function useERP() {
   // sem passar pelo fluxo de produção. É o "controle rápido" do dia a dia.
   // dataISO (yyyy-mm-dd) permite lançar vendas de dias passados.
   // clienteId (opcional) vincula a venda a um cliente cadastrado.
-  const registrarVendaRapida = (itens, canal, forma, quando, dataISO, clienteId) =>
+  const registrarVendaRapida = (itens, canal, forma, quando, dataISO, clienteId, desconto) =>
     up((d) => {
       const id = 7000 + Math.floor(Math.random() * 2999);
-      const total = totalVenda(itens, d.produtos);
+      const bruto = totalVenda(itens, d.produtos);
+      const desc = Math.max(0, Math.min(bruto, Number(desconto) || 0));
+      const total = +(bruto - desc).toFixed(2);
       const hojeISO = new Date().toISOString().slice(0, 10);
       const dia = dataISO || hojeISO;
       const ts = dataISO && dataISO !== hojeISO ? new Date(dia + "T12:00:00").getTime() : Date.now();
       d.pedidos.unshift({
         id, clienteId: clienteId || null, canal, status: "Entregue", pagamento: forma,
-        itens, obs: "", criado: quando, rapida: true, ts, data: dia,
+        itens, obs: "", criado: quando, rapida: true, ts, data: dia, total, desconto: desc || 0,
       });
       itens.forEach((it) => {
         const p = d.produtos.find((x) => x.id === it.id);
         if (p) p.estoque = Math.max(0, p.estoque - it.qtd);
       });
       d.financeiro.unshift({
-        id: uid(), tipo: "receita", cat: "Vendas", desc: `Venda rápida #${id} (${canal})`,
+        id: uid(), tipo: "receita", cat: "Vendas",
+        desc: `Venda rápida #${id} (${canal})${desc ? ` · desc. R$ ${desc.toFixed(2)}` : ""}`,
         valor: total, status: "pago", venc: dia === hojeISO ? "hoje" : dia, origem: "Venda Rápida", data: dia,
       });
-      // vincula ao cliente: cashback 3%, pontos e histórico
+      // vincula ao cliente: cashback 3%, pontos e histórico (sobre o valor líquido)
       if (clienteId) {
         const cli = d.clientes.find((c) => c.id === clienteId);
         if (cli) {
@@ -599,7 +602,7 @@ export function useERP() {
         }
       }
       const un = itens.reduce((t, i) => t + i.qtd, 0);
-      log(d, `Venda rápida #${id} — ${canal} · ${un} un · ${forma} · caixa +${total.toFixed(2)}`);
+      log(d, `Venda rápida #${id} — ${canal} · ${un} un · ${forma}${desc ? ` · desconto R$ ${desc.toFixed(2)}` : ""} · caixa +${total.toFixed(2)}`);
     });
 
   // Exclui uma venda rápida: devolve o estoque, tira a receita do caixa e
