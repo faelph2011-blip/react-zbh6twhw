@@ -17,6 +17,8 @@ export const insumos = [
   { id: "morango", nome: "Morango / Amora", cat: "Sabores", un: "kg", custo: 22.00, estoque: 0, min: 1, max: 6 },
   { id: "leite_ninho", nome: "Leite em pó Ninho", cat: "Sabores", un: "kg", custo: 40.00, estoque: 0, min: 1, max: 5 },
   { id: "adocante", nome: "Adoçante (gotas) — custo a confirmar", cat: "Secos", un: "gota", custo: 0.006, estoque: 0, min: 200, max: 4000 },
+  { id: "limao", nome: "Limão (unidade)", cat: "Sabores", un: "un", custo: 3.00, estoque: 0, min: 3, max: 30 },
+  { id: "baunilha", nome: "Baunilha (frasco 30ml)", cat: "Sabores", un: "gota", custo: 0.025, estoque: 0, min: 100, max: 1800 },
   // Gás modelado como kg de botijão (13kg = R$100 → R$7,69/kg). Consumo por
   // pudim vem da fornada: 1h10 ≈ 0,29kg p/ 16 individuais → 0,0182 kg/individual.
   { id: "gas", nome: "Gás de cozinha (botijão 13kg)", cat: "Produção", un: "kg", custo: 7.69, estoque: 13, min: 3, max: 26 },
@@ -24,6 +26,7 @@ export const insumos = [
   { id: "pote_med", nome: "Pote pudim médio", cat: "Embalagem", un: "un", custo: 3.90, estoque: 120, min: 80, max: 500 },
   { id: "pote_gra", nome: "Pote pudim grande", cat: "Embalagem", un: "un", custo: 7.80, estoque: 40, min: 30, max: 200 },
   { id: "rotulo", nome: "Adesivo de divulgação", cat: "Embalagem", un: "un", custo: 0.90, estoque: 800, min: 400, max: 3000 },
+  { id: "emb_quadrada", nome: "Embalagem quadrada (R$5,90 / 10 un)", cat: "Embalagem", un: "un", custo: 0.59, estoque: 0, min: 20, max: 300 },
   // Embalagens da linha FESTA (mini pudim 40ml em vidro).
   { id: "pote_vidro_p", nome: "Pote de vidro pequeno (festa)", cat: "Embalagem", un: "un", custo: 2.00, estoque: 0, min: 50, max: 500 },
   { id: "adesivo_festa", nome: "Adesivo da marca (festa)", cat: "Embalagem", un: "un", custo: 0.50, estoque: 0, min: 50, max: 500 },
