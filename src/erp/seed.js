@@ -16,6 +16,7 @@ export const insumos = [
   { id: "creme_leite", nome: "Creme de leite (caixa 200g)", cat: "Sabores", un: "caixa", custo: 3.00, estoque: 0, min: 6, max: 40 },
   { id: "morango", nome: "Morango / Amora", cat: "Sabores", un: "kg", custo: 22.00, estoque: 0, min: 1, max: 6 },
   { id: "leite_ninho", nome: "Leite em pó Ninho", cat: "Sabores", un: "kg", custo: 40.00, estoque: 0, min: 1, max: 5 },
+  { id: "adocante", nome: "Adoçante (gotas) — custo a confirmar", cat: "Secos", un: "gota", custo: 0.006, estoque: 0, min: 200, max: 4000 },
   // Gás modelado como kg de botijão (13kg = R$100 → R$7,69/kg). Consumo por
   // pudim vem da fornada: 1h10 ≈ 0,29kg p/ 16 individuais → 0,0182 kg/individual.
   { id: "gas", nome: "Gás de cozinha (botijão 13kg)", cat: "Produção", un: "kg", custo: 7.69, estoque: 13, min: 3, max: 26 },
@@ -162,6 +163,19 @@ export const produtos = [
       { id: "condensado", qtd: 0.037 }, { id: "leite", qtd: 0.0147 }, { id: "ovos", qtd: 0.111 },
       { id: "acucar", qtd: 0.0133 }, { id: "agua", qtd: 0.0073 }, { id: "gas", qtd: 0.0061 },
       { id: "pote_vidro_p", qtd: 1 }, { id: "adesivo_festa", qtd: 1 }, { id: "colherzinha", qtd: 1 }, { id: "liguinha", qtd: 1 },
+    ],
+  },
+  // ---- Linha FITNESS — sem açúcar (adoçante) e leite Ninho. Calda a definir. ----
+  {
+    id: "fitness", nome: "Pudim Fitness", sabor: "Fitness", porte: "Individual", cat: "Fitness", sku: "PUD-FIT-120",
+    tamanho: "~110ml", emoji: "🏋️", grad: "linear-gradient(135deg,#6FA36B,#A9CB8E)",
+    preco: 12.0, promo: null, tempo: 65, rendimento: 1, validade: 5, estoque: 0,
+    // Receita rende 3 individuais: 3 ovos · 150ml leite · 50g ninho · 20 gotas adoçante (÷3 por pudim).
+    // Calda ainda não definida (some ao custo depois).
+    ficha: [
+      { id: "ovos", qtd: 1 }, { id: "leite", qtd: 0.05 }, { id: "leite_ninho", qtd: 0.01667 },
+      { id: "adocante", qtd: 6.667 }, { id: "gas", qtd: 0.0182 },
+      { id: "pote_ind", qtd: 1 }, { id: "rotulo", qtd: 1 },
     ],
   },
 ];
