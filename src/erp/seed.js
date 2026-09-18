@@ -183,6 +183,24 @@ export const produtos = [
   },
 ];
 
+// Baunilha em TODOS os pudins: 6 gotas por receita (base = 9 individuais → 0,667
+// gota/individual), proporcional ao tamanho. Custo mínimo (~R$0,02/individual).
+const BAUNILHA = {
+  ind: 0.667, med: 1.67, gra: 5.56,
+  nutella: 0.667, nutella_med: 1.67, nutella_gra: 5.56,
+  frutas: 0.667, frutas_med: 1.67, frutas_gra: 5.56,
+  festa: 0.222, degustacao: 0.222, fitness: 0.667,
+};
+// Limão só na calda de Frutas Vermelhas: 1 unidade por receita (÷9), proporcional.
+const LIMAO = { frutas: 0.111, frutas_med: 0.278, frutas_gra: 0.926 };
+produtos.forEach((p) => {
+  if (!Array.isArray(p.ficha)) return;
+  const b = BAUNILHA[p.id];
+  if (b && !p.ficha.some((f) => f.id === "baunilha")) p.ficha.push({ id: "baunilha", qtd: b });
+  const l = LIMAO[p.id];
+  if (l && !p.ficha.some((f) => f.id === "limao")) p.ficha.push({ id: "limao", qtd: l });
+});
+
 // ---- Clientes (CRM) ----
 export const clientes = [
   { id: "c1", nome: "Camila Andrade", tel: "(34) 99911-2211", wpp: true, aniv: "12/08", origem: "Instagram", cashback: 8.4, pontos: 240, pedidos: 7, gasto: 348, ultimo: "há 3 dias" },
