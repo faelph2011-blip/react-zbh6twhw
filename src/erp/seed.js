@@ -17,6 +17,7 @@ export const insumos = [
   { id: "morango", nome: "Morango / Amora", cat: "Sabores", un: "kg", custo: 22.00, estoque: 0, min: 1, max: 6 },
   { id: "leite_ninho", nome: "Leite em pó Ninho", cat: "Sabores", un: "kg", custo: 40.00, estoque: 0, min: 1, max: 5 },
   { id: "adocante", nome: "Adoçante Zero-Cal Eritritol líquido (65ml)", cat: "Secos", un: "gota", custo: 0.0135, estoque: 0, min: 200, max: 4000 },
+  { id: "sucralose", nome: "Sucralose (pacote 400g por R$59,90)", cat: "Secos", un: "g", custo: 0.14975, estoque: 0, min: 100, max: 800 },
   { id: "limao", nome: "Limão (unidade)", cat: "Sabores", un: "un", custo: 3.00, estoque: 0, min: 3, max: 30 },
   { id: "baunilha", nome: "Baunilha (frasco 30ml)", cat: "Sabores", un: "gota", custo: 0.025, estoque: 0, min: 100, max: 1800 },
   // Gás modelado como kg de botijão (13kg = R$100 → R$7,69/kg). Consumo por
@@ -173,11 +174,11 @@ export const produtos = [
     id: "fitness", nome: "Pudim Fitness", sabor: "Fitness", porte: "Individual", cat: "Fitness", sku: "PUD-FIT-120",
     tamanho: "~110ml", emoji: "🏋️", grad: "linear-gradient(135deg,#6FA36B,#A9CB8E)",
     preco: 12.0, promo: null, tempo: 65, rendimento: 1, validade: 5, estoque: 0,
-    // Receita rende 3 individuais: 3 ovos · 150ml leite · 50g ninho · 20 gotas adoçante (÷3 por pudim).
-    // Calda ainda não definida (some ao custo depois).
+    // Receita rende 4 individuais: 3 ovos · 200ml leite · 50g ninho · 20 gotas adoçante
+    // + calda (25g sucralose + 60ml água). Tudo ÷4 por pudim.
     ficha: [
-      { id: "ovos", qtd: 1 }, { id: "leite", qtd: 0.05 }, { id: "leite_ninho", qtd: 0.01667 },
-      { id: "adocante", qtd: 6.667 }, { id: "gas", qtd: 0.0182 },
+      { id: "ovos", qtd: 0.75 }, { id: "leite", qtd: 0.05 }, { id: "leite_ninho", qtd: 0.0125 },
+      { id: "adocante", qtd: 5 }, { id: "sucralose", qtd: 6.25 }, { id: "agua", qtd: 0.015 }, { id: "gas", qtd: 0.0182 },
       { id: "pote_ind", qtd: 1 }, { id: "rotulo", qtd: 1 },
     ],
   },
@@ -189,7 +190,7 @@ const BAUNILHA = {
   ind: 0.667, med: 1.67, gra: 5.56,
   nutella: 0.667, nutella_med: 1.67, nutella_gra: 5.56,
   frutas: 0.667, frutas_med: 1.67, frutas_gra: 5.56,
-  festa: 0.222, degustacao: 0.222, fitness: 0.667,
+  festa: 0.222, degustacao: 0.222, fitness: 1.5,
 };
 // Limão só na calda de Frutas Vermelhas: 1 unidade por receita (÷9), proporcional.
 const LIMAO = { frutas: 0.111, frutas_med: 0.278, frutas_gra: 0.926 };
