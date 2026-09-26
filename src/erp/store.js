@@ -577,7 +577,7 @@ export function useERP() {
   // sem passar pelo fluxo de produção. É o "controle rápido" do dia a dia.
   // dataISO (yyyy-mm-dd) permite lançar vendas de dias passados.
   // clienteId (opcional) vincula a venda a um cliente cadastrado.
-  const registrarVendaRapida = (itens, canal, forma, quando, dataISO, clienteId, desconto) =>
+  const registrarVendaRapida = (itens, canal, forma, quando, dataISO, clienteId, desconto, obs) =>
     up((d) => {
       const id = 7000 + Math.floor(Math.random() * 2999);
       const bruto = totalVenda(itens, d.produtos);
@@ -588,7 +588,7 @@ export function useERP() {
       const ts = dataISO && dataISO !== hojeISO ? new Date(dia + "T12:00:00").getTime() : Date.now();
       d.pedidos.unshift({
         id, clienteId: clienteId || null, canal, status: "Entregue", pagamento: forma,
-        itens, obs: "", criado: quando, rapida: true, ts, data: dia, total, desconto: desc || 0, por: usuarioAtual(),
+        itens, obs: (obs || "").trim(), criado: quando, rapida: true, ts, data: dia, total, desconto: desc || 0, por: usuarioAtual(),
       });
       itens.forEach((it) => {
         const p = d.produtos.find((x) => x.id === it.id);

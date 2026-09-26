@@ -20,7 +20,7 @@ export default function VendaRapida({ erp }) {
   const [canal, setCanal] = useState("Balcão");
   const [forma, setForma] = useState("PIX");
   const [cart, setCart] = useState({});
-  const [manual, setManual] = useState("");
+  const [obs, setObs] = useState("");
   const [data, setData] = useState(hojeISO());
   const [cliente, setCliente] = useState("");
   const [desconto, setDesconto] = useState("");
@@ -43,16 +43,12 @@ export default function VendaRapida({ erp }) {
 
   const registrar = () => {
     if (!itens.length) return;
-    let quando;
-    if (!retroativo) {
-      quando = manual ? "hoje " + manual : agora();
-    } else {
-      const dLabel = new Date(data + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-      quando = manual ? `${dLabel} ${manual}` : dLabel;
-    }
-    registrarVendaRapida(itens, canal, forma, quando, data, cliente || null, desc);
+    const quando = retroativo
+      ? new Date(data + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+      : agora();
+    registrarVendaRapida(itens, canal, forma, quando, data, cliente || null, desc, obs);
     setCart({});
-    setManual("");
+    setObs("");
     setData(hoje);
     setCliente("");
     setDesconto("");
@@ -121,8 +117,8 @@ export default function VendaRapida({ erp }) {
           ))}
           <input type="date" max={hoje} value={data} onChange={(e) => setData(e.target.value || hoje)}
             title="Data da venda (hoje ou um dia passado)" style={{ minWidth: 150 }} />
-          <input placeholder="horário (ex: 14:30) · opcional" value={manual}
-            onChange={(e) => setManual(e.target.value)} style={{ flex: 1, minWidth: 120 }} />
+          <input placeholder="📝 observação · opcional" value={obs}
+            onChange={(e) => setObs(e.target.value)} style={{ flex: 1, minWidth: 120 }} />
           <select value={cliente} onChange={(e) => setCliente(e.target.value)} title="Vincular a um cliente cadastrado (opcional)" style={{ minWidth: 150 }}>
             <option value="">👤 Sem cliente</option>
             {db.clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
@@ -174,6 +170,7 @@ export default function VendaRapida({ erp }) {
                   {v.itens.map((it, i) => { const p = db.produtos.find((x) => x.id === it.id); return (i ? ", " : "") + it.qtd + "× " + (p ? p.nome.replace("Pudim ", "") : ""); })}
                 </div>
                 <div className="mut" style={{ fontSize: 11.5 }}>📅 {quando} · {v.canal} · {v.pagamento}{v.desconto > 0 && <span style={{ color: "var(--green)" }}> · 🏷️ desc. {brl(v.desconto)}</span>}{v.por && <span> · 🧑 {v.por}</span>}</div>
+                {v.obs && <div className="mut" style={{ fontSize: 11, fontStyle: "italic" }}>📝 {v.obs}</div>}
               </div>
               <span className="num" style={{ fontWeight: 700 }}>{brl(t)}</span>
               <button className="lixo" title="Editar (canal/forma/data)" onClick={() => setEditar(v)}>✏️</button>
