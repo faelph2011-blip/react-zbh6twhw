@@ -173,7 +173,7 @@ export const produtos = [
   {
     id: "fitness", nome: "Pudim Fitness", sabor: "Fitness", porte: "Individual", cat: "Fitness", sku: "PUD-FIT-120",
     tamanho: "~110ml", emoji: "🏋️", grad: "linear-gradient(135deg,#6FA36B,#A9CB8E)",
-    preco: 15.0, promo: null, promoUnit: 14, combo: "2 por R$ 28", tempo: 65, rendimento: 1, validade: 5, estoque: 0,
+    preco: 16.0, promo: null, promoUnit: 15, combo: "2 por R$ 30", tempo: 65, rendimento: 1, validade: 5, estoque: 0,
     // Receita rende 4 individuais: 3 ovos · 200ml leite · 50g ninho · 20 gotas adoçante
     // + calda (25g sucralose + 60ml água). Tudo ÷4 por pudim.
     ficha: [
