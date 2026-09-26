@@ -21,11 +21,14 @@ export default function Pedidos({ erp }) {
   const pendentePag = (p) => p.pagamento !== "Pago" && p.status !== "Cancelado";
   const nPendPag = db.pedidos.filter(pendentePag).length;
 
-  const list = db.pedidos.filter((p) => {
-    if (filtro === "Todos") return true;
-    if (filtro === "pendpag") return pendentePag(p);
-    return p.status === filtro;
-  });
+  const quando = (p) => p.ts || new Date((p.data || "1970-01-01") + "T12:00:00").getTime() || 0;
+  const list = db.pedidos
+    .filter((p) => {
+      if (filtro === "Todos") return true;
+      if (filtro === "pendpag") return pendentePag(p);
+      return p.status === filtro;
+    })
+    .sort((a, b) => quando(b) - quando(a)); // mais recente primeiro
 
   return (
     <>
