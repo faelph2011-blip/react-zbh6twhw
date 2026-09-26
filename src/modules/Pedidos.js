@@ -6,6 +6,12 @@ const STATUS_CLS = { Novo: "t-blu", Produção: "t-org", Pronto: "t-pur", Entreg
 const CANAL_IC = { Balcão: "🏪", WhatsApp: "💬", Site: "🌐", Delivery: "🛵" };
 // Cor do selo de pagamento por status
 const pagCls = (pg) => (pg === "Pago" ? "t-grn" : pg === "Aguardando PIX" ? "t-org" : pg === "Pendente" ? "t-red" : "t-blu");
+// Data real do pedido (dd/mm/aaaa). Usa p.data (ISO) — não o texto "hoje" do criado.
+const fmtData = (p) => {
+  const iso = p.data;
+  if (iso && /^\d{4}-\d{2}-\d{2}/.test(iso)) { const [a, m, d] = iso.split("-"); return `${d}/${m}/${a}`; }
+  return p.criado || "—";
+};
 
 export default function Pedidos({ erp }) {
   const { db, totalPedido, precificarVenda, enviarProducao, entregarPedido, cancelarPedido, marcarPago, marcarPendente } = erp;
@@ -47,7 +53,7 @@ export default function Pedidos({ erp }) {
             <Card key={p.id}>
               <div className="hdr" style={{ marginBottom: 8 }}>
                 <div><div className="name">#{p.numero || p.id} · {CANAL_IC[p.canal]} {p.canal}</div>
-                  <div className="mut" style={{ fontSize: 12 }}>{cli?.nome} · {p.criado}</div></div>
+                  <div className="mut" style={{ fontSize: 12 }}>{cli?.nome || "Cliente não identificado"} · 📅 {fmtData(p)}{p.por ? ` · 🧑 ${p.por}` : ""}</div></div>
                 <Tag cls={STATUS_CLS[p.status]}>{p.status}</Tag>
               </div>
               {p.itens.map((it, i) => {

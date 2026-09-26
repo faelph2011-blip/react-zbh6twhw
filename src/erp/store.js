@@ -236,6 +236,14 @@ export function useERP() {
     sair: async () => { await sair(); },
   };
 
+  // Nome de quem está logado (para marcar "lançado por" em cada registro).
+  const NOMES_USUARIO = { "fael.ph2011@gmail.com": "Raphael" };
+  const usuarioAtual = () => {
+    const email = (session && session.user && session.user.email) || "";
+    if (!email) return "PIN";
+    return NOMES_USUARIO[email.toLowerCase()] || email.split("@")[0];
+  };
+
   const toggleTheme = useCallback(() => {
     setTheme((t) => {
       const n = t === "dark" ? "light" : "dark";
@@ -298,7 +306,7 @@ export function useERP() {
     up((d) => {
       const id = 1000 + Math.floor(Math.random() * 9000);
       const hojeISO = new Date().toISOString().slice(0, 10);
-      const ped = { id, clienteId, canal, status: "Novo", pagamento: "Pendente", itens, obs: "", criado: "hoje", data: hojeISO, ts: Date.now() };
+      const ped = { id, clienteId, canal, status: "Novo", pagamento: "Pendente", itens, obs: "", criado: "hoje", data: hojeISO, ts: Date.now(), por: usuarioAtual() };
       d.pedidos.unshift(ped);
       const total = totalVenda(itens, d.produtos);
       d.financeiro.unshift({ id: uid(), tipo: "receita", cat: "Vendas", desc: `Pedido #${id}`, valor: total, status: "aberto", venc: "hoje", origem: "Pedidos" });
@@ -410,7 +418,7 @@ export function useERP() {
         desc: `Compra: ${nome}${qtd ? ` (${qtd})` : ""}`,
         valor, status: "pago", venc: dia === hojeISO ? "hoje" : dia,
         origem: "Compras", data: dia,
-        insumoId: insumoId || null, qtd: Number(qtd) || 0, nome,
+        insumoId: insumoId || null, qtd: Number(qtd) || 0, nome, por: usuarioAtual(),
       });
       log(d, `Compra registrada — ${nome} · R$ ${valor.toFixed(2)} (${dia})`);
     });
@@ -472,6 +480,7 @@ export function useERP() {
         venc: (venc || "").trim() || "hoje",
         origem: "Manual",
         data: data || hojeISO,
+        por: usuarioAtual(),
       });
       log(d, `Lançamento manual — ${t} · R$ ${(Number(valor) || 0).toFixed(2)} · ${(desc || "").trim() || "sem descrição"}`);
     });
@@ -579,7 +588,7 @@ export function useERP() {
       const ts = dataISO && dataISO !== hojeISO ? new Date(dia + "T12:00:00").getTime() : Date.now();
       d.pedidos.unshift({
         id, clienteId: clienteId || null, canal, status: "Entregue", pagamento: forma,
-        itens, obs: "", criado: quando, rapida: true, ts, data: dia, total, desconto: desc || 0,
+        itens, obs: "", criado: quando, rapida: true, ts, data: dia, total, desconto: desc || 0, por: usuarioAtual(),
       });
       itens.forEach((it) => {
         const p = d.produtos.find((x) => x.id === it.id);

@@ -173,7 +173,7 @@ export default function VendaRapida({ erp }) {
                 <div className="name" style={{ fontSize: 13 }}>
                   {v.itens.map((it, i) => { const p = db.produtos.find((x) => x.id === it.id); return (i ? ", " : "") + it.qtd + "× " + (p ? p.nome.replace("Pudim ", "") : ""); })}
                 </div>
-                <div className="mut" style={{ fontSize: 11.5 }}>📅 {quando} · {v.canal} · {v.pagamento}{v.desconto > 0 && <span style={{ color: "var(--green)" }}> · 🏷️ desc. {brl(v.desconto)}</span>}</div>
+                <div className="mut" style={{ fontSize: 11.5 }}>📅 {quando} · {v.canal} · {v.pagamento}{v.desconto > 0 && <span style={{ color: "var(--green)" }}> · 🏷️ desc. {brl(v.desconto)}</span>}{v.por && <span> · 🧑 {v.por}</span>}</div>
               </div>
               <span className="num" style={{ fontWeight: 700 }}>{brl(t)}</span>
               <button className="lixo" title="Editar (canal/forma/data)" onClick={() => setEditar(v)}>✏️</button>
